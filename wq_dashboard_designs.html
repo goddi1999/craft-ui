@@ -1,0 +1,669 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:transparent}
+
+/* Role switcher */
+.role-bar{display:flex;gap:2px;padding:3px;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);margin-bottom:1.25rem}
+.role-btn{flex:1;padding:8px 4px;font-size:12px;font-weight:500;border:none;background:transparent;cursor:pointer;border-radius:calc(var(--border-radius-lg) - 2px);color:var(--color-text-secondary);transition:all .15s;letter-spacing:.01em}
+.role-btn.active{background:var(--color-background-primary);color:var(--color-text-primary);border:0.5px solid var(--color-border-tertiary)}
+
+/* Shell */
+.dash{display:none}
+.dash.active{display:grid}
+
+/* ═══ SHARED SHELL ═══ */
+.app-shell{display:grid;grid-template-columns:200px 1fr;gap:0;min-height:520px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+
+/* Sidebar */
+.sidebar{background:var(--color-background-secondary);border-right:0.5px solid var(--color-border-tertiary);padding:16px 0;display:flex;flex-direction:column;gap:2px}
+.sidebar-header{padding:0 16px 14px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:8px}
+.sidebar-org{font-size:13px;font-weight:500;color:var(--color-text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-role{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+.nav-section{padding:4px 12px 2px;font-size:10px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-top:8px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:13px;color:var(--color-text-secondary);cursor:pointer;border-radius:0;transition:background .1s;user-select:none;border:none;background:transparent;width:100%;text-align:left}
+.nav-item:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.nav-item.active{background:var(--color-background-primary);color:var(--color-text-primary);font-weight:500}
+.nav-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.nav-badge{margin-left:auto;font-size:10px;padding:1px 6px;border-radius:10px;background:var(--color-background-danger);color:var(--color-text-danger)}
+
+/* Main content */
+.main{background:var(--color-background-primary);padding:24px;overflow:auto}
+.page-title{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:20px}
+
+/* Metric grid */
+.metric-grid{display:grid;gap:10px;margin-bottom:20px}
+.metric-grid-4{grid-template-columns:repeat(4,1fr)}
+.metric-grid-3{grid-template-columns:repeat(3,1fr)}
+.metric-grid-2{grid-template-columns:repeat(2,1fr)}
+.metric-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px}
+.metric-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:6px;font-weight:500;letter-spacing:.03em;text-transform:uppercase}
+.metric-value{font-size:22px;font-weight:500;color:var(--color-text-primary);font-variant-numeric:tabular-nums}
+.metric-delta{font-size:11px;margin-top:4px}
+.metric-delta.up{color:var(--color-text-success)}
+.metric-delta.warn{color:var(--color-text-warning)}
+.metric-delta.neutral{color:var(--color-text-secondary)}
+
+/* Section header */
+.section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.section-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.section-action{font-size:12px;color:var(--color-text-info);cursor:pointer;background:none;border:none;padding:0}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px}
+.data-table th{text-align:left;padding:6px 10px;font-size:11px;font-weight:500;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);letter-spacing:.03em;text-transform:uppercase}
+.data-table td{padding:9px 10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary)}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--color-background-secondary)}
+
+/* Status pill */
+.pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.pill-green{background:var(--color-background-success);color:var(--color-text-success)}
+.pill-amber{background:var(--color-background-warning);color:var(--color-text-warning)}
+.pill-red{background:var(--color-background-danger);color:var(--color-text-danger)}
+.pill-blue{background:var(--color-background-info);color:var(--color-text-info)}
+.pill-gray{background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)}
+
+/* Progress bar */
+.prog-wrap{height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden;margin-top:4px}
+.prog-fill{height:100%;border-radius:3px;transition:width .3s}
+.prog-green{background:var(--color-text-success)}
+.prog-amber{background:var(--color-text-warning)}
+
+/* Card row */
+.card-row{display:grid;gap:10px;margin-bottom:20px}
+.card-row-2{grid-template-columns:1fr 1fr}
+.card-row-3{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px}
+.card-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px}
+.card-body{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+
+/* Alert banner */
+.alert{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:var(--border-radius-md);border:0.5px solid;margin-bottom:16px;font-size:13px}
+.alert-warn{background:var(--color-background-warning);border-color:var(--color-border-warning);color:var(--color-text-warning)}
+.alert-info{background:var(--color-background-info);border-color:var(--color-border-info);color:var(--color-text-info)}
+
+/* Activity list */
+.activity-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.activity-text{font-size:12px;color:var(--color-text-primary);line-height:1.4}
+.activity-time{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
+
+/* Classroom card */
+.classroom-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:14px 16px;cursor:pointer;border:0.5px solid var(--color-border-tertiary);transition:border-color .12s}
+.classroom-card:hover{border-color:var(--color-border-primary)}
+.classroom-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.classroom-meta{font-size:12px;color:var(--color-text-secondary);margin-top:3px}
+.classroom-stats{display:flex;gap:12px;margin-top:10px}
+.c-stat{font-size:11px;color:var(--color-text-secondary)}
+.c-stat strong{color:var(--color-text-primary);font-weight:500}
+
+/* Quest card (student) */
+.quest-card{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);cursor:pointer;margin-bottom:8px;transition:border-color .12s}
+.quest-card:hover{border-color:var(--color-border-primary)}
+.quest-icon{width:36px;height:36px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.quest-info{flex:1;min-width:0}
+.quest-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.quest-subtitle{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.quest-prog{font-size:11px;color:var(--color-text-info);margin-left:auto;white-space:nowrap}
+
+/* Avatar */
+.avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+
+/* Quick actions */
+.action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.action-btn{padding:10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;text-align:center;font-size:12px;color:var(--color-text-secondary);transition:background .12s}
+.action-btn:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.action-icon{font-size:18px;display:block;margin-bottom:4px}
+
+/* Usage bar */
+.usage-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.usage-label{font-size:12px;color:var(--color-text-secondary);width:80px;flex-shrink:0}
+.usage-bar{flex:1;height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden}
+.usage-fill{height:100%;border-radius:3px}
+.usage-val{font-size:11px;color:var(--color-text-secondary);width:60px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+
+/* Sidebar nav tracking */
+.nav-indicator{width:3px;height:16px;border-radius:2px;margin-right:-4px;flex-shrink:0;opacity:0}
+.nav-item.active .nav-indicator{opacity:1;background:var(--color-text-info)}
+</style>
+
+<!-- Role switcher -->
+<div class="role-bar">
+  <button class="role-btn active" onclick="switchRole('admin',this)">Institution Admin</button>
+  <button class="role-btn" onclick="switchRole('teacher',this)">Teacher</button>
+  <button class="role-btn" onclick="switchRole('student',this)">Student</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     INSTITUTION ADMIN DASHBOARD
+══════════════════════════════════════════════════════════ -->
+<div class="dash active" id="dash-admin">
+<div class="app-shell">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-org">Pflegeschule Nord</div>
+      <div class="sidebar-role">Institution Admin</div>
+    </div>
+    <button class="nav-item active" onclick="adminNav('overview',this)"><span class="nav-indicator"></span>Overview</button>
+    <div class="nav-section">Organisation</div>
+    <button class="nav-item" onclick="adminNav('org',this)"><span class="nav-indicator"></span>Faculties & Cohorts</button>
+    <button class="nav-item" onclick="adminNav('classrooms',this)"><span class="nav-indicator"></span>Classrooms</button>
+    <div class="nav-section">People</div>
+    <button class="nav-item" onclick="adminNav('teachers',this)"><span class="nav-indicator"></span>Teachers</button>
+    <button class="nav-item" onclick="adminNav('students',this)"><span class="nav-indicator"></span>Students</button>
+    <button class="nav-item" onclick="adminNav('invites',this)"><span class="nav-indicator"></span>Invitations <span class="nav-badge">3</span></button>
+    <div class="nav-section">Billing</div>
+    <button class="nav-item" onclick="adminNav('license',this)"><span class="nav-indicator"></span>License & Usage</button>
+    <button class="nav-item" onclick="adminNav('entitlements',this)"><span class="nav-indicator"></span>Entitlements</button>
+    <div class="nav-section">Compliance</div>
+    <button class="nav-item" onclick="adminNav('settings',this)"><span class="nav-indicator"></span>Settings</button>
+    <button class="nav-item" onclick="adminNav('audit',this)"><span class="nav-indicator"></span>Audit Log</button>
+  </div>
+
+  <!-- Main -->
+  <div class="main" id="admin-main">
+    <!-- OVERVIEW page -->
+    <div id="admin-overview">
+      <div class="page-title">Overview</div>
+      <div class="page-sub">Pflegeschule Nord · Academic year 2025/26</div>
+
+      <div class="alert alert-warn">
+        <span>⚠</span>
+        <span>3 pending invitations have not been accepted. <strong style="cursor:pointer;text-decoration:underline" onclick="adminNav('invites',document.querySelector('.nav-item'))">Review invites →</strong></span>
+      </div>
+
+      <div class="metric-grid metric-grid-4">
+        <div class="metric-card">
+          <div class="metric-label">Active Teachers</div>
+          <div class="metric-value">18</div>
+          <div class="metric-delta neutral">of 25 seats</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Active Students</div>
+          <div class="metric-value">312</div>
+          <div class="metric-delta up">↑ 24 this month</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Classrooms</div>
+          <div class="metric-value">14</div>
+          <div class="metric-delta neutral">12 active</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Storage used</div>
+          <div class="metric-value">43 GB</div>
+          <div class="metric-delta warn">86 % of 50 GB</div>
+          <div class="prog-wrap"><div class="prog-fill prog-amber" style="width:86%"></div></div>
+        </div>
+      </div>
+
+      <div class="card-row card-row-2">
+        <div class="card">
+          <div class="card-title">Seat utilisation</div>
+          <div class="usage-row"><div class="usage-label">Teachers</div><div class="usage-bar"><div class="usage-fill prog-green" style="width:72%"></div></div><div class="usage-val">18 / 25</div></div>
+          <div class="usage-row"><div class="usage-label">Students</div><div class="usage-bar"><div class="usage-fill prog-green" style="width:78%"></div></div><div class="usage-val">312 / 400</div></div>
+          <div class="usage-row"><div class="usage-label">Storage</div><div class="usage-bar"><div class="usage-fill prog-amber" style="width:86%"></div></div><div class="usage-val">43 / 50 GB</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent activity</div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:var(--color-text-success)"></div>
+            <div><div class="activity-text">M. Baumann joined as teacher</div><div class="activity-time">2 hours ago</div></div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:var(--color-text-info)"></div>
+            <div><div class="activity-text">Classroom "PG 3A" created</div><div class="activity-time">Yesterday</div></div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:var(--color-text-warning)"></div>
+            <div><div class="activity-text">Storage quota at 86 %</div><div class="activity-time">Auto-alert</div></div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot" style="background:var(--color-text-secondary)"></div>
+            <div><div class="activity-text">3 invitations pending acceptance</div><div class="activity-time">3 days ago</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLASSROOMS page -->
+    <div id="admin-classrooms" style="display:none">
+      <div class="page-title">Classrooms</div>
+      <div class="page-sub">All classrooms in this institution</div>
+      <div class="section-hd">
+        <span class="section-title">14 classrooms</span>
+        <button class="section-action">+ Create classroom</button>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Name</th><th>Lead teacher</th><th>Students</th><th>Programme</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>PG 3A</td><td>K. Hoffmann</td><td>24</td><td>Generalistische Pflege</td><td><span class="pill pill-green">Active</span></td><td><button class="section-action">Edit</button></td></tr>
+          <tr><td>PG 3B</td><td>A. Müller</td><td>22</td><td>Generalistische Pflege</td><td><span class="pill pill-green">Active</span></td><td><button class="section-action">Edit</button></td></tr>
+          <tr><td>WM 2A</td><td>T. Braun</td><td>18</td><td>Wundmanagement</td><td><span class="pill pill-green">Active</span></td><td><button class="section-action">Edit</button></td></tr>
+          <tr><td>WM 1A</td><td>—</td><td>0</td><td>Wundmanagement</td><td><span class="pill pill-amber">No teacher</span></td><td><button class="section-action">Assign</button></td></tr>
+          <tr><td>Alt 2023</td><td>S. Klein</td><td>20</td><td>Altenpflege</td><td><span class="pill pill-gray">Inactive</span></td><td><button class="section-action">Reactivate</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TEACHERS page -->
+    <div id="admin-teachers" style="display:none">
+      <div class="page-title">Teachers</div>
+      <div class="page-sub">Directory · 18 active staff members</div>
+      <div class="section-hd"><span class="section-title"></span><button class="section-action">+ Invite teacher</button></div>
+      <table class="data-table">
+        <thead><tr><th>Name</th><th>Email</th><th>Faculty</th><th>Classrooms</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Katharina Hoffmann</td><td>k.hoffmann@pflegeschule.de</td><td>Pflege</td><td>2</td><td><span class="pill pill-green">Active</span></td></tr>
+          <tr><td>Andreas Müller</td><td>a.mueller@pflegeschule.de</td><td>Pflege</td><td>1</td><td><span class="pill pill-green">Active</span></td></tr>
+          <tr><td>Tobias Braun</td><td>t.braun@pflegeschule.de</td><td>Wundmanagement</td><td>1</td><td><span class="pill pill-green">Active</span></td></tr>
+          <tr><td>Maria Becker</td><td>m.becker@pflegeschule.de</td><td>Pflege</td><td>0</td><td><span class="pill pill-amber">No classroom</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- INVITES page -->
+    <div id="admin-invites" style="display:none">
+      <div class="page-title">Invitations</div>
+      <div class="page-sub">3 pending · sent via email</div>
+      <table class="data-table">
+        <thead><tr><th>Email</th><th>Role</th><th>Invited by</th><th>Sent</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>n.wagner@extern.de</td><td>Teacher</td><td>K. Hoffmann</td><td>3 days ago</td><td><span class="pill pill-amber">Pending</span></td><td><button class="section-action">Resend</button></td></tr>
+          <tr><td>l.schmidt@gmail.com</td><td>Student</td><td>Admin</td><td>5 days ago</td><td><span class="pill pill-amber">Pending</span></td><td><button class="section-action">Resend</button></td></tr>
+          <tr><td>p.meyer@extern.de</td><td>Student</td><td>Admin</td><td>7 days ago</td><td><span class="pill pill-red">Expired</span></td><td><button class="section-action">Reinvite</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- LICENSE page -->
+    <div id="admin-license" style="display:none">
+      <div class="page-title">License & Usage</div>
+      <div class="page-sub">EDU Plus · renews 1 Sep 2026</div>
+      <div class="metric-grid metric-grid-3">
+        <div class="metric-card"><div class="metric-label">Plan</div><div class="metric-value" style="font-size:16px">EDU Plus</div><div class="metric-delta neutral">Per-tenant instance</div></div>
+        <div class="metric-card"><div class="metric-label">Next invoice</div><div class="metric-value" style="font-size:16px">€ 890</div><div class="metric-delta neutral">1 Sep 2026</div></div>
+        <div class="metric-card"><div class="metric-label">Billing status</div><div class="metric-value" style="font-size:16px;color:var(--color-text-success)">Paid</div><div class="metric-delta neutral">Last: 1 Mar 2026</div></div>
+      </div>
+      <div class="section-title" style="margin-bottom:10px">Quota usage</div>
+      <div class="usage-row"><div class="usage-label">Teacher seats</div><div class="usage-bar"><div class="usage-fill prog-green" style="width:72%"></div></div><div class="usage-val">18 / 25</div></div>
+      <div class="usage-row"><div class="usage-label">Student seats</div><div class="usage-bar"><div class="usage-fill prog-green" style="width:78%"></div></div><div class="usage-val">312 / 400</div></div>
+      <div class="usage-row"><div class="usage-label">Storage</div><div class="usage-bar"><div class="usage-fill prog-amber" style="width:86%"></div></div><div class="usage-val">43 / 50 GB</div></div>
+      <div class="usage-row"><div class="usage-label">Classrooms</div><div class="usage-bar"><div class="usage-fill prog-green" style="width:35%"></div></div><div class="usage-val">14 / 40</div></div>
+    </div>
+
+    <!-- ORG / AUDIT / SETTINGS / STUDENTS / ENTITLEMENTS placeholder -->
+    <div id="admin-org" style="display:none"><div class="page-title">Faculties & Cohorts</div><div class="page-sub">Organisation structure</div><div class="card"><div class="card-body">Faculties → Programmes → Cohorts → Class groups → Offerings. Tree view with inline create/edit coming here.</div></div></div>
+    <div id="admin-students" style="display:none"><div class="page-title">Students</div><div class="page-sub">Directory · 312 enrolled</div><div class="card"><div class="card-body">Searchable student directory with classroom assignment, invite flow, and remove-from-institution action.</div></div></div>
+    <div id="admin-settings" style="display:none"><div class="page-title">Settings & Compliance</div><div class="page-sub">Institution configuration · GDPR</div><div class="card"><div class="card-body">Locale, timezone, data retention, notification defaults, GDPR data subject requests.</div></div></div>
+    <div id="admin-audit" style="display:none"><div class="page-title">Audit Log</div><div class="page-sub">Scoped to this institution · GDPR Art. 32</div><div class="card"><div class="card-body">Time-filtered event log: user added, removed, role changed, data export, login events.</div></div></div>
+    <div id="admin-entitlements" style="display:none"><div class="page-title">Entitlements</div><div class="page-sub">Read-only · set by platform</div><div class="card"><div class="card-body">Plan feature flags and per-institution overrides visible here. Cannot be edited at institution level.</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     TEACHER DASHBOARD
+══════════════════════════════════════════════════════════ -->
+<div class="dash" id="dash-teacher">
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-org">Katharina Hoffmann</div>
+      <div class="sidebar-role">Teacher</div>
+    </div>
+    <button class="nav-item active" onclick="teacherNav('overview',this)"><span class="nav-indicator"></span>Overview</button>
+    <div class="nav-section">Teaching</div>
+    <button class="nav-item" onclick="teacherNav('classrooms',this)"><span class="nav-indicator"></span>My Classrooms</button>
+    <button class="nav-item" onclick="teacherNav('attendance',this)"><span class="nav-indicator"></span>Attendance</button>
+    <button class="nav-item" onclick="teacherNav('rewards',this)"><span class="nav-indicator"></span>Rewards</button>
+    <div class="nav-section">Studio</div>
+    <button class="nav-item" onclick="teacherNav('courses',this)"><span class="nav-indicator"></span>Course Studio</button>
+    <button class="nav-item" onclick="teacherNav('games',this)"><span class="nav-indicator"></span>Game Studio</button>
+    <button class="nav-item" onclick="teacherNav('tasks',this)"><span class="nav-indicator"></span>Task Studio</button>
+    <div class="nav-section">Insights</div>
+    <button class="nav-item" onclick="teacherNav('analytics',this)"><span class="nav-indicator"></span>Analytics</button>
+    <button class="nav-item" onclick="teacherNav('notif',this)"><span class="nav-indicator"></span>Notifications <span class="nav-badge">5</span></button>
+  </div>
+
+  <div class="main" id="teacher-main">
+    <!-- OVERVIEW -->
+    <div id="teacher-overview">
+      <div class="page-title">Good morning, Katharina</div>
+      <div class="page-sub">Tuesday, 18 March 2026 · 2 classrooms active today</div>
+
+      <div class="metric-grid metric-grid-3">
+        <div class="metric-card"><div class="metric-label">My Classrooms</div><div class="metric-value">2</div><div class="metric-delta neutral">PG 3A · WM 2A</div></div>
+        <div class="metric-card"><div class="metric-label">Open submissions</div><div class="metric-value">7</div><div class="metric-delta warn">3 overdue</div></div>
+        <div class="metric-card"><div class="metric-label">Joker requests</div><div class="metric-value">2</div><div class="metric-delta neutral">awaiting approval</div></div>
+      </div>
+
+      <div class="card-row card-row-2">
+        <div>
+          <div class="section-hd"><span class="section-title">My classrooms</span></div>
+          <div class="classroom-card" style="margin-bottom:8px" onclick="teacherNav('classrooms',null)">
+            <div class="classroom-name">PG 3A — Generalistische Pflege</div>
+            <div class="classroom-meta">24 students · Lead teacher</div>
+            <div class="classroom-stats">
+              <div class="c-stat"><strong>1</strong> session today</div>
+              <div class="c-stat"><strong>3</strong> open tasks</div>
+              <div class="c-stat"><strong>86%</strong> avg progress</div>
+            </div>
+          </div>
+          <div class="classroom-card" onclick="teacherNav('classrooms',null)">
+            <div class="classroom-name">WM 2A — Wundmanagement</div>
+            <div class="classroom-meta">18 students · Lead teacher</div>
+            <div class="classroom-stats">
+              <div class="c-stat"><strong>0</strong> sessions today</div>
+              <div class="c-stat"><strong>4</strong> open tasks</div>
+              <div class="c-stat"><strong>71%</strong> avg progress</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="section-hd"><span class="section-title">Quick actions</span></div>
+          <div class="action-grid">
+            <button class="action-btn"><span class="action-icon">📋</span>New task</button>
+            <button class="action-btn"><span class="action-icon">🎮</span>Start game</button>
+            <button class="action-btn"><span class="action-icon">✅</span>Take attendance</button>
+            <button class="action-btn"><span class="action-icon">📊</span>View progress</button>
+            <button class="action-btn"><span class="action-icon">🏆</span>Award points</button>
+            <button class="action-btn"><span class="action-icon">📤</span>Share course</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-hd"><span class="section-title">Pending submissions</span><button class="section-action">View all →</button></div>
+      <table class="data-table">
+        <thead><tr><th>Student</th><th>Task</th><th>Classroom</th><th>Submitted</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>L. Fischer</td><td>Wundassessment ABCDE</td><td>WM 2A</td><td>Yesterday</td><td><span class="pill pill-amber">Awaiting review</span></td></tr>
+          <tr><td>T. Schulz</td><td>Verbandswechsel Protokoll</td><td>WM 2A</td><td>2 days ago</td><td><span class="pill pill-red">Overdue review</span></td></tr>
+          <tr><td>M. Koch</td><td>Fallstudie Dekubitus</td><td>PG 3A</td><td>Today</td><td><span class="pill pill-blue">New</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CLASSROOMS detail -->
+    <div id="teacher-classrooms" style="display:none">
+      <div class="page-title">My Classrooms</div>
+      <div class="page-sub">Primary and co-teacher roles</div>
+      <div class="classroom-card" style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="classroom-name">PG 3A — Generalistische Pflege</div>
+            <div class="classroom-meta">24 students · Lead teacher · Active</div>
+          </div>
+          <span class="pill pill-green">Active</span>
+        </div>
+        <div class="classroom-stats" style="margin-top:12px">
+          <div class="c-stat"><strong>3</strong> course deliveries</div>
+          <div class="c-stat"><strong>2</strong> game deliveries</div>
+          <div class="c-stat"><strong>4</strong> task deliveries</div>
+          <div class="c-stat"><strong>86%</strong> avg lesson progress</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="section-action">Roster</button>
+          <button class="section-action">Attendance</button>
+          <button class="section-action">Deliveries</button>
+          <button class="section-action">Rewards</button>
+        </div>
+      </div>
+      <div class="classroom-card">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div><div class="classroom-name">WM 2A — Wundmanagement</div><div class="classroom-meta">18 students · Lead teacher · Active</div></div>
+          <span class="pill pill-green">Active</span>
+        </div>
+        <div class="classroom-stats" style="margin-top:12px">
+          <div class="c-stat"><strong>2</strong> course deliveries</div>
+          <div class="c-stat"><strong>1</strong> game delivery</div>
+          <div class="c-stat"><strong>3</strong> task deliveries</div>
+          <div class="c-stat"><strong>71%</strong> avg lesson progress</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="section-action">Roster</button>
+          <button class="section-action">Attendance</button>
+          <button class="section-action">Deliveries</button>
+          <button class="section-action">Rewards</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAMES -->
+    <div id="teacher-games" style="display:none">
+      <div class="page-title">Game Studio</div>
+      <div class="page-sub">My games · draft and published</div>
+      <div class="section-hd"><span></span><button class="section-action">+ New game</button></div>
+      <table class="data-table">
+        <thead><tr><th>Game</th><th>Type</th><th>Version</th><th>Deliveries</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Wundklassifikation Quiz</td><td>Image Pin</td><td>v3</td><td>2 classrooms</td><td><span class="pill pill-green">Published</span></td></tr>
+          <tr><td>PPE Sequence Drag</td><td>Sort/Drag</td><td>v1</td><td>1 classroom</td><td><span class="pill pill-green">Published</span></td></tr>
+          <tr><td>Wundassessment ABCDE</td><td>Open Question</td><td>v2 draft</td><td>0</td><td><span class="pill pill-amber">Draft</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="teacher-analytics" style="display:none">
+      <div class="page-title">Analytics</div>
+      <div class="page-sub">Lesson progress · learning events · game performance</div>
+      <div class="metric-grid metric-grid-3">
+        <div class="metric-card"><div class="metric-label">Avg lesson completion</div><div class="metric-value">79%</div><div class="metric-delta up">↑ 4% vs last week</div></div>
+        <div class="metric-card"><div class="metric-label">Game sessions this week</div><div class="metric-value">47</div><div class="metric-delta neutral">across 2 classrooms</div></div>
+        <div class="metric-card"><div class="metric-label">Avg game score</div><div class="metric-value">68%</div><div class="metric-delta warn">↓ 2% vs last week</div></div>
+      </div>
+      <div class="card"><div class="card-title">Lesson progress by student (PG 3A)</div>
+        <div style="margin-top:8px">
+          <div class="usage-row"><div class="usage-label" style="width:120px">L. Fischer</div><div class="usage-bar"><div class="usage-fill prog-green" style="width:92%"></div></div><div class="usage-val">92%</div></div>
+          <div class="usage-row"><div class="usage-label" style="width:120px">T. Schulz</div><div class="usage-bar"><div class="usage-fill prog-green" style="width:84%"></div></div><div class="usage-val">84%</div></div>
+          <div class="usage-row"><div class="usage-label" style="width:120px">M. Koch</div><div class="usage-bar"><div class="usage-fill prog-amber" style="width:61%"></div></div><div class="usage-val">61%</div></div>
+          <div class="usage-row"><div class="usage-label" style="width:120px">S. Weber</div><div class="usage-bar"><div class="usage-fill prog-amber" style="width:48%"></div></div><div class="usage-val">48%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUBS -->
+    <div id="teacher-attendance" style="display:none"><div class="page-title">Attendance</div><div class="page-sub">Sessions · schedules · exceptions</div><div class="card"><div class="card-body">Session list per classroom. Manual open/close. Mark present/absent per student. Recurring schedule builder with exception dates.</div></div></div>
+    <div id="teacher-rewards" style="display:none"><div class="page-title">Rewards</div><div class="page-sub">Points · Jokers · classroom leaderboard</div><div class="card"><div class="card-body">Joker types: Hausaufgaben-Joker, Fehler-Joker, Open-Notes-Joker, Platzwahl, Gruppenbelohnung. Approve/deny pending requests. Manual point awards via point_ledger.</div></div></div>
+    <div id="teacher-courses" style="display:none"><div class="page-title">Course Studio</div><div class="page-sub">My courses · topics · lessons · versions</div><div class="card"><div class="card-body">Course list → Topics → Lessons (Yoopta editor). Publish snapshot to course_versions. Topic availability rules: lock, manual unlock, scheduled unlock.</div></div></div>
+    <div id="teacher-tasks" style="display:none"><div class="page-title">Task Studio</div><div class="page-sub">Templates · deliveries · groups · submissions</div><div class="card"><div class="card-body">Task template builder. Published versions. Delivery per classroom. Group assignment. Review and return submissions with inline feedback.</div></div></div>
+    <div id="teacher-notif" style="display:none"><div class="page-title">Notifications</div><div class="page-sub">Delivery-scoped inbox</div><div class="card"><div class="card-body">In-app notification list filtered to this teacher's deliveries. 5 unread: 2 joker requests, 3 new task submissions.</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     STUDENT DASHBOARD
+══════════════════════════════════════════════════════════ -->
+<div class="dash" id="dash-student">
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-org">Lena Fischer</div>
+      <div class="sidebar-role">Student · PG 3A</div>
+    </div>
+    <button class="nav-item active" onclick="studentNav('overview',this)"><span class="nav-indicator"></span>Overview</button>
+    <div class="nav-section">Learning</div>
+    <button class="nav-item" onclick="studentNav('classrooms',this)"><span class="nav-indicator"></span>My Classrooms</button>
+    <button class="nav-item" onclick="studentNav('tasks',this)"><span class="nav-indicator"></span>My Tasks <span class="nav-badge">2</span></button>
+    <button class="nav-item" onclick="studentNav('play',this)"><span class="nav-indicator"></span>Play Games</button>
+    <div class="nav-section">Personal</div>
+    <button class="nav-item" onclick="studentNav('rewards',this)"><span class="nav-indicator"></span>My Rewards</button>
+    <button class="nav-item" onclick="studentNav('notes',this)"><span class="nav-indicator"></span>My Notes</button>
+    <button class="nav-item" onclick="studentNav('messages',this)"><span class="nav-indicator"></span>Messages</button>
+    <button class="nav-item" onclick="studentNav('notif',this)"><span class="nav-indicator"></span>Notifications <span class="nav-badge">3</span></button>
+  </div>
+
+  <div class="main" id="student-main">
+    <!-- OVERVIEW -->
+    <div id="student-overview">
+      <div class="page-title">Good morning, Lena 👋</div>
+      <div class="page-sub">Tuesday, 18 March · Here's what's on today</div>
+
+      <div class="alert alert-info">
+        <span>📋</span>
+        <span>Task <strong>"Fallstudie Dekubitus"</strong> is due tomorrow. <span style="text-decoration:underline;cursor:pointer" onclick="studentNav('tasks',null)">Open task →</span></span>
+      </div>
+
+      <div class="metric-grid metric-grid-3">
+        <div class="metric-card"><div class="metric-label">Overall progress</div><div class="metric-value">92%</div><div class="metric-delta up">↑ 3% this week</div><div class="prog-wrap"><div class="prog-fill prog-green" style="width:92%"></div></div></div>
+        <div class="metric-card"><div class="metric-label">My points</div><div class="metric-value">1 240</div><div class="metric-delta neutral">Level 4 · Wundexperte</div></div>
+        <div class="metric-card"><div class="metric-label">Learning streak</div><div class="metric-value">12 🔥</div><div class="metric-delta neutral">days in a row</div></div>
+      </div>
+
+      <div class="section-hd"><span class="section-title">Continue learning</span></div>
+      <div class="quest-card">
+        <div class="quest-icon" style="background:var(--color-background-info)">📖</div>
+        <div class="quest-info">
+          <div class="quest-title">Wundmanagement Grundlagen</div>
+          <div class="quest-subtitle">PG 3A · Lesson 4 of 6 · Wundklassifikation</div>
+          <div class="prog-wrap" style="margin-top:6px"><div class="prog-fill prog-green" style="width:67%"></div></div>
+        </div>
+        <div class="quest-prog">67% done</div>
+      </div>
+      <div class="quest-card">
+        <div class="quest-icon" style="background:var(--color-background-success)">🎮</div>
+        <div class="quest-info">
+          <div class="quest-title">Wundklassifikation Quiz</div>
+          <div class="quest-subtitle">PG 3A · Image Pin game · Not started</div>
+        </div>
+        <div class="quest-prog" style="color:var(--color-text-secondary)">New</div>
+      </div>
+      <div class="quest-card">
+        <div class="quest-icon" style="background:var(--color-background-warning)">📋</div>
+        <div class="quest-info">
+          <div class="quest-title">Fallstudie Dekubitus</div>
+          <div class="quest-subtitle">PG 3A · Task · Due tomorrow</div>
+        </div>
+        <div class="quest-prog" style="color:var(--color-text-danger)">Due soon</div>
+      </div>
+    </div>
+
+    <!-- CLASSROOMS -->
+    <div id="student-classrooms" style="display:none">
+      <div class="page-title">My Classrooms</div>
+      <div class="page-sub">Active enrolments</div>
+      <div class="classroom-card">
+        <div class="classroom-name">PG 3A — Generalistische Pflege</div>
+        <div class="classroom-meta">K. Hoffmann · 24 students</div>
+        <div class="classroom-stats" style="margin-top:10px">
+          <div class="c-stat"><strong>3</strong> courses</div>
+          <div class="c-stat"><strong>2</strong> games available</div>
+          <div class="c-stat"><strong>4</strong> tasks</div>
+          <div class="c-stat"><strong>92%</strong> my progress</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="section-action">Courses & Lessons</button>
+          <button class="section-action">Games</button>
+          <button class="section-action">Tasks</button>
+          <button class="section-action">Rewards</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div id="student-tasks" style="display:none">
+      <div class="page-title">My Tasks</div>
+      <div class="page-sub">All assignments across active classrooms</div>
+      <table class="data-table">
+        <thead><tr><th>Task</th><th>Classroom</th><th>Due</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Fallstudie Dekubitus</td><td>PG 3A</td><td>Tomorrow</td><td><span class="pill pill-amber">In progress</span></td></tr>
+          <tr><td>Wundassessment ABCDE</td><td>WM 2A</td><td>25 Mar</td><td><span class="pill pill-gray">Not started</span></td></tr>
+          <tr><td>Verbandswechsel Protokoll</td><td>PG 3A</td><td>—</td><td><span class="pill pill-green">Returned · B+</span></td></tr>
+          <tr><td>Gruppenarbeit Hydrokolloide</td><td>WM 2A</td><td>—</td><td><span class="pill pill-green">Submitted</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PLAY -->
+    <div id="student-play" style="display:none">
+      <div class="page-title">Play Games</div>
+      <div class="page-sub">Solo · Versus · Class sessions</div>
+      <div class="card-row card-row-2">
+        <div class="card">
+          <div class="card-title">My game stats</div>
+          <div class="usage-row"><div class="usage-label" style="width:140px">Games played</div><div class="metric-value" style="font-size:16px">14</div></div>
+          <div class="usage-row"><div class="usage-label" style="width:140px">Avg score</div><div class="metric-value" style="font-size:16px">74%</div></div>
+          <div class="usage-row"><div class="usage-label" style="width:140px">Best score</div><div class="metric-value" style="font-size:16px">96%</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Available games</div>
+          <div class="quest-card" style="margin-bottom:8px;padding:8px 10px">
+            <div class="quest-icon" style="background:var(--color-background-info);width:28px;height:28px;font-size:13px">🎮</div>
+            <div class="quest-info"><div class="quest-title" style="font-size:12px">Wundklassifikation Quiz</div></div>
+            <button class="section-action">Play</button>
+          </div>
+          <div class="quest-card" style="padding:8px 10px">
+            <div class="quest-icon" style="background:var(--color-background-success);width:28px;height:28px;font-size:13px">🏆</div>
+            <div class="quest-info"><div class="quest-title" style="font-size:12px">PPE Sequence — Versus</div></div>
+            <button class="section-action">Join</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REWARDS -->
+    <div id="student-rewards" style="display:none">
+      <div class="page-title">My Rewards</div>
+      <div class="page-sub">PG 3A · Points · Level · Jokers</div>
+      <div class="metric-grid metric-grid-3">
+        <div class="metric-card"><div class="metric-label">Total points</div><div class="metric-value">1 240</div><div class="metric-delta up">+80 this week</div></div>
+        <div class="metric-card"><div class="metric-label">Level</div><div class="metric-value">4</div><div class="metric-delta neutral">Wundexperte · 260 to lvl 5</div><div class="prog-wrap" style="margin-top:6px"><div class="prog-fill prog-green" style="width:62%"></div></div></div>
+        <div class="metric-card"><div class="metric-label">Rank</div><div class="metric-value">#3</div><div class="metric-delta neutral">Class leaderboard</div></div>
+      </div>
+      <div class="section-hd"><span class="section-title">My Jokers</span></div>
+      <div class="card-row card-row-3">
+        <div class="card"><div class="card-title">Hausaufgaben-Joker</div><div class="card-body">1 available · <span style="color:var(--color-text-info);cursor:pointer">Request →</span></div></div>
+        <div class="card"><div class="card-title">Fehler-Joker</div><div class="card-body">0 available</div></div>
+        <div class="card"><div class="card-title">Open-Notes-Joker</div><div class="card-body">2 available · <span style="color:var(--color-text-info);cursor:pointer">Request →</span></div></div>
+      </div>
+    </div>
+
+    <!-- STUBS -->
+    <div id="student-notes" style="display:none"><div class="page-title">My Notes</div><div class="page-sub">Personal notes · pinned · linked to lessons</div><div class="card"><div class="card-body">Personal note cards, pinnable, linkable to specific lessons. Soft-delete only. Never shared with teacher.</div></div></div>
+    <div id="student-messages" style="display:none"><div class="page-title">Messages</div><div class="page-sub">Teacher-initiated threads only</div><div class="card"><div class="card-body">Conversation list. Read cursor per thread. Teacher initiates 1:1 — student can reply. Safeguarding: student cannot initiate new threads with teacher.</div></div></div>
+    <div id="student-notif" style="display:none"><div class="page-title">Notifications</div><div class="page-sub">Your inbox · 3 unread</div><div class="card"><div class="card-body">Task returned with feedback, game delivery published, joker approved. Preference controls: email / in-app toggles.</div></div></div>
+  </div>
+</div>
+</div>
+
+<script>
+function switchRole(role, btn) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.dash').forEach(d => d.classList.remove('active'));
+  document.getElementById('dash-' + role).classList.add('active');
+}
+
+function adminNav(page, btn) {
+  document.querySelectorAll('#dash-admin .nav-item').forEach(i => i.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  ['overview','classrooms','teachers','students','invites','license','org','settings','audit','entitlements'].forEach(p => {
+    const el = document.getElementById('admin-' + p);
+    if(el) el.style.display = p === page ? '' : 'none';
+  });
+}
+
+function teacherNav(page, btn) {
+  document.querySelectorAll('#dash-teacher .nav-item').forEach(i => i.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  ['overview','classrooms','attendance','rewards','courses','games','tasks','analytics','notif'].forEach(p => {
+    const el = document.getElementById('teacher-' + p);
+    if(el) el.style.display = p === page ? '' : 'none';
+  });
+}
+
+function studentNav(page, btn) {
+  document.querySelectorAll('#dash-student .nav-item').forEach(i => i.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  ['overview','classrooms','tasks','play','rewards','notes','messages','notif'].forEach(p => {
+    const el = document.getElementById('student-' + p);
+    if(el) el.style.display = p === page ? '' : 'none';
+  });
+}
+</script>

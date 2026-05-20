@@ -1,0 +1,164 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 1rem 0 1.5rem; font-family: var(--font-sans); }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 1.5rem; }
+.stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; }
+.stat-label { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 4px; }
+.stat-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+.stat-val.green { color: var(--color-text-success); }
+.stat-val.amber { color: var(--color-text-warning); }
+.stat-val.red { color: var(--color-text-danger); }
+.chart-wrap { position: relative; width: 100%; height: 320px; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; font-size: 12px; color: var(--color-text-secondary); }
+.legend span { display: flex; align-items: center; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+</style>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Total groups</div><div class="stat-val">8</div></div>
+    <div class="stat"><div class="stat-label">Submitted early</div><div class="stat-val green">3</div></div>
+    <div class="stat"><div class="stat-label">On time</div><div class="stat-val amber">3</div></div>
+    <div class="stat"><div class="stat-label">Late / missing</div><div class="stat-val red">2</div></div>
+  </div>
+
+  <div class="chart-wrap">
+    <canvas id="sc"></canvas>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:#1D9E75"></span>Early</span>
+    <span><span class="dot" style="background:#EF9F27"></span>On time</span>
+    <span><span class="dot" style="background:#E24B4A"></span>Late</span>
+    <span><span class="dot" style="background:#B4B2A9"></span>Not submitted</span>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const due = new Date('2026-03-21T23:59:00').getTime();
+
+const submissions = [
+  { group: 'Group 1', ts: new Date('2026-03-19T14:23:00').getTime() },
+  { group: 'Group 2', ts: new Date('2026-03-19T20:05:00').getTime() },
+  { group: 'Group 3', ts: new Date('2026-03-20T09:41:00').getTime() },
+  { group: 'Group 4', ts: new Date('2026-03-21T17:52:00').getTime() },
+  { group: 'Group 5', ts: new Date('2026-03-21T22:31:00').getTime() },
+  { group: 'Group 6', ts: new Date('2026-03-21T23:44:00').getTime() },
+  { group: 'Group 7', ts: new Date('2026-03-22T01:18:00').getTime() },
+  { group: 'Group 8', ts: null },
+];
+
+function color(ts) {
+  if (!ts) return '#B4B2A9';
+  const diff = due - ts;
+  if (diff > 24 * 3600 * 1000) return '#1D9E75';
+  if (diff >= 0) return '#EF9F27';
+  return '#E24B4A';
+}
+
+function fmt(ts) {
+  if (!ts) return 'Not submitted';
+  return new Date(ts).toLocaleString('de-DE', { weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+const yLabels = submissions.map(s => s.group);
+
+const datasets = submissions.map((s, i) => ({
+  label: s.group,
+  data: s.ts ? [{ x: s.ts, y: i }] : [{ x: new Date('2026-03-19T08:00:00').getTime(), y: i }],
+  backgroundColor: color(s.ts),
+  pointRadius: s.ts ? 9 : 6,
+  pointHoverRadius: 12,
+  pointStyle: s.ts ? 'circle' : 'rectRot',
+  showLine: false,
+}));
+
+const dueLinePlugin = {
+  id: 'dueLine',
+  afterDraw(chart) {
+    const { ctx, scales: { x, y } } = chart;
+    const xPos = x.getPixelForValue(due);
+    ctx.save();
+    ctx.beginPath();
+    ctx.setLineDash([5, 4]);
+    ctx.moveTo(xPos, y.top);
+    ctx.lineTo(xPos, y.bottom);
+    ctx.strokeStyle = '#E24B4A';
+    ctx.lineWidth = 1.5;
+    ctx.globalAlpha = 0.7;
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+    ctx.font = '11px sans-serif';
+    ctx.fillStyle = '#E24B4A';
+    ctx.textAlign = 'center';
+    ctx.fillText('Due date', xPos, y.top - 6);
+    ctx.restore();
+  }
+};
+
+new Chart(document.getElementById('sc'), {
+  type: 'scatter',
+  data: { datasets },
+  plugins: [dueLinePlugin],
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          title: (items) => submissions[items[0].datasetIndex].group,
+          label: (item) => {
+            const s = submissions[item.datasetIndex];
+            return s.ts ? ' Submitted: ' + fmt(s.ts) : ' Not submitted';
+          }
+        },
+        backgroundColor: 'var(--color-background-primary)',
+        titleColor: 'var(--color-text-primary)',
+        bodyColor: 'var(--color-text-secondary)',
+        borderColor: 'var(--color-border-secondary)',
+        borderWidth: 0.5,
+        padding: 10,
+        titleFont: { size: 13, weight: '500' },
+        bodyFont: { size: 12 },
+      }
+    },
+    scales: {
+      x: {
+        type: 'linear',
+        min: new Date('2026-03-18T08:00:00').getTime(),
+        max: new Date('2026-03-23T08:00:00').getTime(),
+        grid: { color: 'rgba(136,135,128,0.1)' },
+        ticks: {
+          font: { size: 11 },
+          color: '#888780',
+          maxTicksLimit: 6,
+          autoSkip: false,
+          callback: v => {
+            const d = new Date(v);
+            return d.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short' });
+          }
+        }
+      },
+      y: {
+        type: 'linear',
+        min: -0.8,
+        max: submissions.length - 0.2,
+        grid: { color: 'rgba(136,135,128,0.08)' },
+        ticks: {
+          font: { size: 12 },
+          color: '#888780',
+          stepSize: 1,
+          callback: v => {
+            const i = Math.round(v);
+            return i >= 0 && i < yLabels.length ? yLabels[i] : '';
+          }
+        }
+      }
+    }
+  }
+});
+</script>

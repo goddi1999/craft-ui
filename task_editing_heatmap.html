@@ -1,0 +1,115 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 1rem 0 1.5rem; font-family: var(--font-sans); }
+.header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.25rem; }
+.title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.subtitle { font-size: 12px; color: var(--color-text-tertiary); }
+.insight { display: flex; align-items: center; gap: 8px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; margin-bottom: 1.25rem; font-size: 12px; color: var(--color-text-secondary); }
+.insight strong { color: var(--color-text-primary); font-weight: 500; }
+.grid-wrap { overflow-x: auto; }
+.grid { display: grid; grid-template-columns: 52px repeat(7, 1fr); gap: 3px; min-width: 400px; }
+.day-label { font-size: 11px; color: var(--color-text-tertiary); text-align: center; padding-bottom: 4px; }
+.hour-label { font-size: 11px; color: var(--color-text-tertiary); text-align: right; padding-right: 8px; line-height: 18px; height: 18px; }
+.cell { height: 18px; border-radius: 3px; cursor: default; transition: opacity 0.15s; }
+.cell:hover { opacity: 0.75; }
+.legend-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 11px; color: var(--color-text-tertiary); }
+.legend-cells { display: flex; gap: 3px; }
+.legend-cell { width: 14px; height: 14px; border-radius: 2px; }
+</style>
+
+<div class="wrap">
+  <div class="header">
+    <span class="title">Editing activity — Aufgabe: Wundheilung Phasen</span>
+    <span class="subtitle">Mon 17 Mar – Sun 23 Mar</span>
+  </div>
+
+  <div class="insight">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><circle cx="7" cy="7" r="6" stroke="var(--color-text-warning)" stroke-width="1.2"/><rect x="6.3" y="3.5" width="1.4" height="4" rx="0.7" fill="var(--color-text-warning)"/><circle cx="7" cy="9.8" r="0.8" fill="var(--color-text-warning)"/></svg>
+    Most editing on <strong>Sunday 19:00–22:00</strong> &nbsp;·&nbsp; Almost no activity during school hours (08:00–14:00)
+  </div>
+
+  <div class="grid-wrap">
+    <div class="grid" id="heatmap"></div>
+  </div>
+
+  <div class="legend-row">
+    <span>Less</span>
+    <div class="legend-cells" id="legend"></div>
+    <span>More</span>
+  </div>
+</div>
+
+<script>
+const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const hours = Array.from({length: 24}, (_, i) => i);
+
+const raw = {
+  Mon: { 9:1, 10:1, 19:2, 20:3 },
+  Tue: { 10:1, 15:2, 20:4, 21:3 },
+  Wed: { 9:1, 16:2, 17:3, 20:5, 21:4, 22:2 },
+  Thu: { 11:1, 14:1, 19:3, 20:6, 21:5, 22:3 },
+  Fri: { 10:1, 15:2, 16:3, 18:4, 19:8, 20:10, 21:8, 22:5 },
+  Sat: { 10:3, 11:4, 14:2, 15:3, 16:4, 19:7, 20:9, 21:6 },
+  Sun: { 9:2, 10:3, 11:2, 14:1, 16:2, 18:4, 19:14, 20:16, 21:12, 22:7, 23:3 },
+};
+
+const allVals = Object.values(raw).flatMap(d => Object.values(d));
+const maxVal = Math.max(...allVals);
+
+function intensity(v) {
+  if (!v) return 0;
+  return v / maxVal;
+}
+
+function cellColor(t) {
+  if (t === 0) return 'var(--color-background-secondary)';
+  const stops = [
+    [0.001, 0.15, '#C0DD97', '#3B6D11'],
+    [0.15,  0.35, '#C0DD97', '#3B6D11'],
+    [0.35,  0.6,  '#97C459', '#27500A'],
+    [0.6,   0.8,  '#639922', '#173404'],
+    [0.8,   1.01, '#3B6D11', '#173404'],
+  ];
+  for (const [lo, hi, light, dark] of stops) {
+    if (t >= lo && t < hi) return light;
+  }
+  return '#3B6D11';
+}
+
+const grid = document.getElementById('heatmap');
+
+grid.innerHTML += '<div></div>';
+days.forEach(d => {
+  const el = document.createElement('div');
+  el.className = 'day-label';
+  el.textContent = d;
+  grid.appendChild(el);
+});
+
+hours.forEach(h => {
+  const label = document.createElement('div');
+  label.className = 'hour-label';
+  label.textContent = h % 3 === 0 ? String(h).padStart(2,'0') + ':00' : '';
+  grid.appendChild(label);
+
+  days.forEach(d => {
+    const v = (raw[d] && raw[d][h]) || 0;
+    const t = intensity(v);
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.style.background = cellColor(t);
+    cell.title = `${d} ${String(h).padStart(2,'0')}:00 — ${v} edits`;
+    grid.appendChild(cell);
+  });
+});
+
+const legendColors = ['var(--color-background-secondary)', '#C0DD97', '#97C459', '#639922', '#3B6D11'];
+const leg = document.getElementById('legend');
+legendColors.forEach(c => {
+  const el = document.createElement('div');
+  el.className = 'legend-cell';
+  el.style.background = c;
+  leg.appendChild(el);
+});
+</script>
