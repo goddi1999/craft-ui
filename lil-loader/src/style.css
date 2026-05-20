@@ -1,0 +1,203 @@
+@import url('https://unpkg.com/normalize.css') layer(normalize);
+
+@layer normalize, base, demo;
+
+@layer demo {
+  :root {
+    --speed: 3.5s;
+  }
+  .loader {
+    width: 75%;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    container-type: size;
+    scale: 1 -1;
+    transform-style: preserve-3d;
+  }
+
+  .frame {
+    width: 120px;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    background: light-dark(hsl(0 0% 98%), hsl(0 0% 94%));
+    border-radius: 24px;
+    border: 1px solid hsl(0 0% 75% / 0.5);
+
+    box-shadow: 0 40px 30px -18px hsl(30 80% 50% / 0.35),
+      0 20px 20px -12px hsl(30 80% 50% / 0.35),
+      0 -2px 4px 2px hsl(30 80% 90% / 0.75) inset;
+  }
+
+  .loader span {
+    width: 90%;
+    aspect-ratio: 10 / 2.25;
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    translate: -50% 0%;
+    border-radius: 50%;
+    border: 1px solid hsl(0 0% 50%);
+    scale: 0.25;
+    animation: hue var(--speed) calc((-1 * var(--speed)) * (var(--idx) / 10))
+        infinite ease-in-out reverse,
+      travel var(--speed) calc((-1 * var(--speed)) * (var(--idx) / 10)) infinite
+        linear,
+      scale calc(var(--speed) * 0.5)
+        calc((-1 * var(--speed)) * (var(--idx) / 10)) infinite alternate;
+  }
+
+  @property --hue {
+    syntax: '<number>';
+    initial-value: 0;
+    inherits: true;
+  }
+
+  .loader span {
+    --bg: hsl(var(--hue) 85% 58% / 0.85);
+    background: radial-gradient(hsl(0 0% 100% / 0.25), #0000), var(--bg);
+    border-color: color-mix(in hsl, var(--bg), white 20%);
+  }
+
+  @keyframes hue {
+    0% {
+      --hue: 350;
+    }
+    100% {
+      --hue: 40;
+    }
+  }
+
+  @keyframes scale {
+    0% {
+      opacity: 0;
+    }
+    15%,
+    25% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  @keyframes travel {
+    0%,
+    5% {
+      transform: translate3d(0, 0, 0);
+      translate: -50% -5%;
+    }
+    95%,
+    100% {
+      transform: translate3d(0, 0, 10px);
+      translate: -50% calc(100cqb - 95%);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --font-size-min: 16;
+    --font-size-max: 20;
+    --font-ratio-min: 1.2;
+    --font-ratio-max: 1.33;
+    --font-width-min: 375;
+    --font-width-max: 1500;
+  }
+
+  html {
+    color-scheme: light only;
+  }
+
+  :where(.fluid) {
+    --fluid-min: calc(
+      var(--font-size-min) * pow(var(--font-ratio-min), var(--font-level, 0))
+    );
+    --fluid-max: calc(
+      var(--font-size-max) * pow(var(--font-ratio-max), var(--font-level, 0))
+    );
+    --fluid-preferred: calc(
+      (var(--fluid-max) - var(--fluid-min)) /
+        (var(--font-width-max) - var(--font-width-min))
+    );
+    --fluid-type: clamp(
+      (var(--fluid-min) / 16) * 1rem,
+      ((var(--fluid-min) / 16) * 1rem) -
+        (((var(--fluid-preferred) * var(--font-width-min)) / 16) * 1rem) +
+        (var(--fluid-preferred) * var(--variable-unit, 100vi)),
+      (var(--fluid-max) / 16) * 1rem
+    );
+    font-size: var(--fluid-type);
+  }
+
+  *,
+  *:after,
+  *:before {
+    box-sizing: border-box;
+  }
+
+  body {
+    background: light-dark(hsl(0 0% 90%), canvas);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    font-family: 'SF Pro Text', 'SF Pro Icons', 'AOS Icons', 'Helvetica Neue',
+      Helvetica, Arial, sans-serif, system-ui;
+  }
+
+  body::before {
+    --size: 45px;
+    --line: color-mix(in lch, canvasText, transparent 70%);
+    content: '';
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    background: linear-gradient(
+          90deg,
+          var(--line) 1px,
+          transparent 1px var(--size)
+        )
+        50% 50% / var(--size) var(--size),
+      linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% /
+        var(--size) var(--size);
+    mask: linear-gradient(-20deg, transparent 50%, white);
+    top: 0;
+    transform-style: flat;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .bear-link {
+    color: canvasText;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    width: 48px;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    opacity: 0.8;
+  }
+
+  :where(.x-link, .bear-link):is(:hover, :focus-visible) {
+    opacity: 1;
+  }
+
+  .bear-link svg {
+    width: 75%;
+  }
+
+  /* Utilities */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}

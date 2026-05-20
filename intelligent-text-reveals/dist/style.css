@@ -1,0 +1,544 @@
+@import url('https://unpkg.com/normalize.css') layer(normalize);
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@layer normalize, base, demo, debug, motion, signature;
+
+@layer signature {
+  .sig {
+    --base-delay: calc((var(--duration) + var(--delay)));
+    --natty-delay: 0.973125;
+    position: absolute;
+    top: calc(100% + 1rem);
+    width: 160px;
+    right: 0;
+    rotate: 10deg;
+  }
+  path {
+    --end: 1.025;
+    stroke-dasharray: var(--end);
+    stroke-dashoffset: var(--end);
+    -webkit-animation: draw calc(var(--path-speed) * 1s)
+      calc((var(--base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+      forwards;
+            animation: draw calc(var(--path-speed) * 1s)
+      calc((var(--base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+      forwards;
+  }
+
+  :is(.eye, .nose) {
+    fill: hsl(0 0% 0% / 0);
+    -webkit-animation: draw calc(var(--path-speed) * 1s)
+        calc((var(--base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+        forwards,
+      fill 0.5s calc((var(--base-delay) * 1s) + var(--natty-delay, 0) * 1s)
+        forwards;
+            animation: draw calc(var(--path-speed) * 1s)
+        calc((var(--base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+        forwards,
+      fill 0.5s calc((var(--base-delay) * 1s) + var(--natty-delay, 0) * 1s)
+        forwards;
+  }
+
+  .eye {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    -webkit-animation: draw calc(var(--path-speed) * 1s)
+        calc((var(--base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+        forwards,
+      fill 0.5s calc((var(--base-delay) * 1s) + var(--natty-delay, 0) * 1s)
+        forwards,
+      blink 6s calc((var(--base-delay) * 1s) + var(--natty-delay, 0) * 1s)
+        infinite;
+            animation: draw calc(var(--path-speed) * 1s)
+        calc((var(--base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+        forwards,
+      fill 0.5s calc((var(--base-delay) * 1s) + var(--natty-delay, 0) * 1s)
+        forwards,
+      blink 6s calc((var(--base-delay) * 1s) + var(--natty-delay, 0) * 1s)
+        infinite;
+  }
+
+  @-webkit-keyframes fill {
+    to {
+      fill: currentColor;
+    }
+  }
+
+  @keyframes fill {
+    to {
+      fill: currentColor;
+    }
+  }
+
+  @-webkit-keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @-webkit-keyframes blink {
+    0%,
+    46%,
+    48%,
+    50%,
+    100% {
+      transform: scaleY(1);
+    }
+    47%,
+    49% {
+      transform: scaleY(0.1);
+    }
+  }
+
+  @keyframes blink {
+    0%,
+    46%,
+    48%,
+    50%,
+    100% {
+      transform: scaleY(1);
+    }
+    47%,
+    49% {
+      transform: scaleY(0.1);
+    }
+  }
+}
+
+@layer motion {
+  @property --progress {
+    initial-value: 0;
+    syntax: '<number>';
+    inherits: true;
+  }
+
+  :root {
+    --start-mask: -70;
+    --end-mask: 0;
+    --start-bg: 132;
+    --end-bg: 16;
+    --duration: 1.8;
+    --color: hsl(280 80% 50% / 0.5);
+  }
+
+  [data-debug='false'] {
+    .dupe--hide,
+    .dupe--reveal {
+      -webkit-animation: reveal calc(var(--duration) * 1s) calc(var(--delay) * 1s)
+          ease-in both,
+        compress calc(var(--duration) * 0.5s)
+          calc((var(--delay) * 1s) + (var(--duration) * 0.44s)) ease-in-out both;
+              animation: reveal calc(var(--duration) * 1s) calc(var(--delay) * 1s)
+          ease-in both,
+        compress calc(var(--duration) * 0.5s)
+          calc((var(--delay) * 1s) + (var(--duration) * 0.44s)) ease-in-out both;
+    }
+    .dupe--reveal {
+      --movement: 0.15lh;
+      --compression: 1.55;
+      line-height: 1.46;
+    }
+    .dupe--reveal .dupe__content {
+      /* needs to go from -80 to -20 */
+      -webkit-mask-image: radial-gradient(
+        180cqmax 180cqmax at 50%
+          calc(
+            (var(--start-mask) * 1cqmax) +
+              ((var(--progress) - 1) * (var(--start-mask) * -1cqmax))
+          ),
+        #fff 38%,
+        #0000 40%
+      );
+              mask-image: radial-gradient(
+        180cqmax 180cqmax at 50%
+          calc(
+            (var(--start-mask) * 1cqmax) +
+              ((var(--progress) - 1) * (var(--start-mask) * -1cqmax))
+          ),
+        #fff 38%,
+        #0000 40%
+      );
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+    }
+    .dupe--hide {
+      --compression: 1.4;
+      .dupe__content {
+        filter: blur(calc(var(--blur, 0) * 1px));
+        /* trying to go from 120 to 16 */
+        background: radial-gradient(
+            180cqmax 180cqmax at 50%
+              calc(
+                (var(--start-bg) * 1cqmax) -
+                  (
+                    clamp(0, var(--progress), 1) *
+                      ((var(--start-bg) - var(--end-bg)) * 1cqmax)
+                  )
+              ),
+            var(--color) 25%,
+            canvasText,
+            #0000
+          )
+          50% 50% / 100% 100% no-repeat;
+        color: #0000;
+        -webkit-background-clip: text;
+                background-clip: text;
+        /* needs to go from -80 to 0 */
+        -webkit-mask-image: radial-gradient(
+            180cqmax 180cqmax at 50%
+              calc(
+                (var(--start-mask) * 1cqmax) +
+                  ((var(--progress) - 1) * (var(--start-mask) * -1cqmax))
+              ),
+            #fff 43%,
+            #0000 45%
+          ),
+          linear-gradient(#fff 0 0);
+                mask-image: radial-gradient(
+            180cqmax 180cqmax at 50%
+              calc(
+                (var(--start-mask) * 1cqmax) +
+                  ((var(--progress) - 1) * (var(--start-mask) * -1cqmax))
+              ),
+            #fff 43%,
+            #0000 45%
+          ),
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+                mask-composite: exclude;
+      }
+    }
+  }
+
+  @-webkit-keyframes reveal {
+    0% {
+      --progress: 0;
+      -webkit-animation-timing-function: ease-in;
+              animation-timing-function: ease-in;
+    }
+    40% {
+      --progress: 1;
+      -webkit-animation-timing-function: ease-out;
+              animation-timing-function: ease-out;
+    }
+    90%,
+    100% {
+      --progress: 2;
+    }
+  }
+
+  @keyframes reveal {
+    0% {
+      --progress: 0;
+      -webkit-animation-timing-function: ease-in;
+              animation-timing-function: ease-in;
+    }
+    40% {
+      --progress: 1;
+      -webkit-animation-timing-function: ease-out;
+              animation-timing-function: ease-out;
+    }
+    90%,
+    100% {
+      --progress: 2;
+    }
+  }
+  @-webkit-keyframes compress {
+    40% {
+      transform: translateY(var(--movement, 0));
+    }
+    50% {
+      line-height: var(--compression, 1.5);
+    }
+    75% {
+      transform: translateY(0);
+    }
+    100% {
+      line-height: 1.5;
+    }
+  }
+  @keyframes compress {
+    40% {
+      transform: translateY(var(--movement, 0));
+    }
+    50% {
+      line-height: var(--compression, 1.5);
+    }
+    75% {
+      transform: translateY(0);
+    }
+    100% {
+      line-height: 1.5;
+    }
+  }
+}
+
+@layer debug {
+  /*
+  * We have two things to do;
+  * background: 112 -> 16
+  * mask: -80 -> -20
+  */
+  [data-debug='true'] {
+    .dupe--hide .dupe__content {
+      filter: blur(calc(var(--blur, 0) * 1px));
+      background: radial-gradient(
+          100cqmax 100cqmax at 50% calc(var(--by) * 1cqmax),
+          hsl(220 40% 60%),
+          canvasText,
+          #0000
+        )
+        50% 50% / 100% 100% no-repeat;
+      color: #0000;
+      -webkit-background-clip: text;
+              background-clip: text;
+      -webkit-mask-image: radial-gradient(
+          120cqmax 120cqmax at 50% calc(var(--my) * 1cqmax),
+          #fff 43%,
+          #0000 45%
+        ),
+        linear-gradient(#fff 0 0);
+              mask-image: radial-gradient(
+          120cqmax 120cqmax at 50% calc(var(--my) * 1cqmax),
+          #fff 43%,
+          #0000 45%
+        ),
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+    }
+    .dupe--reveal .dupe__content {
+      -webkit-mask-image: radial-gradient(
+        120cqmax 120cqmax at 50% calc(var(--my) * 1cqmax),
+        #fff 38%,
+        #0000 40%
+      );
+              mask-image: radial-gradient(
+        120cqmax 120cqmax at 50% calc(var(--my) * 1cqmax),
+        #fff 38%,
+        #0000 40%
+      );
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+    }
+    .dupe__content {
+      line-height: var(--lh, 1.5);
+    }
+  }
+}
+
+@layer demo {
+  main {
+    position: relative;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .dupe {
+    position: absolute;
+    container-type: inline-size;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    min-height: 100%;
+    width: 50ch;
+    max-width: 100%;
+    font-weight: 300;
+    display: grid;
+    place-items: end;
+
+    .dupe__content {
+      padding: 1rem;
+    }
+
+    a {
+      color: inherit;
+      font-weight: 700;
+    }
+  }
+
+  .dupe--reveal {
+    place-items: start;
+    .dupe__content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+  }
+
+  .text-container {
+    position: relative;
+  }
+
+  .text {
+    width: 50ch;
+    max-width: 100%;
+    padding: 1rem;
+    font-weight: 300;
+    opacity: 0;
+  }
+
+  hr {
+    width: calc(100% - 1rem);
+    margin-block: 2rem;
+    opacity: 0.2;
+    display: inline-block;
+    -webkit-animation: fade 1s calc((var(--duration) + var(--delay)) * 1.1s) both;
+            animation: fade 1s calc((var(--duration) + var(--delay)) * 1.1s) both;
+  }
+
+  .dupe,
+  .text {
+    color: color-mix(in hsl, currentColor, #000 30%);
+
+    a {
+      text-underline-offset: 4px;
+    }
+
+    &:not(.dupe--hide) {
+      a,
+      strong {
+        color: canvasText;
+      }
+    }
+  }
+  body {
+    background: light-dark(#fff, #000);
+  }
+  @-webkit-keyframes fade {
+    0% {
+      opacity: 0;
+    }
+  }
+  @keyframes fade {
+    0% {
+      opacity: 0;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --font-size-min: 16;
+    --font-size-max: 20;
+    --font-ratio-min: 1.2;
+    --font-ratio-max: 1.33;
+    --font-width-min: 375;
+    --font-width-max: 1500;
+  }
+
+  html {
+    color-scheme: light dark;
+  }
+
+  [data-theme='light'] {
+    color-scheme: light only;
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark only;
+  }
+
+  :where(.fluid) {
+    --fluid-min: calc(
+      var(--font-size-min) * pow(var(--font-ratio-min), var(--font-level, 0))
+    );
+    --fluid-max: calc(
+      var(--font-size-max) * pow(var(--font-ratio-max), var(--font-level, 0))
+    );
+    --fluid-preferred: calc(
+      (var(--fluid-max) - var(--fluid-min)) /
+        (var(--font-width-max) - var(--font-width-min))
+    );
+    --fluid-type: clamp(
+      (var(--fluid-min) / 16) * 1rem,
+      ((var(--fluid-min) / 16) * 1rem) -
+        (((var(--fluid-preferred) * var(--font-width-min)) / 16) * 1rem) +
+        (var(--fluid-preferred) * var(--variable-unit, 100vi)),
+      (var(--fluid-max) / 16) * 1rem
+    );
+    font-size: var(--fluid-type);
+  }
+
+  *,
+  *:after,
+  *:before {
+    box-sizing: border-box;
+  }
+
+  body {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    font-family: 'SF Pro Text', 'SF Pro Icons', 'AOS Icons', 'Helvetica Neue',
+      Helvetica, Arial, sans-serif, system-ui;
+  }
+
+  body::before {
+    --size: 45px;
+    --line: color-mix(in hsl, canvasText, transparent 70%);
+    content: '';
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    background: linear-gradient(
+          90deg,
+          var(--line) 1px,
+          transparent 1px var(--size)
+        )
+        50% 50% / var(--size) var(--size),
+      linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% /
+        var(--size) var(--size);
+    -webkit-mask: linear-gradient(-20deg, transparent 50%, white);
+            mask: linear-gradient(-20deg, transparent 50%, white);
+    top: 0;
+    transform-style: flat;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .bear-link {
+    color: canvasText;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    width: 48px;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    opacity: 0.8;
+  }
+
+  :where(.x-link, .bear-link):is(:hover, :focus-visible) {
+    opacity: 1;
+  }
+
+  .bear-link svg {
+    width: 75%;
+  }
+
+  /* Utilities */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+div.tp-dfwv {
+  width: 280px;
+}

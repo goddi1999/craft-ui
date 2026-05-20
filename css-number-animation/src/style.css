@@ -1,0 +1,36 @@
+@property --value {
+  initial-value: 0;
+  inherits: true;
+  syntax: '<integer>';
+}
+
+body {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  
+  & > .counter {
+    counter-reset: val var(--value);
+    font-size: 4rem;
+    &::after {
+      content: counter(val)'%';
+      font-family: monospace;
+      font-variant: tabular-nums;
+    }
+  }
+}
+
+[data-animate="false"] .counter {
+  transition: --value 1s ease-out;
+}
+
+[data-animate="true"] .counter {
+  animation: update 1s ease-out forwards;
+  animation-composition: add;
+}
+
+@keyframes update {
+  to {
+    --value: var(--reference);
+  }
+}

@@ -1,0 +1,6 @@
+# "Intelligent" text reveals 
+
+A Pen created on CodePen.
+
+Original URL: [https://codepen.io/jh3y/pen/zxYQagX](https://codepen.io/jh3y/pen/zxYQagX).
+

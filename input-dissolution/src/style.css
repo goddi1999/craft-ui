@@ -1,0 +1,348 @@
+@import url('https://unpkg.com/normalize.css') layer(normalize);
+
+@layer normalize, base, demo, debug, motion, explode;
+
+@layer explode {
+  main {
+    transition-property: transform;
+    transition-duration: 1s;
+    transition-timing-function: ease-out;
+  }
+  .layer {
+    opacity: 0;
+    transition-property: opacity, translate;
+    transition-duration: 1s;
+    transition-timing-function: ease-out;
+  }
+  [data-explode='false'] {
+    .layer {
+      transition-delay: 0s;
+    }
+    main {
+      transition-delay: 1s;
+    }
+  }
+  [data-explode='true'] {
+    .layer {
+      transition-delay: 1s;
+    }
+    main {
+      transition-delay: 0s;
+    }
+  }
+  [data-explode='true'] main {
+    transform: rotateX(32deg) rotateY(-32deg);
+  }
+  [data-exploding='true'] *,
+  [data-explode='true'] * {
+    transform-style: preserve-3d;
+  }
+  [data-explode='true'] .layer {
+    --depth-step: 6rem;
+    translate: 0 0 calc(var(--step, 1) * var(--depth-step));
+    opacity: 1;
+  }
+  .displace-layer {
+    --step: 1;
+  }
+  .input-layer {
+    --step: 3;
+  }
+  .filter-layer {
+    --step: 2;
+  }
+}
+
+@layer motion {
+  form[data-submitted='true'] {
+    --progress: 1;
+  }
+  [data-debug='false'] {
+    --progress: 0;
+  }
+  form[data-submitted='false'] input {
+    animation: reveal 1s both;
+  }
+  @keyframes reveal {
+    0% {
+      opacity: 0;
+    }
+  }
+  [data-debug='false'] form[data-submitted='true'] {
+    .wrap input {
+      transition: clip-path calc(var(--speed) * 1s);
+    }
+    .wrap .dupe {
+      transition: clip-path calc(var(--speed) * 1s),
+        mask-position calc(var(--speed) * 1s);
+    }
+    .displacer {
+      transition: translate calc(var(--speed) * 1s);
+    }
+  }
+}
+
+@layer debug {
+  /* to make your progress work, map the progress against a range */
+  /* is it actually clip 0 - 100 or is it like -10 to 110? for example */
+
+  .input .debug-wrapper {
+    outline: 1px solid canvasText;
+    outline-offset: 6px;
+  }
+
+  .displace-debug {
+    filter: url('#displace');
+  }
+
+  [data-debug='true'] {
+    --progress: var(--scrub, 0);
+  }
+
+  [data-rtl='true'] {
+    .wrap input,
+    .input-debug {
+      clip-path: inset(
+        0
+          calc(
+            ((-10% + (var(--progress) * (120% + var(--spread)))) - var(--peak)) *
+              1
+          )
+          0 0
+      );
+    }
+    .wrap .dupe,
+    .filter-debug {
+      clip-path: inset(
+        0 0 0 calc((110% - (var(--progress) * (120% + var(--spread)))) * 1)
+      );
+      mask-image: linear-gradient(
+        90deg,
+        #0000 0 52%,
+        #fff calc(54% + 4px),
+        #0000 calc(54% + 200px) 100%
+      );
+      mask-position: calc(
+          (-5% + (var(--progress) * (120% - var(--spread)))) * 1
+        )
+        0;
+    }
+    .displacer,
+    .displace-debug {
+      translate: calc(100% - (var(--progress) * (100% + var(--spread)))) 0;
+      mask: linear-gradient(90deg, #fff, #0000);
+    }
+  }
+
+  [data-rtl='false'] {
+    .wrap input,
+    .input-debug {
+      clip-path: inset(
+        0 0 0
+          calc(
+            ((-10% + (var(--progress) * (120% + var(--spread)))) - var(--peak)) *
+              1
+          )
+      );
+    }
+    .wrap .dupe,
+    .filter-debug {
+      clip-path: inset(
+        0 calc((110% - (var(--progress) * (120% + var(--spread)))) * 1) 0 0
+      );
+      mask-image: linear-gradient(
+        90deg,
+        #0000 0 calc(46% - var(--spread)),
+        #fff calc(46% - 4px),
+        #0000 48% 100%
+      );
+      mask-position: calc(
+          (105% - (var(--progress) * (120% - var(--spread)))) * 1
+        )
+        0;
+    }
+    .displacer,
+    .displace-debug {
+      mask-image: linear-gradient(90deg, #0000, #fff);
+      translate: calc(-100% + (var(--progress) * (100% + var(--spread)))) 0;
+    }
+  }
+  .wrap input,
+  .wrap .dupe,
+  .debug-wrapper div {
+    line-height: 3rem;
+  }
+  .filter-debug,
+  .wrap .dupe {
+    backdrop-filter: brightness(2);
+    mask-size: 200% 100%;
+  }
+  .displacer {
+    mix-blend-mode: plus-lighter;
+    /* backdrop-filter: brightness(2) contrast(2); */
+    backdrop-filter: brightness(1) contrast(2) url(#dissolve);
+    backdrop-filter: brightness(1) contrast(2) url('#dissolve');
+  }
+}
+
+@layer demo {
+  :root {
+    --peak: 4%;
+    --spread: 200px;
+    --speed: 2;
+    --progress: 0;
+  }
+
+  [data-filtered='true'] .filtered {
+    filter: blur(1px) url('#dissolve');
+  }
+
+  .dupe::-webkit-scrollbar {
+    display: none;
+  }
+
+  input {
+    caret-color: red;
+    caret-shape: block;
+    outline-color: #0000;
+  }
+
+  form button {
+    outline-color: red;
+  }
+
+  input::placeholder {
+    opacity: 0.5;
+  }
+
+  .wrap {
+    overflow: hidden;
+  }
+
+  main ::selection {
+    background: red;
+  }
+}
+
+@layer base {
+  :root {
+    --font-size-min: 16;
+    --font-size-max: 20;
+    --font-ratio-min: 1.2;
+    --font-ratio-max: 1.33;
+    --font-width-min: 375;
+    --font-width-max: 1500;
+  }
+
+  html {
+    color-scheme: light dark;
+  }
+
+  [data-theme='light'] {
+    color-scheme: light only;
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark only;
+  }
+
+  :where(.fluid) {
+    --fluid-min: calc(
+      var(--font-size-min) * pow(var(--font-ratio-min), var(--font-level, 0))
+    );
+    --fluid-max: calc(
+      var(--font-size-max) * pow(var(--font-ratio-max), var(--font-level, 0))
+    );
+    --fluid-preferred: calc(
+      (var(--fluid-max) - var(--fluid-min)) /
+        (var(--font-width-max) - var(--font-width-min))
+    );
+    --fluid-type: clamp(
+      (var(--fluid-min) / 16) * 1rem,
+      ((var(--fluid-min) / 16) * 1rem) -
+        (((var(--fluid-preferred) * var(--font-width-min)) / 16) * 1rem) +
+        (var(--fluid-preferred) * var(--variable-unit, 100vi)),
+      (var(--fluid-max) / 16) * 1rem
+    );
+    font-size: var(--fluid-type);
+  }
+
+  *,
+  *:after,
+  *:before {
+    box-sizing: border-box;
+  }
+
+  body {
+    background: light-dark(#fff, #000);
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    font-family: 'SF Pro Text', 'SF Pro Icons', 'AOS Icons', 'Helvetica Neue',
+      Helvetica, Arial, sans-serif, system-ui;
+  }
+
+  body::before {
+    --size: 45px;
+    --line: color-mix(in hsl, canvasText, transparent 70%);
+    content: '';
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    background: linear-gradient(
+          90deg,
+          var(--line) 1px,
+          transparent 1px var(--size)
+        )
+        50% 50% / var(--size) var(--size),
+      linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% /
+        var(--size) var(--size);
+    mask: linear-gradient(-20deg, transparent 50%, white);
+    top: 0;
+    transform-style: flat;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .bear-link {
+    color: canvasText;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    width: 48px;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    opacity: 0.8;
+  }
+
+  :where(.x-link, .bear-link):is(:hover, :focus-visible) {
+    opacity: 1;
+  }
+
+  .bear-link svg {
+    width: 75%;
+  }
+
+  /* Utilities */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+div.tp-dfwv {
+  white-space: nowrap;
+  width: 280px;
+  z-index: 9999;
+  position: fixed;
+  transform-style: presrve-3d;
+  translate: 0 0 200px;
+}
