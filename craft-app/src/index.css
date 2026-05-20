@@ -46,6 +46,20 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+
+      /* https://oklch.fyi/ */
+  --oklch-violet: 0.76 0.18 305;
+  --oklch-black: 0 0 0;
+  --oklch-indigo: 0.74 0.15 275;
+  --oklch-blue: 0.78 0.14 245;
+  --oklch-cyan: 0.8 0.13 215;
+  --oklch-teal: 0.78 0.14 185;
+  --oklch-green: 0.8 0.16 150;
+  --oklch-lime: 0.84 0.18 125;
+  --oklch-orange: 0.82 0.17 55;
+  --oklch-pink: 0.8 0.17 10;
+  --oklch-darkblue: 0.45 0.14 254;
+
 }
 
 :root {
@@ -81,6 +95,20 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+      /* https://oklch.fyi/ */
+  --oklch-violet: 0.76 0.18 305;
+  --oklch-black: 0 0 0;
+  --oklch-indigo: 0.74 0.15 275;
+  --oklch-blue: 0.78 0.14 245;
+  --oklch-cyan: 0.8 0.13 215;
+  --oklch-teal: 0.78 0.14 185;
+  --oklch-green: 0.8 0.16 150;
+  --oklch-lime: 0.84 0.18 125;
+  --oklch-orange: 0.82 0.17 55;
+  --oklch-pink: 0.8 0.17 10;
+  --oklch-darkblue: 0.45 0.14 254;
+
 }
 
 .dark {
@@ -127,4 +155,59 @@
   html {
     @apply font-sans;
     }
+}
+
+
+[data-accent='violet'] {
+  --primary: oklch(var(--oklch-violet));
+  --ring: oklch(var(--oklch-violet));
+  --primary-foreground: oklch(0.145 0 0);
+}
+
+[data-accent='indigo'] {
+  --primary: oklch(var(--oklch-indigo));
+  --ring: oklch(var(--oklch-indigo));
+  --primary-foreground: oklch(0.145 0 0);
+}
+
+[data-accent='blue'] {
+  --primary: oklch(var(--oklch-blue));
+  --ring: oklch(var(--oklch-blue));
+  --primary-foreground: oklch(0.145 0 0);
+}
+
+[data-accent='cyan'] {
+  --primary: oklch(var(--oklch-cyan));
+  --ring: oklch(var(--oklch-cyan));
+  --primary-foreground: oklch(0.145 0 0);
+}
+
+[data-accent='teal'] {
+  --primary: oklch(var(--oklch-teal));
+  --ring: oklch(var(--oklch-teal));
+  --primary-foreground: oklch(0.145 0 0);
+}
+
+[data-accent='green'] {
+  --primary: oklch(var(--oklch-green));
+  --ring: oklch(var(--oklch-green));
+  --primary-foreground: oklch(0.145 0 0);
+}
+
+[data-accent='lime'] {
+  --primary: oklch(var(--oklch-lime));
+  --ring: oklch(var(--oklch-lime));
+  --primary-foreground: oklch(0.145 0 0);
+}
+
+[data-accent='orange'] {
+  --primary: oklch(var(--oklch-orange));
+  --ring: oklch(var(--oklch-orange));
+  --primary-foreground: oklch(0.145 0 0);
+}
+
+[data-accent='pink'] {
+  --primary: oklch(var(--oklch-pink));
+  --ring: oklch(var(--oklch-pink));
+  --primary-foreground: oklch(0.145 0 0);
 }
