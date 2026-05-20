@@ -6,6 +6,7 @@ export { ScrollDrivenIndexPanel } from './ScrollDrivenIndexPanel'
 export { ScrollDrivenIndexProgress } from './ScrollDrivenIndexProgress'
 export { ScrollDrivenIndexTrigger } from './ScrollDrivenIndexTrigger'
 export { ScrollDrivenIndexTriggerDetails } from './ScrollDrivenIndexTriggerDetails'
+export { ScrollDrivenIndexPage } from './page'
 export {
   scrollDrivenIndexTriggerVariants,
   scrollDrivenIndexVariants,

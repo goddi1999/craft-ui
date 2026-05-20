@@ -22,7 +22,7 @@ export const scrollDrivenIndexVariants = cva(
 )
 
 export const scrollDrivenIndexTriggerVariants = cva(
-  'scroll-driven-index__trigger fixed z-[9999999] cursor-pointer border-0 outline-offset-2',
+  'scroll-driven-index__trigger fixed z-9999999 cursor-pointer border-0 outline-offset-2',
   {
     variants: {
       tone: {

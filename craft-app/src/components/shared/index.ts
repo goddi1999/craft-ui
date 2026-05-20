@@ -8,6 +8,7 @@ export {
   ScrollDrivenIndexProgress,
   ScrollDrivenIndexTrigger,
   ScrollDrivenIndexTriggerDetails,
+  ScrollDrivenIndexPage,
   scrollDrivenIndexTriggerVariants,
   scrollDrivenIndexVariants,
   usePopoverSizeFallback,
@@ -22,3 +23,27 @@ export type {
   ScrollDrivenIndexTone,
   ScrollDrivenIndexTriggerProps,
 } from './scroll-driven-index'
+export {
+  FauxPipVideo,
+  FauxPipVideoBackdrop,
+  FauxPipVideoPlayer,
+  FauxPipVideoSentinel,
+  FauxPipVideoShell,
+  FauxPipVideoPage,
+  fauxPipVideoVariants,
+  useScrollStateStuck,
+} from './faux-pip-video'
+export type {
+  FauxPipVideoPlayerProps,
+  FauxPipVideoProps,
+  FauxPipVideoSize,
+} from './faux-pip-video'
+export {
+  PlaybookScrollAnimationSubgrid,
+  TheCraftOfUiPlaybookCssScrollAnimationWSubgridPage,
+} from './the-craft-of-ui-playbook-css-scroll-animation-w-subgrid'
+export type {
+  PlaybookScrollAnimationSubgridProps,
+  PlaybookScrollAnimationSubgridStagger,
+  PlaybookScrollAnimationSubgridTheme,
+} from './the-craft-of-ui-playbook-css-scroll-animation-w-subgrid'
