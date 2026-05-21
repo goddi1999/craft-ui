@@ -1,7 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2026 code_double (https://codepen.io/code_double/pen/myrqpJa)
-Fork of an original work  (https://codepen.io/jh3y/pen/jOdmWeK)
+Copyright (c) 2026 Jhey (https://codepen.io/jh3y/pen/jOdmWeK)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

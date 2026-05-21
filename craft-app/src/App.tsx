@@ -3,7 +3,9 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { DemoLayout } from '@/components/layout'
 import {
   FauxPipVideoPage,
+  LinePathAnimationPage,
   ScrollDrivenIndexPage,
+  StyleableSelectPage,
   TheCraftOfUiPlaybookCssScrollAnimationWSubgridPage,
   YouCanScrollPage,
 } from '@/components/shared'
@@ -28,8 +30,16 @@ export function App() {
             element={<TheCraftOfUiPlaybookCssScrollAnimationWSubgridPage />}
           />
           <Route
+            path="/examples/you-can-select-things-styleable-select"
+            element={<StyleableSelectPage />}
+          />
+          <Route
             path="/examples/you-can-scroll"
             element={<YouCanScrollPage />}
+          />
+          <Route
+            path="/examples/line-path-animation"
+            element={<LinePathAnimationPage />}
           />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

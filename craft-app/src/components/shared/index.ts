@@ -47,5 +47,16 @@ export type {
   PlaybookScrollAnimationSubgridStagger,
   PlaybookScrollAnimationSubgridTheme,
 } from './the-craft-of-ui-playbook-css-scroll-animation-w-subgrid'
+export { StyleableSelect, StyleableSelectPage } from './styleable-select'
+export type { StyleableSelectProps, StyleableSelectTheme } from './styleable-select'
 export { YouCanScroll, YouCanScrollPage, youCanScrollVariants } from './you-can-scroll'
 export type { YouCanScrollProps, YouCanScrollTheme } from './you-can-scroll'
+export {
+  LinePathAnimation,
+  LinePathAnimationPage,
+  useLinePathAnimation,
+} from './line-path-animation'
+export type {
+  LinePathAnimationProps,
+  LinePathAnimationTheme,
+} from './line-path-animation'

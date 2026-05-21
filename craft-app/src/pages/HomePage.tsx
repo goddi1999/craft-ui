@@ -40,11 +40,25 @@ const EXAMPLES: ExampleEntry[] = [
     tag: 'CSS · Subgrid',
   },
   {
+    title: 'Styleable Select',
+    description:
+      'A stylable select demo inspired by the base-select interaction pattern.',
+    path: '/examples/you-can-select-things-styleable-select',
+    tag: 'CSS · Select',
+  },
+  {
     title: 'You Can Scroll',
     description:
       'A sticky phrase and chroma-scroll list driven by CSS view timelines and scroll-linked animation.',
     path: '/examples/you-can-scroll',
     tag: 'CSS · View Timeline',
+  },
+  {
+    title: 'Line Path Animation',
+    description:
+      'A scroll-driven SVG path fill animation with sticky headline and progressive section reveals.',
+    path: '/examples/line-path-animation',
+    tag: 'CSS · SVG',
   },
 ]
 

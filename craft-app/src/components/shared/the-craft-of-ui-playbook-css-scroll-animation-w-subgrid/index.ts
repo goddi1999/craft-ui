@@ -5,4 +5,3 @@ export type {
   PlaybookScrollAnimationSubgridStagger,
   PlaybookScrollAnimationSubgridTheme,
 } from './playbook-scroll-animation-subgrid.types'
-

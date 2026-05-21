@@ -1,0 +1,228 @@
+@layer styleable-select {
+  [data-slot='styleable-select'] {
+    display: grid;
+    place-items: center;
+    padding: 2rem 1rem;
+    color-scheme: light dark;
+    background: canvas;
+    color: canvasText;
+  }
+
+  [data-slot='styleable-select'][data-fullpage='true'] {
+    min-height: 100svh;
+  }
+
+  [data-slot='styleable-select'][data-theme='light'] {
+    color-scheme: light only;
+  }
+
+  [data-slot='styleable-select'][data-theme='dark'] {
+    color-scheme: dark only;
+  }
+
+  [data-slot='styleable-select'] .styleable-select__line {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45ch;
+    font-size: 2rem;
+    color: canvasText;
+  }
+
+  [data-slot='styleable-select'] .styleable-select__prefix {
+    display: inline-block;
+    translate: 0.5ch 0;
+    transition-property: opacity, translate;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out;
+  }
+
+  [data-slot='styleable-select']:has(.custom-select[data-open='true'])
+    .styleable-select__prefix {
+    opacity: 0.25;
+    translate: 0 0;
+  }
+
+  [data-slot='styleable-select']:has(.custom-select:is(:hover, :focus-within))
+    .styleable-select__prefix {
+    translate: 0 0;
+  }
+
+  [data-slot='styleable-select'] .custom-select {
+    --height: 1.2lh;
+    --fade: 0.5;
+    --hover: light-dark(
+      color-mix(in oklch, canvasText, transparent 90%),
+      color-mix(in oklch, canvasText, transparent 85%)
+    );
+    --transition: 0.26s;
+    position: relative;
+    width: 220px;
+  }
+
+  [data-slot='styleable-select'] .custom-select[data-centered='false'] {
+    --start-delay: 0.4;
+  }
+
+  [data-slot='styleable-select'] .custom-select__trigger {
+    width: 100%;
+    height: var(--height);
+    border: 0;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    outline-color: color-mix(in oklch, canvasText, transparent);
+    transition: background var(--transition) ease-out;
+  }
+
+  [data-slot='styleable-select'] .custom-select:is(:hover, :focus-within) .custom-select__trigger,
+  [data-slot='styleable-select'] .custom-select[data-open='true'] .custom-select__trigger {
+    background: var(--hover);
+  }
+
+  [data-slot='styleable-select'] .custom-select__value {
+    flex: 1;
+    text-align: left;
+    transition: opacity var(--transition) ease;
+  }
+
+  [data-slot='styleable-select'] .custom-select[data-open='true'] .custom-select__value {
+    opacity: 0;
+  }
+
+  [data-slot='styleable-select'] .custom-select svg {
+    width: 24px;
+    height: 24px;
+    opacity: 0.5;
+    transition: opacity 0.2s ease-out;
+  }
+
+  [data-slot='styleable-select'] .custom-select:is(:hover, :focus-within) svg,
+  [data-slot='styleable-select'] .custom-select[data-open='true'] svg {
+    opacity: 1;
+  }
+
+  [data-slot='styleable-select'] .custom-select path {
+    transition-property: translate, rotate, d;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out;
+    transform-box: fill-box;
+    transform-origin: center center;
+  }
+
+  [data-slot='styleable-select'] .custom-select .chevron-top--left {
+    transform-origin: 0 0;
+  }
+
+  [data-slot='styleable-select'] .custom-select .chevron-bottom--right {
+    transform-origin: 0 100%;
+  }
+
+  [data-slot='styleable-select'] .custom-select[data-open='true'] .chevron-top {
+    d: path('M4 12L12 4');
+  }
+
+  [data-slot='styleable-select'] .custom-select[data-open='true'] .chevron-top--left {
+    d: path('M21.8984 13.8984L11.9989 3.99894');
+    rotate: -45deg;
+    translate: -8px 8px;
+  }
+
+  [data-slot='styleable-select'] .custom-select[data-open='true'] .chevron-bottom {
+    d: path('M4 12L12 20');
+  }
+
+  [data-slot='styleable-select'] .custom-select[data-open='true'] .chevron-bottom--right {
+    rotate: 45deg;
+    translate: -8px -8px;
+    d: path('M21.8984 10L11.9989 19.8995');
+  }
+
+  [data-slot='styleable-select'] .custom-select__picker {
+    position: absolute;
+    inset-inline: 0;
+    top: 50%;
+    translate: 0 -50%;
+    height: calc(7 * var(--height));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition) ease;
+    mask: linear-gradient(#0000, #fff 2rem calc(100% - 2rem), #0000) 0 0 /
+      100% 100% no-repeat;
+  }
+
+  [data-slot='styleable-select'] .custom-select[data-open='true'] .custom-select__picker {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  [data-slot='styleable-select'] .scroller {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: calc(3 * var(--height)) 0;
+    list-style: none;
+    overflow: auto;
+    scroll-snap-type: y mandatory;
+    scrollbar-color: transparent transparent;
+  }
+
+  [data-slot='styleable-select'] .scroller li {
+    height: var(--height);
+    scroll-snap-align: center;
+    opacity: var(--fade);
+    filter: blur(4px);
+    animation: styleable-select-fade-n-blur both ease-in-out;
+    animation-timeline: view();
+    transition: color 0.2s calc(var(--proximity) * 0.1s) ease-out;
+  }
+
+  [data-slot='styleable-select'] .custom-select[data-open='false'] .scroller li {
+    --delay: calc(sin(((3 - var(--proximity)) / 3) * 45deg) * 0.8s);
+    color: transparent;
+    transition-delay: var(--delay);
+  }
+
+  [data-slot='styleable-select'] .custom-select[data-open='true'] .scroller li {
+    color: canvasText;
+  }
+
+  [data-slot='styleable-select'] .custom-select__option {
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  @starting-style {
+    [data-slot='styleable-select'] .custom-select[data-open='false'] .scroller li {
+      color: canvasText;
+    }
+  }
+
+  @keyframes styleable-select-fade-n-blur {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    40%,
+    60% {
+      opacity: var(--fade);
+    }
+    50% {
+      filter: blur(0);
+      opacity: 1;
+    }
+  }
+}
