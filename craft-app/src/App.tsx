@@ -5,6 +5,7 @@ import {
   FauxPipVideoPage,
   ScrollDrivenIndexPage,
   TheCraftOfUiPlaybookCssScrollAnimationWSubgridPage,
+  YouCanScrollPage,
 } from '@/components/shared'
 import { HomePage } from '@/pages/HomePage'
 
@@ -25,6 +26,10 @@ export function App() {
           <Route
             path="/examples/the-craft-of-ui-playbook-css-scroll-animation-w-subgrid"
             element={<TheCraftOfUiPlaybookCssScrollAnimationWSubgridPage />}
+          />
+          <Route
+            path="/examples/you-can-scroll"
+            element={<YouCanScrollPage />}
           />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

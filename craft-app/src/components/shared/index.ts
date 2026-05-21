@@ -47,3 +47,5 @@ export type {
   PlaybookScrollAnimationSubgridStagger,
   PlaybookScrollAnimationSubgridTheme,
 } from './the-craft-of-ui-playbook-css-scroll-animation-w-subgrid'
+export { YouCanScroll, YouCanScrollPage, youCanScrollVariants } from './you-can-scroll'
+export type { YouCanScrollProps, YouCanScrollTheme } from './you-can-scroll'

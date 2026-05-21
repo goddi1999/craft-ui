@@ -39,6 +39,13 @@ const EXAMPLES: ExampleEntry[] = [
     path: '/examples/the-craft-of-ui-playbook-css-scroll-animation-w-subgrid',
     tag: 'CSS · Subgrid',
   },
+  {
+    title: 'You Can Scroll',
+    description:
+      'A sticky phrase and chroma-scroll list driven by CSS view timelines and scroll-linked animation.',
+    path: '/examples/you-can-scroll',
+    tag: 'CSS · View Timeline',
+  },
 ]
 
 export function HomePage() {
