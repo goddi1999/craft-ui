@@ -12,12 +12,21 @@ export function useScrollStateStuck(
     const sentinel = sentinelRef.current
     if (!sentinel) return
 
+    const update = (isIntersecting: boolean) => {
+      document.documentElement.dataset.stuck = isIntersecting ? 'false' : 'true'
+    }
+
+    const initialRect = sentinel.getBoundingClientRect()
+    update(initialRect.bottom > 0 && initialRect.top < window.innerHeight)
+
     const observer = new IntersectionObserver(
       (entries) => {
-        const isStuck = !entries[0]?.isIntersecting
-        document.documentElement.dataset.stuck = isStuck ? 'true' : 'false'
+        update(entries[0]?.isIntersecting ?? true)
       },
-      { threshold: 0 },
+      {
+        threshold: 0,
+        rootMargin: '1px 0px 1px 0px',
+      },
     )
 
     observer.observe(sentinel)

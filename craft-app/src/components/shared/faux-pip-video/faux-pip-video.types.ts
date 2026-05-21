@@ -15,6 +15,7 @@ export type FauxPipVideoProps = {
   pipWidth?: number
   duration?: number
   navHeight?: number
+  direction?: 'left' | 'right'
   debug?: boolean
   size?: FauxPipVideoSize
   className?: string
@@ -25,4 +26,10 @@ export type FauxPipVideoPlayerProps = {
   src: string
   title: string
   className?: string
+  children?: ReactNode
+}
+
+export type FauxPipVideoToggleProps = {
+  isPipEnabled: boolean
+  onToggle: () => void
 }

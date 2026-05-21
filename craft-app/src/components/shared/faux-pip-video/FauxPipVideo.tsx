@@ -1,4 +1,4 @@
-import { useRef, type CSSProperties } from 'react'
+import { useCallback, useRef, useState, type CSSProperties } from 'react'
 import type { VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
@@ -10,6 +10,7 @@ import type { FauxPipVideoProps } from './faux-pip-video.types'
 import { FauxPipVideoPlayer } from './FauxPipVideoPlayer'
 import { FauxPipVideoSentinel } from './FauxPipVideoSentinel'
 import { FauxPipVideoShell } from './FauxPipVideoShell'
+import { FauxPipVideoToggle } from './FauxPipVideoToggle'
 import { useScrollStateStuck } from './use-scroll-state-stuck'
 
 export function FauxPipVideo({
@@ -23,14 +24,22 @@ export function FauxPipVideo({
   pipWidth = 260,
   duration = 0.26,
   navHeight = 56,
+  direction = 'right',
   debug = false,
   size = 'default',
   className,
   style,
 }: FauxPipVideoProps & VariantProps<typeof fauxPipVideoVariants>) {
   const sentinelRef = useRef<HTMLDivElement>(null)
+  const [isPipEnabled, setIsPipEnabled] = useState(true)
 
   useScrollStateStuck(sentinelRef)
+
+  const fauxPipDirection = direction === 'right' ? 1 : -1
+
+  const handleToggle = useCallback(() => {
+    setIsPipEnabled((prev) => !prev)
+  }, [])
 
   const cssVars: CSSProperties = {
     ...(contentWidth !== undefined && {
@@ -41,6 +50,7 @@ export function FauxPipVideo({
     ['--faux-pip-width' as string]: pipWidth,
     ['--faux-pip-duration' as string]: duration,
     ['--faux-pip-nav-height' as string]: `${navHeight}px`,
+    ['--faux-pip-direction' as string]: fauxPipDirection,
     ...style,
   }
 
@@ -48,6 +58,7 @@ export function FauxPipVideo({
     <div
       data-slot="faux-pip-video"
       data-debug={debug ? 'true' : 'false'}
+      data-pip-active={isPipEnabled ? 'true' : 'false'}
       className={cn(fauxPipVideoVariants({ size }), className)}
       style={cssVars}
     >
@@ -55,7 +66,12 @@ export function FauxPipVideo({
         <FauxPipVideoSentinel ref={sentinelRef} />
       </div>
       <FauxPipVideoShell>
-        <FauxPipVideoPlayer src={src} title={title} />
+        <FauxPipVideoPlayer src={src} title={title}>
+          <FauxPipVideoToggle
+            isPipEnabled={isPipEnabled}
+            onToggle={handleToggle}
+          />
+        </FauxPipVideoPlayer>
       </FauxPipVideoShell>
       {header ? (
         <div data-slot="faux-pip-video-header">{header}</div>

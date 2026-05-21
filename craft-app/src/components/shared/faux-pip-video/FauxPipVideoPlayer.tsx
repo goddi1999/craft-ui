@@ -6,16 +6,19 @@ export function FauxPipVideoPlayer({
   src,
   title,
   className,
+  children,
 }: FauxPipVideoPlayerProps) {
   return (
-    <iframe
-      data-slot="faux-pip-video-player"
-      src={src}
-      title={title}
-      className={cn(className)}
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      referrerPolicy="strict-origin-when-cross-origin"
-      allowFullScreen
-    />
+    <div data-slot="faux-pip-video-frame" className={cn(className)}>
+      <iframe
+        data-slot="faux-pip-video-player"
+        src={src}
+        title={title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+      />
+      {children}
+    </div>
   )
 }
