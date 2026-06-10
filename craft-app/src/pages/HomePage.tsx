@@ -60,6 +60,13 @@ const EXAMPLES: ExampleEntry[] = [
     path: '/examples/line-path-animation',
     tag: 'CSS · SVG',
   },
+  {
+    title: 'Curved Scrollbar',
+    description:
+      'A reusable scroll panel with an SVG thumb that bends around rounded content corners.',
+    path: '/examples/curved-scrollbar',
+    tag: 'CSS · Scrollbar',
+  },
 ]
 
 export function HomePage() {

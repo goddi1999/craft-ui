@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import { DemoLayout } from '@/components/layout'
 import {
+  CurvedScrollbarPage,
   FauxPipVideoPage,
   LinePathAnimationPage,
   ScrollDrivenIndexPage,
@@ -40,6 +41,10 @@ export function App() {
           <Route
             path="/examples/line-path-animation"
             element={<LinePathAnimationPage />}
+          />
+          <Route
+            path="/examples/curved-scrollbar"
+            element={<CurvedScrollbarPage />}
           />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

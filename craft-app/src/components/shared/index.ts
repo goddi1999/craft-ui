@@ -1,4 +1,30 @@
 export {
+  CurvedImage,
+  CurvedScrollbar,
+  CurvedScrollbarContent,
+  CurvedScrollbarFooter,
+  CurvedScrollbarHeader,
+  CurvedScrollbarPage,
+  CurvedScrollbarViewport,
+  CurvedText,
+  CurvedTitle,
+  curvedScrollbarVariants,
+} from './curved-scrollbar'
+export type {
+  CurvedImagePlacement,
+  CurvedImageProps,
+  CurvedScrollbarContentProps,
+  CurvedScrollbarFooterProps,
+  CurvedScrollbarHeaderProps,
+  CurvedScrollbarProps,
+  CurvedScrollbarSize,
+  CurvedScrollbarTheme,
+  CurvedScrollbarViewportProps,
+  CurvedTextProps,
+  CurvedTextVariant,
+  CurvedTitleProps,
+} from './curved-scrollbar'
+export {
   ScrollDrivenIndex,
   SCROLL_DRIVEN_INDEX_SCROLL_CLASS,
   ScrollDrivenIndexIcon,
