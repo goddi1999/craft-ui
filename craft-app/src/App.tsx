@@ -2,7 +2,9 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import { DemoLayout } from '@/components/layout'
 import {
+  AgentComputerIconPage,
   CurvedScrollbarPage,
+  SparkleButtonPage,
   FauxPipVideoPage,
   LinePathAnimationPage,
   ScrollDrivenIndexPage,
@@ -45,6 +47,14 @@ export function App() {
           <Route
             path="/examples/curved-scrollbar"
             element={<CurvedScrollbarPage />}
+          />
+          <Route
+            path="/examples/agent-computer-icon"
+            element={<AgentComputerIconPage />}
+          />
+          <Route
+            path="/examples/sparkle-button"
+            element={<SparkleButtonPage />}
           />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

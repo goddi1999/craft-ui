@@ -67,6 +67,20 @@ const EXAMPLES: ExampleEntry[] = [
     path: '/examples/curved-scrollbar',
     tag: 'CSS · Scrollbar',
   },
+  {
+    title: 'Agent Computer Icon',
+    description:
+      'A 24px monitor face with GSAP-driven states — loading, success, failure, waiting — animated through eyes, screen, and base.',
+    path: '/examples/agent-computer-icon',
+    tag: 'GSAP · SVG',
+  },
+  {
+    title: 'Sparkle Button',
+    description:
+      'A hover-activated pill button with conic spark, orbiting particles, and gradient label text.',
+    path: '/examples/sparkle-button',
+    tag: 'CSS · Button',
+  },
 ]
 
 export function HomePage() {

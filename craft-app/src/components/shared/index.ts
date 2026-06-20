@@ -86,3 +86,15 @@ export type {
   LinePathAnimationProps,
   LinePathAnimationTheme,
 } from './line-path-animation'
+export { AgentComputerIcon, AgentComputerIconPage } from './ai-agent'
+export type {
+  AgentComputerIconAnimation,
+  AgentComputerIconState,
+  AgentComputerIconVariant,
+} from './ai-agent'
+export { SparkleButton, SparkleButtonPage, sparkleButtonVariants } from './sparkle-button'
+export type {
+  SparkleButtonHue,
+  SparkleButtonProps,
+  SparkleButtonSize,
+} from './sparkle-button'

@@ -18,7 +18,7 @@ const DEMO_PARAGRAPHS = [
 export function CurvedScrollbarPage() {
   return (
     <div className="flex min-h-svh items-center justify-center bg-background px-4 py-12">
-      <CurvedScrollbar theme="dark" color="#f85922">
+      <CurvedScrollbar theme="light" color="#f85922">
         <CurvedScrollbarViewport>
           <CurvedScrollbarHeader>
             <CurvedTitle>023: curved scroller.</CurvedTitle>
