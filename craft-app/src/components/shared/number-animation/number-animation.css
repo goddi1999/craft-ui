@@ -1,0 +1,93 @@
+/*
+ * Registering the property is what makes an integer interpolable — without
+ * this the counter would jump straight to its new value.
+ */
+@property --number-animation-value {
+  initial-value: 0;
+  inherits: true;
+  syntax: '<integer>';
+}
+
+@layer number-animation {
+  [data-slot='number-animation-root'] {
+    display: inline-block;
+  }
+
+  [data-slot='number-animation'] {
+    --number-animation-value: 0;
+    --number-animation-reference: 0;
+    --number-animation-duration: 1s;
+
+    display: inline-block;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+    /* the counter is the rendered number; the property drives it */
+    counter-reset: number-animation-val var(--number-animation-value);
+  }
+
+  [data-slot='number-animation']::after {
+    content: counter(number-animation-val) var(--number-animation-suffix, '');
+  }
+
+  [data-slot='number-animation'].number-animation--sm {
+    font-size: 1.5rem;
+  }
+
+  [data-slot='number-animation'].number-animation--size-default {
+    font-size: 2.5rem;
+  }
+
+  [data-slot='number-animation'].number-animation--lg {
+    font-size: 4rem;
+  }
+
+  [data-slot='number-animation'].number-animation--xl {
+    font-size: 6rem;
+  }
+
+  [data-slot='number-animation'].number-animation--transition {
+    transition: --number-animation-value var(--number-animation-duration)
+      ease-out;
+  }
+
+  /*
+   * Additive composition means the keyframe is layered on top of the value
+   * already on the element, so the run starts wherever the number currently
+   * sits and adds the delta.
+   */
+  [data-slot='number-animation'].number-animation--animation {
+    animation: number-animation-update var(--number-animation-duration) ease-out
+      forwards;
+    animation-composition: add;
+  }
+
+  @keyframes number-animation-update {
+    from {
+      --number-animation-value: 0;
+    }
+    to {
+      --number-animation-value: var(--number-animation-reference);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='number-animation'] {
+      transition-duration: 1ms;
+      animation-duration: 1ms;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* demo stage                                                          */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='number-animation-stage'] {
+    color-scheme: light dark;
+    position: relative;
+    min-height: 100svh;
+    background: light-dark(#fff, #000);
+    color: canvastext;
+    overflow: hidden;
+  }
+}

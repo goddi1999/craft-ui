@@ -1,0 +1,137 @@
+@layer carousel-3d {
+  /* ------------------------------------------------------------------ */
+  /* scene                                                               */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='carousel-3d'] {
+    --carousel-3d-card-width: 17.5em;
+    --carousel-3d-gap: 0.5em;
+    --carousel-3d-perspective: 35em;
+    --carousel-3d-duration: 32s;
+    --carousel-3d-radius: 1.5em;
+
+    display: grid;
+    /* keeps the rotated cards from spawning scrollbars */
+    overflow: hidden;
+    perspective: var(--carousel-3d-perspective);
+  }
+
+  /* lateral fade so cards dissolve at the edges instead of being clipped */
+  [data-slot='carousel-3d'][data-fade='true'] {
+    mask: linear-gradient(90deg, #0000, red 20% 80%, #0000);
+  }
+
+  [data-slot='carousel-3d'].carousel-3d--sm {
+    --carousel-3d-card-width: 11em;
+    --carousel-3d-radius: 1em;
+  }
+
+  [data-slot='carousel-3d'].carousel-3d--size-default {
+    --carousel-3d-card-width: 17.5em;
+    --carousel-3d-radius: 1.5em;
+  }
+
+  [data-slot='carousel-3d'].carousel-3d--lg {
+    --carousel-3d-card-width: 24em;
+    --carousel-3d-radius: 2em;
+  }
+
+  [data-slot='carousel-3d'].carousel-3d--slow {
+    --carousel-3d-duration: 64s;
+  }
+
+  [data-slot='carousel-3d'].carousel-3d--speed-default {
+    --carousel-3d-duration: 32s;
+  }
+
+  [data-slot='carousel-3d'].carousel-3d--fast {
+    --carousel-3d-duration: 16s;
+  }
+
+  /* smaller perspective = more extreme foreshortening */
+  [data-slot='carousel-3d'].carousel-3d--subtle {
+    --carousel-3d-perspective: 70em;
+  }
+
+  [data-slot='carousel-3d'].carousel-3d--depth-default {
+    --carousel-3d-perspective: 35em;
+  }
+
+  [data-slot='carousel-3d'].carousel-3d--extreme {
+    --carousel-3d-perspective: 20em;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* ring                                                                */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='carousel-3d-ring'] {
+    display: grid;
+    place-self: center;
+    /* children carry their own 3D transform, so this parent must not flatten */
+    transform-style: preserve-3d;
+    animation: carousel-3d-spin var(--carousel-3d-duration) linear infinite;
+  }
+
+  [data-slot='carousel-3d'][data-paused='true']
+    [data-slot='carousel-3d-ring'] {
+    animation-play-state: paused;
+  }
+
+  @keyframes carousel-3d-spin {
+    to {
+      rotate: y 1turn;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* card                                                                */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='carousel-3d-card'] {
+    /* base angle each card occupies around the ring */
+    --carousel-3d-base-angle: calc(1turn / var(--carousel-3d-count));
+
+    /* every card stacks in the same grid cell, then transforms out */
+    grid-area: 1 / 1;
+    width: var(--carousel-3d-card-width);
+    aspect-ratio: 7 / 10;
+    object-fit: cover;
+    border-radius: var(--carousel-3d-radius);
+    /* never show the back of a card that has swung past the screen plane */
+    backface-visibility: hidden;
+    /*
+     * Has to be a transform chain: the separate `rotate` and `translate`
+     * properties would apply in the wrong order (translate first, then
+     * rotate) for what this needs.
+     */
+    transform: rotateY(
+        calc(var(--carousel-3d-index) * var(--carousel-3d-base-angle))
+      )
+      translateZ(
+        calc(
+          -1 * (0.5 * var(--carousel-3d-card-width) + var(--carousel-3d-gap)) /
+            tan(0.5 * var(--carousel-3d-base-angle))
+        )
+      );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='carousel-3d-ring'] {
+      animation-duration: calc(var(--carousel-3d-duration) * 4);
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* demo stage                                                          */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='carousel-3d-stage'] {
+    color-scheme: light dark;
+    position: relative;
+    min-height: 100svh;
+    background: light-dark(#fff3ed, #180f0b);
+    color: canvastext;
+    overflow: hidden;
+  }
+}

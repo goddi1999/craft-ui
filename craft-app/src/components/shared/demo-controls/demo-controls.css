@@ -1,0 +1,23 @@
+@layer demo-controls {
+  /*
+   * Demo pages render on their own coloured stages, so the panel and its
+   * unselected buttons derive from the stage's text colour rather than the
+   * app theme tokens — otherwise outline buttons vanish on a dark stage.
+   */
+  [data-slot='demo-panel'] {
+    color: inherit;
+  }
+
+  [data-slot='demo-panel'] button {
+    border-color: color-mix(in oklab, currentcolor, transparent 70%);
+  }
+
+  [data-slot='demo-panel'] button[aria-pressed='false'] {
+    color: inherit;
+    background: color-mix(in oklab, currentcolor, transparent 92%);
+  }
+
+  [data-slot='demo-panel'] button[aria-pressed='false']:hover {
+    background: color-mix(in oklab, currentcolor, transparent 82%);
+  }
+}

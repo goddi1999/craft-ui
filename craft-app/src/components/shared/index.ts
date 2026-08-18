@@ -119,3 +119,103 @@ export type {
   MultiplayerMaskSize,
   MultiplayerMaskTheme,
 } from './multiplayer-mask'
+export {
+  Carousel3D,
+  Carousel3DCard,
+  Carousel3DPage,
+  Carousel3DRing,
+  carousel3dVariants,
+} from './carousel-3d'
+export type {
+  Carousel3DCardProps,
+  Carousel3DDepth,
+  Carousel3DProps,
+  Carousel3DRingProps,
+  Carousel3DSize,
+  Carousel3DSpeed,
+} from './carousel-3d'
+export {
+  ProgressiveBlur,
+  ProgressiveBlurEdge,
+  ProgressiveBlurPage,
+  ProgressiveBlurScroller,
+  progressiveBlurVariants,
+} from './progressive-blur'
+export type {
+  ProgressiveBlurEdgeProps,
+  ProgressiveBlurEdges,
+  ProgressiveBlurIntensity,
+  ProgressiveBlurProps,
+  ProgressiveBlurScrollerProps,
+  ProgressiveBlurSize,
+} from './progressive-blur'
+export {
+  ProductSpotlight,
+  ProductSpotlightBody,
+  ProductSpotlightCard,
+  ProductSpotlightCarousel,
+  ProductSpotlightPage,
+  ProductSpotlightSlide,
+  ProductSpotlightStack,
+  SPOTLIGHT_PRESETS,
+  SpotlightPointerProvider,
+  productSpotlightCardVariants,
+  productSpotlightVariants,
+  useDepthSpotlight,
+} from './product-spotlight'
+export type {
+  ProductSpotlightBodyProps,
+  ProductSpotlightCardProps,
+  ProductSpotlightCardVariant,
+  ProductSpotlightCarouselProps,
+  ProductSpotlightPreset,
+  ProductSpotlightProps,
+  ProductSpotlightSlideProps,
+  ProductSpotlightStackProps,
+  SpotlightParams,
+} from './product-spotlight'
+export {
+  NumberAnimation,
+  NumberAnimationPage,
+  numberAnimationVariants,
+} from './number-animation'
+export type {
+  NumberAnimationMode,
+  NumberAnimationProps,
+  NumberAnimationSize,
+} from './number-animation'
+export { ScrollToType, ScrollToTypePage, scrollToTypeVariants } from './scroll-to-type'
+export type {
+  ScrollToTypeLength,
+  ScrollToTypeProps,
+  ScrollToTypeSize,
+  ScrollToTypeTheme,
+} from './scroll-to-type'
+export { TextReveal, TextRevealPage, textRevealVariants } from './text-reveal'
+export type {
+  TextRevealAccent,
+  TextRevealLength,
+  TextRevealProps,
+  TextRevealSize,
+} from './text-reveal'
+export {
+  DemoControlGroup,
+  DemoPanel,
+  DemoToggle,
+  DemoToggleRow,
+} from './demo-controls'
+export type {
+  DemoControlGroupProps,
+  DemoControlValue,
+  DemoPanelProps,
+  DemoToggleProps,
+  DemoToggleRowProps,
+} from './demo-controls'
+export { CarouselSlider, CarouselSliderPage } from './carousel-slider'
+export type { CarouselSliderProps } from './carousel-slider'
+export { OptionWheel, OptionWheelPage } from './option-wheel'
+export type { OptionWheelProps } from './option-wheel'
+export { YearInDots, YearInDotsPage, relativeFilled } from './year-in-dots'
+export type { YearInDotsProps } from './year-in-dots'
+export { YoutubeEmbed, YoutubeEmbedPage } from './youtube-embed'
+export type { YoutubeEmbedProps } from './youtube-embed'

@@ -1,0 +1,242 @@
+@layer progressive-blur {
+  /* ------------------------------------------------------------------ */
+  /* frame                                                               */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='progressive-blur'] {
+    --progressive-blur-size: 80;
+    --progressive-blur-max: 20;
+    --progressive-blur-brightness: 1.4;
+    --progressive-blur-contrast: 1.4;
+    --progressive-blur-hue: 164;
+    --progressive-blur-accent: hsl(var(--progressive-blur-hue) 90% 50%);
+
+    /* the mask ramp is split 1/6 solid, 5/6 fade */
+    --progressive-blur-start: calc(var(--progressive-blur-size) * (1 / 6));
+    --progressive-blur-add: calc(var(--progressive-blur-size) * (5 / 6));
+
+    color-scheme: light dark;
+    position: relative;
+    overflow: hidden;
+    padding: 0.25rem;
+    container-type: inline-size;
+    /* lets the blur bands read the scroller's timeline from a sibling */
+    timeline-scope: --progressive-blur-scroller;
+  }
+
+  [data-slot='progressive-blur'][data-resizable='true'] {
+    resize: both;
+    min-width: 260px;
+    min-height: 320px;
+    max-width: 100%;
+  }
+
+  [data-slot='progressive-blur']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+    border: 1px solid color-mix(in hsl, canvas, canvastext);
+    border-radius: 12px;
+  }
+
+  [data-slot='progressive-blur'].progressive-blur--sm {
+    --progressive-blur-size: 48;
+  }
+
+  [data-slot='progressive-blur'].progressive-blur--size-default {
+    --progressive-blur-size: 80;
+  }
+
+  [data-slot='progressive-blur'].progressive-blur--lg {
+    --progressive-blur-size: 120;
+  }
+
+  [data-slot='progressive-blur'].progressive-blur--subtle {
+    --progressive-blur-max: 8;
+    --progressive-blur-brightness: 1.1;
+    --progressive-blur-contrast: 1.1;
+  }
+
+  [data-slot='progressive-blur'].progressive-blur--intensity-default {
+    --progressive-blur-max: 20;
+    --progressive-blur-brightness: 1.4;
+    --progressive-blur-contrast: 1.4;
+  }
+
+  [data-slot='progressive-blur'].progressive-blur--strong {
+    --progressive-blur-max: 40;
+    --progressive-blur-brightness: 1.7;
+    --progressive-blur-contrast: 1.8;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* blur bands                                                          */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='progressive-blur-edge'] {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    pointer-events: none;
+    height: calc(var(--progressive-blur-size) * 1px);
+  }
+
+  [data-slot='progressive-blur-edge'][data-edge='top'] {
+    top: 0;
+  }
+
+  [data-slot='progressive-blur-edge'][data-edge='bottom'] {
+    bottom: 0;
+    rotate: 180deg;
+  }
+
+  /*
+   * Each layer blurs a little less than the one below it but masks a little
+   * further down, so stacking them ramps the blur instead of stepping it.
+   * Compositing the two masks with `intersect` keeps the band's own top edge
+   * soft while the ramp fades out.
+   */
+  [data-slot='progressive-blur-layer'] {
+    --progressive-blur-layer-blur: calc(
+      sin(
+          (
+              (
+                  var(--progressive-blur-layers) -
+                    var(--progressive-blur-layer-index)
+                ) / var(--progressive-blur-layers)
+            ) * 90deg
+        ) * var(--progressive-blur-max)
+    );
+    --progressive-blur-layer-stop: calc(
+      sin(
+          (
+              var(--progressive-blur-layer-index) /
+                var(--progressive-blur-layers)
+            ) * 90deg
+        ) * var(--progressive-blur-add)
+    );
+
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(calc(var(--progressive-blur-layer-blur) * 1px))
+      brightness(var(--progressive-blur-brightness))
+      contrast(var(--progressive-blur-contrast));
+    mask:
+      linear-gradient(#0000, #000 0.5rem),
+      linear-gradient(
+        #fff calc(var(--progressive-blur-start) * 1%),
+        #0000
+          calc(
+            (
+                var(--progressive-blur-start) +
+                  var(--progressive-blur-layer-stop)
+              ) * 1%
+          )
+      );
+    mask-composite: intersect;
+  }
+
+  [data-slot='progressive-blur'][data-debug='true']
+    [data-slot='progressive-blur-edge'] {
+    outline: 4px dashed canvastext;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* scroller                                                            */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='progressive-blur-scroller'] {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: auto;
+    overflow-x: hidden;
+    padding: 0.75rem;
+    padding-top: 3rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--progressive-blur-accent) transparent;
+  }
+
+  [data-slot='progressive-blur-scroller'] ::selection {
+    background: var(--progressive-blur-accent);
+  }
+
+  /*
+   * The bands slide in and out on the scroller's own timeline: the top band
+   * drops into place over the first band-height of scroll, the bottom band
+   * clears out over the last.
+   */
+  @supports (animation-timeline: scroll()) {
+    [data-slot='progressive-blur-scroller'] {
+      scroll-timeline: --progressive-blur-scroller;
+    }
+
+    [data-slot='progressive-blur-edge'] {
+      animation: progressive-blur-drop both linear;
+      animation-timeline: --progressive-blur-scroller;
+    }
+
+    [data-slot='progressive-blur-edge'][data-edge='top'] {
+      --progressive-blur-from: -50%;
+      translate: 0 0;
+      animation-range: 0 calc(var(--progressive-blur-size) * 1px);
+    }
+
+    [data-slot='progressive-blur-edge'][data-edge='bottom'] {
+      translate: 0 50%;
+      animation-range: calc(100% - (var(--progressive-blur-size) * 1px)) 100%;
+    }
+
+    @keyframes progressive-blur-drop {
+      0% {
+        translate: 0 var(--progressive-blur-from, 0);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='progressive-blur-edge'] {
+      animation: none;
+      translate: 0 0;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* demo stage                                                          */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='progressive-blur-stage'] {
+    color-scheme: light dark;
+    position: relative;
+    min-height: 100svh;
+    background: light-dark(white, black);
+    color: canvastext;
+    overflow: hidden;
+  }
+
+  [data-slot='progressive-blur-stage']::before {
+    --progressive-blur-grid: 40px;
+    --progressive-blur-line: color-mix(in lch, canvastext, transparent 65%);
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(
+          90deg,
+          var(--progressive-blur-line) 1px,
+          transparent 1px var(--progressive-blur-grid)
+        )
+        0 -5vmin / var(--progressive-blur-grid) var(--progressive-blur-grid),
+      linear-gradient(
+          var(--progressive-blur-line) 1px,
+          transparent 1px var(--progressive-blur-grid)
+        )
+        0 -5vmin / var(--progressive-blur-grid) var(--progressive-blur-grid);
+    mask: linear-gradient(-15deg, transparent 80%, white);
+  }
+}

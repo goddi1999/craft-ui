@@ -1,0 +1,146 @@
+@layer text-reveal {
+  [data-slot='text-reveal'] {
+    --text-reveal-track: 200vh;
+    --text-reveal-font-size: clamp(2rem, 4vw + 1rem, 6rem);
+    --text-reveal-block: 200vmax;
+    --text-reveal-underline: 1lh;
+    --text-reveal-rest: color-mix(in oklab, canvastext, transparent 85%);
+    --text-reveal-fill: color-mix(in oklab, canvastext, transparent 45%);
+    --text-reveal-done: canvastext;
+    --text-reveal-accent: hsl(180 100% 50%);
+
+    display: block;
+    position: relative;
+    height: var(--text-reveal-track);
+  }
+
+  [data-slot='text-reveal'].text-reveal--sm {
+    --text-reveal-font-size: clamp(1.25rem, 2vw + 0.75rem, 3rem);
+  }
+
+  [data-slot='text-reveal'].text-reveal--size-default {
+    --text-reveal-font-size: clamp(2rem, 4vw + 1rem, 6rem);
+  }
+
+  [data-slot='text-reveal'].text-reveal--lg {
+    --text-reveal-font-size: clamp(3rem, 5vw + 1rem, 9rem);
+  }
+
+  [data-slot='text-reveal'].text-reveal--compact {
+    --text-reveal-track: 150vh;
+  }
+
+  [data-slot='text-reveal'].text-reveal--length-default {
+    --text-reveal-track: 200vh;
+  }
+
+  [data-slot='text-reveal'].text-reveal--long {
+    --text-reveal-track: 320vh;
+  }
+
+  [data-slot='text-reveal'].text-reveal--cyan {
+    --text-reveal-accent: hsl(180 100% 50%);
+  }
+
+  [data-slot='text-reveal'].text-reveal--amber {
+    --text-reveal-accent: hsl(38 100% 55%);
+  }
+
+  [data-slot='text-reveal'].text-reveal--magenta {
+    --text-reveal-accent: hsl(320 100% 62%);
+  }
+
+  [data-slot='text-reveal'].text-reveal--plain {
+    --text-reveal-accent: canvastext;
+  }
+
+  [data-slot='text-reveal'][data-debug='true'] {
+    outline: 1rem dashed hsl(0 80% 50% / 0.5);
+    background: hsl(0 80% 50% / 0.1);
+  }
+
+  [data-slot='text-reveal-viewport'] {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+  }
+
+  /*
+   * Three text-clipped backgrounds stacked back to front: a hard-edged
+   * highlight leading the sweep, the grey fill behind it, and a full-width
+   * rest state. Sliding all three left to right is the whole reveal.
+   */
+  [data-slot='text-reveal-text'] {
+    font-size: var(--text-reveal-font-size);
+    font-weight: 600;
+    line-height: 1.1;
+    text-wrap: balance;
+    color: var(--text-reveal-done);
+    background-image: linear-gradient(
+        90deg,
+        transparent calc(100% - 8ch),
+        var(--text-reveal-accent) calc(100% - 8ch)
+      ),
+      linear-gradient(90deg, var(--text-reveal-fill), var(--text-reveal-fill)),
+      linear-gradient(90deg, var(--text-reveal-rest), var(--text-reveal-rest));
+    background-size: var(--text-reveal-block) var(--text-reveal-underline),
+      var(--text-reveal-block) var(--text-reveal-underline),
+      100% var(--text-reveal-underline);
+    background-repeat: no-repeat;
+    background-position-x: 0;
+    background-position-y: 100%;
+    background-clip: text;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      [data-slot='text-reveal'] {
+        view-timeline-name: --text-reveal-track;
+      }
+
+      [data-slot='text-reveal-text'] {
+        background-position-x: calc(var(--text-reveal-block) * -1),
+          calc(var(--text-reveal-block) * -1), 0;
+        color: transparent;
+        animation-name: text-reveal-fill-up, text-reveal-color-in;
+        animation-fill-mode: both;
+        animation-timing-function: linear;
+        animation-timeline: --text-reveal-track;
+        animation-range: entry 100% cover 50%, cover 50% exit 0%;
+      }
+
+      @keyframes text-reveal-fill-up {
+        to {
+          background-position-x: 0, 0, 0;
+        }
+      }
+
+      @keyframes text-reveal-color-in {
+        to {
+          color: var(--text-reveal-done);
+        }
+      }
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* demo stage                                                          */
+  /* ------------------------------------------------------------------ */
+
+  /*
+   * No `overflow-x: hidden` here: with the other axis visible it computes to
+   * `overflow-y: auto`, which would make the stage a scroll container and
+   * leave the sections' view timelines resolving against something that never
+   * scrolls. `clip` bounds the axis without creating a scrollport.
+   */
+  [data-slot='text-reveal-stage'] {
+    color-scheme: dark only;
+    position: relative;
+    background: hsl(0 0% 2%);
+    color: hsl(0 0% 100% / 0.6);
+    overflow-x: clip;
+  }
+}

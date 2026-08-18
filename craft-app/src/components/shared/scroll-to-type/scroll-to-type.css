@@ -1,0 +1,217 @@
+@font-face {
+  font-family: 'Departure Mono';
+  src: url('https://assets.codepen.io/605876/DepartureMono-Regular.woff')
+    format('woff');
+  font-display: swap;
+}
+
+/* the stepped index is what turns scroll distance into character positions */
+@property --scroll-to-type-idx {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --scroll-to-type-alpha {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --scroll-to-type-scrub {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer scroll-to-type {
+  [data-slot='scroll-to-type'] {
+    --scroll-to-type-cursor-hue: 320;
+    --scroll-to-type-font-size: clamp(1.5rem, 1rem + 2.2vw, 2.75rem);
+    --scroll-to-type-track: 200vh;
+
+    color-scheme: light dark;
+    display: block;
+    position: relative;
+    height: var(--scroll-to-type-track);
+    /* the sticky line reads its progress from this element's view timeline */
+    view-timeline: --scroll-to-type-track;
+  }
+
+  [data-slot='scroll-to-type'][data-theme='light'] {
+    color-scheme: light only;
+  }
+
+  [data-slot='scroll-to-type'][data-theme='dark'] {
+    color-scheme: dark only;
+  }
+
+  [data-slot='scroll-to-type'].scroll-to-type--sm {
+    --scroll-to-type-font-size: clamp(1.1rem, 0.9rem + 1.2vw, 1.75rem);
+  }
+
+  [data-slot='scroll-to-type'].scroll-to-type--size-default {
+    --scroll-to-type-font-size: clamp(1.5rem, 1rem + 2.2vw, 2.75rem);
+  }
+
+  [data-slot='scroll-to-type'].scroll-to-type--lg {
+    --scroll-to-type-font-size: clamp(2rem, 1.2rem + 3.2vw, 4rem);
+  }
+
+  [data-slot='scroll-to-type'].scroll-to-type--compact {
+    --scroll-to-type-track: 150vh;
+  }
+
+  [data-slot='scroll-to-type'].scroll-to-type--length-default {
+    --scroll-to-type-track: 200vh;
+  }
+
+  [data-slot='scroll-to-type'].scroll-to-type--long {
+    --scroll-to-type-track: 320vh;
+  }
+
+  [data-slot='scroll-to-type-viewport'] {
+    position: sticky;
+    top: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* the cursor block only blinks while the caret is parked */
+    animation: scroll-to-type-blink 0.8s infinite;
+  }
+
+  [data-slot='scroll-to-type-line'] {
+    font-family: 'Departure Mono', ui-monospace, SFMono-Regular, Menlo,
+      Consolas, monospace;
+    font-size: var(--scroll-to-type-font-size);
+    margin: 0;
+    width: 30ch;
+    max-width: calc(100% - 2rem);
+    animation: scroll-to-type-index both
+      steps(calc(var(--scroll-to-type-length) + 0));
+    animation-timeline: --scroll-to-type-track;
+    animation-range: exit-crossing 0% entry-crossing 100%;
+  }
+
+  /*
+   * Two backgrounds clipped to the text: a 1ch block that rides along as the
+   * cursor, and a grey fill whose width tracks the same index. `--velocity`
+   * forces the cursor fully opaque while the caret is moving, so it only
+   * blinks when the reader stops scrolling.
+   */
+  [data-slot='scroll-to-type-text'] {
+    --scroll-to-type-velocity: round(
+      up,
+      clamp(
+        0,
+        max(
+          calc(var(--scroll-to-type-idx) - var(--scroll-to-type-scrub)),
+          calc(-1 * (var(--scroll-to-type-idx) - var(--scroll-to-type-scrub)))
+        ),
+        1
+      ),
+      1
+    );
+    --scroll-to-type-position: calc(
+      min(
+        round(
+          (var(--scroll-to-type-idx) / 100) * var(--scroll-to-type-length),
+          1
+        ),
+        var(--scroll-to-type-length) - 1
+      )
+    );
+
+    white-space: break-spaces;
+    background:
+      linear-gradient(
+          hsl(
+              var(--scroll-to-type-cursor-hue) 100% 70% /
+                calc(
+                  var(--scroll-to-type-alpha) + var(--scroll-to-type-velocity)
+                )
+            )
+            0 0
+        )
+        calc(var(--scroll-to-type-position) * 1ch) 50% / 1ch 1lh no-repeat,
+      linear-gradient(hsl(0 0% 80%) 0 0) 0 0 /
+        calc(var(--scroll-to-type-idx) * 1%) 100% no-repeat;
+    background-clip: border-box, text;
+    color: transparent;
+    transition: --scroll-to-type-scrub 0.2s;
+  }
+
+  @keyframes scroll-to-type-blink {
+    50% {
+      --scroll-to-type-alpha: 1;
+    }
+  }
+
+  @keyframes scroll-to-type-index {
+    to {
+      --scroll-to-type-idx: 100;
+      --scroll-to-type-scrub: 100;
+    }
+  }
+
+  /* without scroll-driven animation support, show the line plainly */
+  @supports not (animation-timeline: view()) {
+    [data-slot='scroll-to-type-text'] {
+      background: none;
+      color: canvastext;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='scroll-to-type-viewport'] {
+      animation: none;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* demo stage                                                          */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='scroll-to-type-stage'] {
+    color-scheme: light dark;
+    position: relative;
+    background: light-dark(white, black);
+    color: canvastext;
+  }
+
+  [data-slot='scroll-to-type-stage'][data-theme='light'] {
+    color-scheme: light only;
+  }
+
+  [data-slot='scroll-to-type-stage'][data-theme='dark'] {
+    color-scheme: dark only;
+  }
+
+  [data-slot='scroll-to-type-stage']::before {
+    --scroll-to-type-grid: 45px;
+    --scroll-to-type-line-color: color-mix(
+      in lch,
+      canvastext,
+      transparent 70%
+    );
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(
+          90deg,
+          var(--scroll-to-type-line-color) 1px,
+          transparent 1px var(--scroll-to-type-grid)
+        )
+        50% 50% / var(--scroll-to-type-grid) var(--scroll-to-type-grid),
+      linear-gradient(
+          var(--scroll-to-type-line-color) 1px,
+          transparent 1px var(--scroll-to-type-grid)
+        )
+        50% 50% / var(--scroll-to-type-grid) var(--scroll-to-type-grid);
+    mask: linear-gradient(-20deg, transparent 50%, white);
+  }
+}

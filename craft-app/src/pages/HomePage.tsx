@@ -88,6 +88,76 @@ const EXAMPLES: ExampleEntry[] = [
     path: '/examples/multiplayer-masking-with-grid-mask',
     tag: 'CSS · Mask',
   },
+  {
+    title: 'Product Spotlight Cards',
+    description:
+      'A depth map relights a flat product photo in real time — normals, contact shadows and a tracked spotlight, all sharing one WebGL context.',
+    path: '/examples/product-spotlight-cards',
+    tag: 'WebGL · Depth',
+  },
+  {
+    title: 'Pure CSS 3D Carousel',
+    description:
+      'Cards stacked in one grid cell, rotated around the Y axis and pushed back along Z to form a ring that spins with no JavaScript.',
+    path: '/examples/pure-css-3d-animated-carousel',
+    tag: 'CSS · 3D',
+  },
+  {
+    title: 'Progressive Blur',
+    description:
+      'Stacked backdrop-filter layers with staggered masks composited using intersect, sliding in on the scroller’s own timeline.',
+    path: '/examples/scroll-driven-progressive-blur-w-contrast',
+    tag: 'CSS · Backdrop',
+  },
+  {
+    title: 'CSS Number Animation',
+    description:
+      'A registered integer custom property feeds a CSS counter, making the number itself interpolable without a JavaScript tick.',
+    path: '/examples/css-number-animation',
+    tag: 'CSS · Counter',
+  },
+  {
+    title: 'Scroll-Driven Text Reveals',
+    description:
+      'Three text-clipped gradients swept by a view timeline, so the fill re-flows at any size without measuring anything.',
+    path: '/examples/css-responsive-scroll-driven-text-reveals',
+    tag: 'CSS · View Timeline',
+  },
+  {
+    title: 'Scroll to Type',
+    description:
+      'A stepped view-timeline animation turns scroll distance into a character index, typing a line out with a blinking caret.',
+    path: '/examples/css-scroll-to-type',
+    tag: 'CSS · Typing',
+  },
+  {
+    title: 'Carousel Slider',
+    description:
+      'A draggable card stack with spring transitions and directional enter/exit variants.',
+    path: '/examples/carousel-slider',
+    tag: 'Motion · Drag',
+  },
+  {
+    title: 'Option Wheel',
+    description:
+      'A curved, draggable picker that bends its options along an arc and blurs them as they fall from the centre.',
+    path: '/examples/option-wheel',
+    tag: 'React · Picker',
+  },
+  {
+    title: 'Year in Dots',
+    description:
+      'One dot per day of the year, filled in proportion to that year’s share of activity.',
+    path: '/examples/year-in-dots',
+    tag: 'React · Dataviz',
+  },
+  {
+    title: 'YouTube Embed',
+    description:
+      'A YouTube iframe wrapper that builds its own player URL and can mask the chrome so the video reads as background art.',
+    path: '/examples/youtube-embed',
+    tag: 'React · Media',
+  },
 ]
 
 export function HomePage() {
