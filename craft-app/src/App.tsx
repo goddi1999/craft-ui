@@ -7,6 +7,7 @@ import {
   SparkleButtonPage,
   FauxPipVideoPage,
   LinePathAnimationPage,
+  MultiplayerMaskPage,
   ScrollDrivenIndexPage,
   StyleableSelectPage,
   TheCraftOfUiPlaybookCssScrollAnimationWSubgridPage,
@@ -55,6 +56,10 @@ export function App() {
           <Route
             path="/examples/sparkle-button"
             element={<SparkleButtonPage />}
+          />
+          <Route
+            path="/examples/multiplayer-masking-with-grid-mask"
+            element={<MultiplayerMaskPage />}
           />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

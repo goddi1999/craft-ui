@@ -1,0 +1,490 @@
+@layer multiplayer-mask {
+  /* ------------------------------------------------------------------ */
+  /* root                                                                */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='multiplayer-mask'] {
+    --multiplayer-mask-size: 80;
+    --multiplayer-mask-column: 46;
+    --multiplayer-mask-border: 8;
+    --multiplayer-mask-movement: 0.72;
+    --multiplayer-mask-transition: 0.18;
+    --multiplayer-mask-offset: -3;
+    --multiplayer-mask-ease: ease-out;
+    --multiplayer-mask-ring-width: 2;
+    --multiplayer-mask-bg: linear-gradient(#0000 0 100%);
+
+    color-scheme: light dark;
+    color: canvastext;
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    gap: calc(var(--multiplayer-mask-size) * 0.5px);
+    height: calc(var(--multiplayer-mask-size) * 1.5px);
+    padding-inline: calc(var(--multiplayer-mask-size) * 0.25px);
+    border-radius: calc(var(--multiplayer-mask-size) * 2px);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  [data-slot='multiplayer-mask'][data-theme='light'] {
+    color-scheme: light only;
+  }
+
+  [data-slot='multiplayer-mask'][data-theme='dark'] {
+    color-scheme: dark only;
+  }
+
+  /* size variants own the avatar diameter and how tightly the grid packs */
+  [data-slot='multiplayer-mask'].multiplayer-mask--sm {
+    --multiplayer-mask-size: 56;
+    --multiplayer-mask-column: 32;
+    --multiplayer-mask-border: 6;
+    font-size: 0.75rem;
+  }
+
+  [data-slot='multiplayer-mask'].multiplayer-mask--default {
+    --multiplayer-mask-size: 80;
+    --multiplayer-mask-column: 46;
+    --multiplayer-mask-border: 8;
+    font-size: 0.875rem;
+  }
+
+  [data-slot='multiplayer-mask'].multiplayer-mask--lg {
+    --multiplayer-mask-size: 108;
+    --multiplayer-mask-column: 60;
+    --multiplayer-mask-border: 8;
+    font-size: 1rem;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* glow                                                                */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='multiplayer-mask']::before,
+  [data-slot='multiplayer-mask']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    border-radius: calc(var(--multiplayer-mask-size) * 2px);
+    background: var(--multiplayer-mask-bg);
+  }
+
+  [data-slot='multiplayer-mask']::before {
+    opacity: 0.3;
+  }
+
+  /* border-box minus padding-box leaves just the hairline ring */
+  [data-slot='multiplayer-mask']::after {
+    border: calc(var(--multiplayer-mask-ring-width) * 1px) solid #0000;
+    mask:
+      linear-gradient(transparent, transparent),
+      linear-gradient(white, white);
+    mask-clip: padding-box, border-box;
+    mask-composite: intersect;
+  }
+
+  [data-slot='multiplayer-mask'][data-glow='true'] {
+    --multiplayer-mask-bg: linear-gradient(
+        in hsl longer hue 90deg,
+        hsl(10 100% 70%) 0 100%
+      )
+      calc(var(--multiplayer-mask-ring-width) * -1px) 0 / 400% 100%;
+  }
+
+  [data-slot='multiplayer-mask'][data-glow='true']::before,
+  [data-slot='multiplayer-mask'][data-glow='true']::after {
+    animation: multiplayer-mask-scale-bg 8s linear infinite;
+  }
+
+  @keyframes multiplayer-mask-scale-bg {
+    to {
+      background-position: 400% 0;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* list + items                                                        */
+  /* ------------------------------------------------------------------ */
+
+  /* narrow auto columns are what makes the avatars overlap */
+  [data-slot='multiplayer-mask-list'] {
+    align-content: end;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc(var(--multiplayer-mask-column) * 1px);
+    height: calc(var(--multiplayer-mask-column) * 1px);
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    translate: calc(
+        (var(--multiplayer-mask-size) - var(--multiplayer-mask-column)) * 0.5px
+      )
+      0;
+  }
+
+  /* the item is 3x taller than the avatar so it has room to lift */
+  [data-slot='multiplayer-mask-item'] {
+    align-content: end;
+    aspect-ratio: 1 / 3;
+    display: grid;
+    position: relative;
+    pointer-events: none;
+    width: calc(var(--multiplayer-mask-size) * 1px);
+    translate: calc(
+        (var(--multiplayer-mask-size) - var(--multiplayer-mask-column)) * -0.5px
+      )
+      calc(
+        (var(--multiplayer-mask-size) - var(--multiplayer-mask-column)) * 0.5px
+      );
+  }
+
+  /* hit area sits only over the avatar square; later items occlude earlier ones */
+  [data-slot='multiplayer-mask-item']::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    aspect-ratio: 1;
+    pointer-events: all;
+  }
+
+  [data-slot='multiplayer-mask-avatar-holder'] {
+    position: absolute;
+    inset: 0;
+    align-content: end;
+    display: grid;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* masking                                                             */
+  /* ------------------------------------------------------------------ */
+
+  /* ltr: every item but the first is cut by the neighbour on its left */
+  [data-slot='multiplayer-mask'][data-direction='ltr']
+    [data-slot='multiplayer-mask-item']:not(:first-of-type)
+    [data-slot='multiplayer-mask-avatar-holder'] {
+    --multiplayer-mask-rad-x: calc(
+      var(--multiplayer-mask-circle) - (var(--multiplayer-mask-column) * 1px) -
+        (var(--multiplayer-mask-border) * 1px)
+    );
+  }
+
+  /* rtl: every item but the last is cut by the neighbour on its right */
+  [data-slot='multiplayer-mask'][data-direction='rtl']
+    [data-slot='multiplayer-mask-item']:not(:last-of-type)
+    [data-slot='multiplayer-mask-avatar-holder'] {
+    --multiplayer-mask-rad-x: calc(
+      var(--multiplayer-mask-circle) + (var(--multiplayer-mask-column) * 1px) -
+        (var(--multiplayer-mask-border) * 1px)
+    );
+  }
+
+  /* the hole parks one avatar-height below, then slides up on neighbour hover */
+  [data-slot='multiplayer-mask'][data-direction='ltr']
+    [data-slot='multiplayer-mask-item']:not(:first-of-type)
+    [data-slot='multiplayer-mask-avatar-holder'],
+  [data-slot='multiplayer-mask'][data-direction='rtl']
+    [data-slot='multiplayer-mask-item']:not(:last-of-type)
+    [data-slot='multiplayer-mask-avatar-holder'] {
+    --multiplayer-mask-circle: calc(
+      ((var(--multiplayer-mask-border) * 2px) +
+            (var(--multiplayer-mask-size) * 1px)) * 0.5
+    );
+    mask-image: radial-gradient(
+      var(--multiplayer-mask-circle) var(--multiplayer-mask-circle) at
+        var(--multiplayer-mask-rad-x, 0) 50%,
+      #0000 calc(var(--multiplayer-mask-circle) - 0.5px),
+      #fff var(--multiplayer-mask-circle)
+    );
+    mask-size: 100% 100%;
+    mask-position: 0 calc(var(--multiplayer-mask-size) * 1px);
+    transition: mask-position calc(var(--multiplayer-mask-transition) * 1s)
+      var(--multiplayer-mask-ease);
+  }
+
+  [data-slot='multiplayer-mask'][data-direction='ltr']
+    [data-slot='multiplayer-mask-item']:hover
+    + [data-slot='multiplayer-mask-item']
+    [data-slot='multiplayer-mask-avatar-holder'],
+  [data-slot='multiplayer-mask'][data-direction='rtl']
+    [data-slot='multiplayer-mask-item']:has(
+      + [data-slot='multiplayer-mask-item']:hover
+    )
+    [data-slot='multiplayer-mask-avatar-holder'] {
+    mask-position: 0
+      calc(
+        var(--multiplayer-mask-size) *
+          ((1 - var(--multiplayer-mask-movement)) * 1px)
+      );
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* avatar                                                              */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='multiplayer-mask-avatar'] {
+    display: inline-block;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    pointer-events: all;
+    transition: translate calc(var(--multiplayer-mask-transition) * 1s)
+      var(--multiplayer-mask-ease);
+  }
+
+  [data-slot='multiplayer-mask-item']:hover
+    [data-slot='multiplayer-mask-avatar'] {
+    translate: 0 calc(var(--multiplayer-mask-movement) * -100%);
+  }
+
+  [data-slot='multiplayer-mask-avatar'] img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: color-mix(in hsl, canvas, canvastext);
+  }
+
+  [data-slot='multiplayer-mask-fallback'] {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: color-mix(in hsl, canvas, canvastext 25%);
+    color: canvastext;
+    font-size: calc(var(--multiplayer-mask-size) * 0.34px);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* name                                                                */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='multiplayer-mask-name'] {
+    position: absolute;
+    left: 50%;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 400;
+    filter: blur(4px);
+    opacity: 0;
+    transition-property: filter, opacity, translate;
+    transition-timing-function: var(--multiplayer-mask-ease);
+    transition-duration: calc(var(--multiplayer-mask-transition) * 1s);
+  }
+
+  [data-slot='multiplayer-mask-item']:hover
+    [data-slot='multiplayer-mask-name'] {
+    filter: blur(0px);
+    opacity: 1;
+  }
+
+  /* ring: each character rides the circle via offset-path */
+  [data-slot='multiplayer-mask'][data-label='ring']
+    [data-slot='multiplayer-mask-name'] {
+    width: calc(var(--multiplayer-mask-size) * 1px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    bottom: 0;
+    translate: -50% calc(var(--multiplayer-mask-movement) * -100%);
+  }
+
+  [data-slot='multiplayer-mask'][data-label='ring']
+    [data-slot='multiplayer-mask-char'] {
+    position: absolute;
+    offset-path: border-box;
+    offset-distance: calc(
+      (var(--multiplayer-mask-offset) + var(--i)) * 1ch
+    );
+    offset-anchor: 50% 150%;
+    translate: 0 100%;
+    transition: translate calc(var(--multiplayer-mask-transition) * 1s)
+      var(--multiplayer-mask-ease);
+  }
+
+  [data-slot='multiplayer-mask'][data-label='ring']
+    [data-slot='multiplayer-mask-item']:hover
+    [data-slot='multiplayer-mask-char'] {
+    translate: 0 0;
+  }
+
+  /* above: the name floats over the lifted avatar */
+  [data-slot='multiplayer-mask'][data-label='above']
+    [data-slot='multiplayer-mask-name'] {
+    bottom: calc(
+      (
+          var(--multiplayer-mask-size) *
+            (1 + var(--multiplayer-mask-movement))
+        ) * 1px
+    );
+    translate: -50% 50%;
+    white-space: nowrap;
+  }
+
+  [data-slot='multiplayer-mask'][data-label='above']
+    [data-slot='multiplayer-mask-item']:hover
+    [data-slot='multiplayer-mask-name'] {
+    translate: -50% -50%;
+  }
+
+  [data-slot='multiplayer-mask'][data-label='none']
+    [data-slot='multiplayer-mask-name'] {
+    display: none;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* overflow trigger                                                    */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='multiplayer-mask-overflow'] {
+    width: calc(var(--multiplayer-mask-size) * 0.5px);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    margin-left: 0.5rem;
+    appearance: none;
+    border: 0;
+    background: #0000;
+    color: canvastext;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity calc(var(--multiplayer-mask-transition) * 1s)
+      var(--multiplayer-mask-ease);
+  }
+
+  [data-slot='multiplayer-mask-overflow']:is(:hover, :focus-visible) {
+    opacity: 1;
+  }
+
+  [data-slot='multiplayer-mask-overflow'] svg {
+    width: 100%;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* debug guides                                                        */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='multiplayer-mask-list']::after {
+    content: 'masked item';
+    position: absolute;
+    bottom: 0;
+    left: calc(var(--multiplayer-mask-column) * 1.5px);
+    width: calc(var(--multiplayer-mask-size) * 1px);
+    aspect-ratio: 1 / 3;
+    z-index: -1;
+    opacity: 0;
+    padding-top: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 200;
+    color: color-mix(in hsl, currentcolor, #0000 25%);
+    outline: 1px solid hsl(0 100% 50%);
+    background: repeating-linear-gradient(
+      45deg,
+      hsl(0 100% 50% / 0.5) 0 1px,
+      #0000 6px 7px
+    );
+    translate: -50%
+      calc(
+        (var(--multiplayer-mask-size) - var(--multiplayer-mask-column)) * 0.5px
+      );
+    transition: opacity 0.5s ease-out;
+  }
+
+  [data-slot='multiplayer-mask-item']:first-of-type::after {
+    content: 'grid column';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: calc(var(--multiplayer-mask-column) * 1px);
+    height: calc(var(--multiplayer-mask-size) * 2.5px);
+    z-index: -1;
+    opacity: 0;
+    padding-top: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 200;
+    color: color-mix(in hsl, currentcolor, #0000 25%);
+    outline: 1px solid hsl(220 100% 50%);
+    background: repeating-linear-gradient(
+      45deg,
+      hsl(220 100% 50% / 0.5) 0 1px,
+      #0000 6px 7px
+    );
+    translate: -50% 0;
+    transition: opacity 0.5s ease-out;
+  }
+
+  [data-slot='multiplayer-mask'][data-debug='true']
+    [data-slot='multiplayer-mask-list']::after,
+  [data-slot='multiplayer-mask'][data-debug='true']
+    [data-slot='multiplayer-mask-item']:first-of-type::after {
+    opacity: 1;
+  }
+
+  [data-slot='multiplayer-mask'][data-debug='true']
+    [data-slot='multiplayer-mask-name'] {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='multiplayer-mask'][data-glow='true']::before,
+    [data-slot='multiplayer-mask'][data-glow='true']::after {
+      animation: none;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* demo stage                                                          */
+  /* ------------------------------------------------------------------ */
+
+  [data-slot='multiplayer-mask-stage'] {
+    color-scheme: light dark;
+    position: relative;
+    min-height: 100svh;
+    background: light-dark(#fff, #000);
+    color: canvastext;
+    overflow: hidden;
+  }
+
+  [data-slot='multiplayer-mask-stage'][data-theme='light'] {
+    color-scheme: light only;
+  }
+
+  [data-slot='multiplayer-mask-stage'][data-theme='dark'] {
+    color-scheme: dark only;
+  }
+
+  [data-slot='multiplayer-mask-stage']::before {
+    --multiplayer-mask-grid: 45px;
+    --multiplayer-mask-line: color-mix(in hsl, canvastext, transparent 70%);
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(
+          90deg,
+          var(--multiplayer-mask-line) 1px,
+          transparent 1px var(--multiplayer-mask-grid)
+        )
+        50% 50% / var(--multiplayer-mask-grid) var(--multiplayer-mask-grid),
+      linear-gradient(
+          var(--multiplayer-mask-line) 1px,
+          transparent 1px var(--multiplayer-mask-grid)
+        )
+        50% 50% / var(--multiplayer-mask-grid) var(--multiplayer-mask-grid);
+    mask: linear-gradient(-20deg, transparent 50%, white);
+  }
+}

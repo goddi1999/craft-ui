@@ -81,6 +81,13 @@ const EXAMPLES: ExampleEntry[] = [
     path: '/examples/sparkle-button',
     tag: 'CSS · Button',
   },
+  {
+    title: 'Multiplayer Masking',
+    description:
+      'An overlapping presence stack where narrow grid columns and radial-gradient masks let each avatar lift cleanly out of its neighbour.',
+    path: '/examples/multiplayer-masking-with-grid-mask',
+    tag: 'CSS · Mask',
+  },
 ]
 
 export function HomePage() {
