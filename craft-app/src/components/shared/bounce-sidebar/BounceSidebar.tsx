@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type ComponentProps } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+} from "react";
+import { Link } from "react-router-dom";
 import { motion, useAnimate } from "motion/react";
-import { arc } from "motion";
 import { cn } from "@/lib/utils";
+
+const MotionLink = motion.create(Link);
 
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -34,11 +42,13 @@ export function BounceSidebar({
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
   const prevY = useRef<number | null>(null);
 
-  const [dotSize] = useState(() => {
-    const dpr = typeof window === "undefined" ? 1 : window.devicePixelRatio || 1;
-    return Math.round(6 * dpr) / dpr;
-  });
+  const [dotSize, setDotSize] = useState(6);
   const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const dpr = window.devicePixelRatio || 1;
+    setDotSize(Math.round(6 * dpr) / dpr);
+  }, []);
 
   useIsomorphicLayoutEffect(() => {
     let cancelled = false;
@@ -84,15 +94,12 @@ export function BounceSidebar({
     if (delta === 0) return;
 
     const distance = Math.abs(delta);
-    const path = arc({
-      strength: Math.min(0.8, 14 / distance),
-      direction: delta > 0 ? "ccw" : "cw",
-    });
+    const bulgeX = -Math.min(14, distance * 0.8);
 
     animate(
       dot.current,
-      { x: 0, y: toY },
-      { duration: 0.25, ease: "easeOut", path },
+      { x: [0, bulgeX, 0], y: toY },
+      { duration: 0.25, ease: "easeOut" },
     );
   }, [activeIndex, animate, dot, dotSize]);
 
@@ -136,15 +143,15 @@ export function BounceSidebar({
             }}
           >
             {href ? (
-              <motion.a
-                href={href}
+              <MotionLink
+                to={href}
                 data-slot="bounce-sidebar-item"
                 data-active={isActive}
                 onClick={() => select(index)}
                 className={itemClassName}
               >
                 {label}
-              </motion.a>
+              </MotionLink>
             ) : (
               <motion.button
                 type="button"

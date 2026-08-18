@@ -294,10 +294,22 @@ const ProximitySidebar = ({
 
     let frame = 0
 
+    const getAnchorY = () => {
+      const firstElement = getSectionElement(sections[0]?.id ?? "")
+      const parent = firstElement ? getScrollParent(firstElement) : window
+
+      if (parent === window) {
+        return window.innerHeight * activeOffset
+      }
+
+      const rect = (parent as HTMLElement).getBoundingClientRect()
+      return rect.top + rect.height * activeOffset
+    }
+
     const updateActiveSection = () => {
       frame = 0
 
-      const anchorY = window.innerHeight * activeOffset
+      const anchorY = getAnchorY()
       let nextActiveId = sections[0]?.id
       let shortestDistance = Number.POSITIVE_INFINITY
 
@@ -363,7 +375,7 @@ const ProximitySidebar = ({
       } ${className}`}
     >
       <div
-        className={`new-home_minimap__dDggR mx-8 flex flex-col ${
+        className={`mx-8 flex flex-col ${
           side === "right" ? "items-end" : "items-start"
         }`}
         style={{ gap: 8 }}
