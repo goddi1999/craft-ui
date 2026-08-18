@@ -3,9 +3,14 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { DemoLayout } from '@/components/layout'
 import {
   AgentComputerIconPage,
+  AnimatedBeamPage,
+  BounceSidebarPage,
   Carousel3DPage,
   CarouselSliderPage,
+  CodeBlockPage,
   CurvedScrollbarPage,
+  FlickeringGridPage,
+  GithubCalendarPage,
   SparkleButtonPage,
   FauxPipVideoPage,
   LinePathAnimationPage,
@@ -14,7 +19,9 @@ import {
   OptionWheelPage,
   ProductSpotlightPage,
   ProgressiveBlurPage,
+  ProximitySidebarPage,
   ScrollDrivenIndexPage,
+  ScrollProgressPage,
   ScrollToTypePage,
   StyleableSelectPage,
   TextRevealPage,
@@ -104,6 +111,31 @@ export function App() {
           <Route
             path="/examples/youtube-embed"
             element={<YoutubeEmbedPage />}
+          />
+          <Route
+            path="/examples/animated-beam"
+            element={<AnimatedBeamPage />}
+          />
+          <Route
+            path="/examples/bounce-sidebar"
+            element={<BounceSidebarPage />}
+          />
+          <Route path="/examples/code-block" element={<CodeBlockPage />} />
+          <Route
+            path="/examples/flickering-grid"
+            element={<FlickeringGridPage />}
+          />
+          <Route
+            path="/examples/github-calendar"
+            element={<GithubCalendarPage />}
+          />
+          <Route
+            path="/examples/proximity-sidebar"
+            element={<ProximitySidebarPage />}
+          />
+          <Route
+            path="/examples/scroll-progress"
+            element={<ScrollProgressPage />}
           />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

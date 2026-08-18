@@ -215,7 +215,29 @@ export { CarouselSlider, CarouselSliderPage } from './carousel-slider'
 export type { CarouselSliderProps } from './carousel-slider'
 export { OptionWheel, OptionWheelPage } from './option-wheel'
 export type { OptionWheelProps } from './option-wheel'
-export { YearInDots, YearInDotsPage, relativeFilled } from './year-in-dots'
+export { YearInDots, YearInDotsPage } from './year-in-dots'
 export type { YearInDotsProps } from './year-in-dots'
 export { YoutubeEmbed, YoutubeEmbedPage } from './youtube-embed'
 export type { YoutubeEmbedProps } from './youtube-embed'
+export { AnimatedBeam, AnimatedBeamPage } from './animated-beam'
+export type { AnimatedBeamProps } from './animated-beam'
+export { BounceSidebar, BounceSidebarPage } from './bounce-sidebar'
+export type { BounceSidebarItem, BounceSidebarProps } from './bounce-sidebar'
+export { CodeBlock, CodeBlockPage } from './code-block'
+export type { CodeBlockProps } from './code-block'
+export { FlickeringGrid, FlickeringGridPage } from './flickering-grid'
+export type { FlickeringGridProps } from './flickering-grid'
+export { GithubActivityCard, GithubCalendarPage } from './github-calendar'
+export type {
+  Contribution,
+  ContributionLevel,
+  GithubActivityCardProps,
+  RepoContribution,
+} from './github-calendar'
+export { ProximitySidebar, ProximitySidebarPage } from './proximity-sidebar'
+export type { ProximitySection } from './proximity-sidebar'
+export { ScrollProgress, ScrollProgressPage } from './scroll-progress'
+export type {
+  ScrollProgressProps,
+  ScrollProgressSection,
+} from './scroll-progress'

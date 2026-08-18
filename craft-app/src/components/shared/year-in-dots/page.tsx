@@ -1,20 +1,23 @@
 import { useState } from 'react'
 
+import { DemoControlGroup, DemoPanel } from '@/components/shared/demo-controls'
+
 import YearInDots from './YearInDots'
 
-const YEARS = [
-  { year: 2021, comments: 412 },
-  { year: 2022, comments: 1180 },
-  { year: 2023, comments: 864 },
-  { year: 2024, comments: 1536 },
-  { year: 2025, comments: 973 },
-]
+const PALETTES = {
+  mono: { elapsed: '#303033', remaining: '#f7f7f7' },
+  ember: { elapsed: '#2a1410', remaining: '#ff5a36' },
+  mint: { elapsed: '#10241d', remaining: '#4ade80' },
+  violet: { elapsed: '#1c1630', remaining: '#a78bfa' },
+} as const
 
-const MAX = Math.max(...YEARS.map((entry) => entry.comments))
-const TOTAL = YEARS.reduce((sum, entry) => sum + entry.comments, 0)
+type PaletteName = keyof typeof PALETTES
+
+const PALETTE_NAMES = Object.keys(PALETTES) as PaletteName[]
 
 export function YearInDotsPage() {
-  const [selected, setSelected] = useState(2024)
+  const [palette, setPalette] = useState<PaletteName>('mono')
+  const { elapsed, remaining } = PALETTES[palette]
 
   return (
     <div className="min-h-svh bg-background px-4 py-16 text-foreground">
@@ -27,24 +30,26 @@ export function YearInDotsPage() {
             Year in dots
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
-            One dot per day of the year, filled in proportion to that year&apos;s
-            share of activity. Select a year to compare.
+            One dot per day of the current year, dimmed as each day passes. The
+            dot on today&apos;s boundary keeps pulsing, the count refreshes
+            itself at midnight, and clicking the card replays the cascade.
           </p>
         </header>
 
-        <section className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {YEARS.map((entry) => (
-            <YearInDots
-              key={entry.year}
-              className="w-full max-w-72"
-              year={entry.year}
-              comments={entry.comments}
-              maxComments={MAX}
-              totalComments={TOTAL}
-              selected={selected === entry.year}
-              onClick={() => setSelected(entry.year)}
+        <section className="flex flex-col items-center gap-8">
+          <YearInDots elapsedColor={elapsed} remainingColor={remaining} />
+
+          <DemoPanel>
+            <DemoControlGroup
+              title="palette"
+              options={PALETTE_NAMES}
+              value={palette}
+              onChange={setPalette}
             />
-          ))}
+            <p className="text-xs text-muted-foreground">
+              Click the card to replay the entrance animation.
+            </p>
+          </DemoPanel>
         </section>
       </div>
     </div>

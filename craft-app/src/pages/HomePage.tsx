@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
@@ -9,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 
 type ExampleEntry = {
   title: string
@@ -158,13 +160,76 @@ const EXAMPLES: ExampleEntry[] = [
     path: '/examples/youtube-embed',
     tag: 'React · Media',
   },
+  {
+    title: 'Animated Beam',
+    description:
+      'An SVG path measured between two element refs with a gradient travelling along it, re-measuring on resize.',
+    path: '/examples/animated-beam',
+    tag: 'SVG · Motion',
+  },
+  {
+    title: 'Bounce Sidebar',
+    description:
+      'A nav marker that squashes and stretches as it travels between items, easing along an arc rather than a straight line.',
+    path: '/examples/bounce-sidebar',
+    tag: 'Motion · Nav',
+  },
+  {
+    title: 'Code Block',
+    description:
+      'Prism highlighting with an entire theme derived from a single accent colour, plus an animated copy button.',
+    path: '/examples/code-block',
+    tag: 'React · Syntax',
+  },
+  {
+    title: 'Flickering Grid',
+    description:
+      'A canvas grid of squares randomly changing opacity, throttled to a target frame rate and paused when hidden.',
+    path: '/examples/flickering-grid',
+    tag: 'Canvas · Ambient',
+  },
+  {
+    title: 'GitHub Activity Card',
+    description:
+      'A contribution heatmap from the public contributions API, with month labels and recently pushed repos.',
+    path: '/examples/github-calendar',
+    tag: 'React · Dataviz',
+  },
+  {
+    title: 'Proximity Sidebar',
+    description:
+      'A table-of-contents rail whose dashes lengthen based on their distance from the cursor.',
+    path: '/examples/proximity-sidebar',
+    tag: 'Motion · Nav',
+  },
+  {
+    title: 'Scroll Progress',
+    description:
+      'A floating progress pill reporting the active section, spring animating between label widths.',
+    path: '/examples/scroll-progress',
+    tag: 'Motion · Scroll',
+  },
 ]
 
 export function HomePage() {
+  const [query, setQuery] = useState('')
+
+  const results = useMemo(() => {
+    const needle = query.trim().toLowerCase()
+    if (!needle) return EXAMPLES
+    // Every term has to appear somewhere in the title or description, so
+    // typing more words narrows the list instead of widening it.
+    const terms = needle.split(/\s+/)
+    return EXAMPLES.filter((example) => {
+      const haystack = `${example.title} ${example.description}`.toLowerCase()
+      return terms.every((term) => haystack.includes(term))
+    })
+  }, [query])
+
   return (
     <div className="min-h-svh bg-background px-4 py-16">
-      <div className="mx-auto max-w-3xl">
-        <header className="mb-12 text-center">
+      <div className="mx-auto max-w-6xl">
+        <header className="mb-8 text-center">
           <h1 className="text-4xl font-medium tracking-tight text-foreground">
             Craft UI
           </h1>
@@ -173,28 +238,48 @@ export function HomePage() {
           </p>
         </header>
 
-        <ul className="grid gap-6 sm:grid-cols-1">
-          {EXAMPLES.map((example) => (
-            <li key={example.path}>
-              <Card>
-                <CardHeader>
-                  <CardTitle>{example.title}</CardTitle>
-                  <CardDescription>{example.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <span className="inline-flex rounded-md bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
-                    {example.tag}
-                  </span>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild>
-                    <Link to={example.path}>Open live example</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            </li>
-          ))}
-        </ul>
+        <div className="mx-auto mb-10 flex max-w-md flex-col gap-2">
+          <Input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search examples…"
+            aria-label="Search examples by title or description"
+            autoComplete="off"
+          />
+          <p className="text-center text-xs text-muted-foreground" aria-live="polite">
+            {results.length} of {EXAMPLES.length} examples
+          </p>
+        </div>
+
+        {results.length > 0 ? (
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {results.map((example) => (
+              <li key={example.path}>
+                <Card className="flex h-full flex-col">
+                  <CardHeader>
+                    <CardTitle>{example.title}</CardTitle>
+                    <CardDescription>{example.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <span className="inline-flex rounded-md bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
+                      {example.tag}
+                    </span>
+                  </CardContent>
+                  <CardFooter>
+                    <Button asChild className="w-full">
+                      <Link to={example.path}>Open live example</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="py-16 text-center text-muted-foreground">
+            No examples match “{query}”.
+          </p>
+        )}
       </div>
     </div>
   )
