@@ -1,0 +1,6 @@
+export { VoiceNote } from './VoiceNote'
+export { VoiceNotePage } from './page'
+export { AnimatedNumber } from './AnimatedNumber'
+export { useVoiceRecorder } from './use-voice-recorder'
+export { RecorderState } from './voice-note.types'
+export type { VoiceNoteProps } from './voice-note.types'

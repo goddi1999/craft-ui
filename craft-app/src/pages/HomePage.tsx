@@ -209,6 +209,69 @@ const EXAMPLES: ExampleEntry[] = [
     path: '/examples/scroll-progress',
     tag: 'Motion · Scroll',
   },
+  {
+    title: 'Calendar Widget',
+    description:
+      'A draggable date strip over an agenda pane, with the selection pill travelling between days as a shared layout element.',
+    path: '/examples/calendar-widget',
+    tag: 'Motion · Calendar',
+  },
+  {
+    title: 'Card Swipe',
+    description:
+      'A draggable deck whose cards derive their Y rotation from the track position, swinging away in perspective as the active card squares up.',
+    path: '/examples/card-swipe',
+    tag: 'Motion · Drag',
+  },
+  {
+    title: 'Emoji Spree Chips',
+    description:
+      'Draggable choice chips that throw the picked emoji up over the deck and drop it back down behind them.',
+    path: '/examples/emoji-spree-chips',
+    tag: 'Motion · Chips',
+  },
+  {
+    title: 'Fund Widget',
+    description:
+      'A vertical balance deck where each card\u2019s rotation and blur come from the track position, tipping pages as they roll past.',
+    path: '/examples/fund-widget',
+    tag: 'Motion · 3D',
+  },
+  {
+    title: 'macOS Sidebar',
+    description:
+      'A collapsible rail that springs between widths, with the hover highlight sliding between rows as a shared layout element.',
+    path: '/examples/macos-sidebar',
+    tag: 'Motion · Nav',
+  },
+  {
+    title: 'Pin Item',
+    description:
+      'Pinning a place moves its card between two lists, travelling to its new section on a shared layout id instead of cutting.',
+    path: '/examples/pin-item',
+    tag: 'Motion · List',
+  },
+  {
+    title: 'Switch Mode',
+    description:
+      'A day/night toggle whose knob moves as a layout animation, so every size variant lands correctly.',
+    path: '/examples/switch-mode',
+    tag: 'Motion · Theme',
+  },
+  {
+    title: 'Tree Menu',
+    description:
+      'A drill-down menu where the picked row becomes the breadcrumb, and the remaining rows part around your choice.',
+    path: '/examples/tree-menu',
+    tag: 'Motion · Nav',
+  },
+  {
+    title: 'Voice Note',
+    description:
+      'A recorder pill that grows out of a mic button, counting the take down on an SVG stroke with a digit-rolling timer.',
+    path: '/examples/voice-note',
+    tag: 'Motion · Audio',
+  },
 ]
 
 export function HomePage() {
