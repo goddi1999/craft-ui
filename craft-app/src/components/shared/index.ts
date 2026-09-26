@@ -92,6 +92,9 @@ export type {
   AgentComputerIconState,
   AgentComputerIconVariant,
 } from './ai-agent'
+export { HeartPage } from './heart'
+export { PulseHeartPage } from './pulse-heart'
+export { FuseButtonPage } from './fuse-button'
 export { SparkleButton, SparkleButtonPage, sparkleButtonVariants } from './sparkle-button'
 export type {
   SparkleButtonHue,
@@ -227,6 +230,7 @@ export { CodeBlock, CodeBlockPage } from './code-block'
 export type { CodeBlockProps } from './code-block'
 export { FlickeringGrid, FlickeringGridPage } from './flickering-grid'
 export type { FlickeringGridProps } from './flickering-grid'
+export { HyperspeedPage } from './hyperspeed'
 export { GithubActivityCard, GithubCalendarPage } from './github-calendar'
 export type {
   Contribution,
@@ -243,6 +247,8 @@ export type {
 } from './scroll-progress'
 export { DemoPage, demoPageStageVariants } from './demo-page'
 export type { DemoPageAlign, DemoPageProps } from './demo-page'
+export { ClearableInput } from './clearable-input'
+export type { ClearableInputProps } from './clearable-input'
 export {
   CalendarWidget,
   CalendarWidgetPage,

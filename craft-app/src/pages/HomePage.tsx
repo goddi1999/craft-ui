@@ -77,11 +77,32 @@ const EXAMPLES: ExampleEntry[] = [
     tag: 'GSAP · SVG',
   },
   {
+    title: 'Heart',
+    description:
+      'Like hearts with typed color variants: a CSS beat primitive, plus a GSAP center-fill with particle burst and swatches.',
+    path: '/examples/heart',
+    tag: 'GSAP · Like',
+  },
+  {
+    title: 'Pulse Heart',
+    description:
+      'A like pill that swells through a bezier overshoot on toggle, its count rolling like an odometer digit.',
+    path: '/examples/pulse-heart',
+    tag: 'React · Like',
+  },
+  {
     title: 'Sparkle Button',
     description:
       'A hover-activated pill button with conic spark, orbiting particles, and gradient label text.',
     path: '/examples/sparkle-button',
     tag: 'CSS · Button',
+  },
+  {
+    title: 'Fuse Button',
+    description:
+      'A commit button that arms a burning fuse instead of a confirm dialog — tap again, or wait it out, before it locks in.',
+    path: '/examples/fuse-button',
+    tag: 'React · Button',
   },
   {
     title: 'Multiplayer Masking',
@@ -189,6 +210,13 @@ const EXAMPLES: ExampleEntry[] = [
     tag: 'Canvas · Ambient',
   },
   {
+    title: 'Hyperspeed',
+    description:
+      'A Three.js road tunnel with distortable geometry, streaking traffic lights, and bloom, steered by a plain options object.',
+    path: '/examples/hyperspeed',
+    tag: 'WebGL · Three.js',
+  },
+  {
     title: 'GitHub Activity Card',
     description:
       'A contribution heatmap from the public contributions API, with month labels and recently pushed repos.',
@@ -264,6 +292,13 @@ const EXAMPLES: ExampleEntry[] = [
       'A drill-down menu where the picked row becomes the breadcrumb, and the remaining rows part around your choice.',
     path: '/examples/tree-menu',
     tag: 'Motion · Nav',
+  },
+  {
+    title: 'Tree Search',
+    description:
+      'A search field that opens into drill-down results with staggered list motion, back crumbs, and arbitrary leaf content.',
+    path: '/examples/tree-search',
+    tag: 'Motion · Search',
   },
   {
     title: 'Voice Note',

@@ -1,0 +1,1 @@
+export { PulseHeartPage } from './page'

@@ -1,0 +1,1 @@
+export { HeartPage } from './page'

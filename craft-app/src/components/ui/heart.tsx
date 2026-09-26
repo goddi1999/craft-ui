@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { type ThemeId, isThemeId } from '@/lib/themes'
 import { cn } from '@/lib/utils'
 import { heartVariants, type HeartVariantProps } from './heart-variant'
 
 interface HeartProps {
   size?: HeartVariantProps['size']
-  color?: ThemeId
+  color?: HeartVariantProps['variant']
   variant?: HeartVariantProps['variant']
   className?: string
   interactive?: boolean
@@ -17,7 +16,7 @@ interface HeartProps {
 const HEART_PATH =
   'M12 21.593c-5.63-5.539-11-10.297-11-14.402C1 3.732 3.195 2 5.5 2c1.463 0 3.055.826 4.26 2.216C10.855 5.323 11.51 6 12 6s1.145-.677 2.24-1.784C15.445 2.826 17.037 2 18.5 2 20.805 2 23 3.732 23 7.191c0 4.105-5.37 8.863-11 14.402z'
 
-export default function Heart({
+export function Heart({
   size = 'default',
   color,
   variant = 'violet',
@@ -70,8 +69,7 @@ export default function Heart({
   }, [isAnimating])
 
   const resolvedLiked = interactive ? isLiked : liked
-  const resolvedVariant =
-    color ?? (typeof variant === 'string' && isThemeId(variant) ? variant : 'violet')
+  const resolvedVariant = color ?? variant ?? 'violet'
 
   const icon = (
     <>

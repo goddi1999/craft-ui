@@ -15,7 +15,10 @@ import {
   EmojiSpreeChipsPage,
   FlickeringGridPage,
   FundWidgetPage,
+  FuseButtonPage,
   GithubCalendarPage,
+  HeartPage,
+  HyperspeedPage,
   SparkleButtonPage,
   FauxPipVideoPage,
   LinePathAnimationPage,
@@ -27,6 +30,7 @@ import {
   ProductSpotlightPage,
   ProgressiveBlurPage,
   ProximitySidebarPage,
+  PulseHeartPage,
   ScrollDrivenIndexPage,
   ScrollProgressPage,
   ScrollToTypePage,
@@ -41,6 +45,7 @@ import {
   YoutubeEmbedPage,
 } from '@/components/shared'
 import { HomePage } from '@/pages/HomePage'
+import { TreeSearchPage } from '@/pages/TreeSearchPage'
 
 export function App() {
   return (
@@ -81,10 +86,13 @@ export function App() {
               path="/examples/agent-computer-icon"
               element={<AgentComputerIconPage />}
             />
+            <Route path="/examples/heart" element={<HeartPage />} />
+            <Route path="/examples/pulse-heart" element={<PulseHeartPage />} />
             <Route
               path="/examples/sparkle-button"
               element={<SparkleButtonPage />}
             />
+            <Route path="/examples/fuse-button" element={<FuseButtonPage />} />
             <Route
               path="/examples/multiplayer-masking-with-grid-mask"
               element={<MultiplayerMaskPage />}
@@ -136,6 +144,7 @@ export function App() {
               path="/examples/flickering-grid"
               element={<FlickeringGridPage />}
             />
+            <Route path="/examples/hyperspeed" element={<HyperspeedPage />} />
             <Route
               path="/examples/github-calendar"
               element={<GithubCalendarPage />}
@@ -165,6 +174,7 @@ export function App() {
             <Route path="/examples/pin-item" element={<PinItemPage />} />
             <Route path="/examples/switch-mode" element={<SwitchModePage />} />
             <Route path="/examples/tree-menu" element={<TreeMenuPage />} />
+            <Route path="/examples/tree-search" element={<TreeSearchPage />} />
             <Route path="/examples/voice-note" element={<VoiceNotePage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -60,7 +60,12 @@ type HeartProps = {
   onChange?: (liked: boolean) => void
 }
 
-function HeartButton({ size = 72, oklchVal, defaultLiked = false, onChange }: HeartProps) {
+export function HeartButton({
+  size = 72,
+  oklchVal,
+  defaultLiked = false,
+  onChange,
+}: HeartProps) {
   const uid = useId().replace(/:/g, '')
   const clipId = useMemo(() => `hclip-${uid}`, [uid])
   const reduced = usePrefersReducedMotion()
@@ -270,7 +275,7 @@ function Swatch({
 
 // ─── Root ───────────────────────────────────────────────────────────────────
 
-export default function HeartWithPicker() {
+export function HeartWithPicker() {
   const [activeKey, setActiveKey] = useState<ColorKey>('violet')
   const [heartKey, setHeartKey] = useState(0)
 
@@ -282,36 +287,10 @@ export default function HeartWithPicker() {
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        background: '#ffffff',
-        gap: 44,
-      }}
-    >
-      <HeartButton
-        key={heartKey}
-        oklchVal={active.oklch}
-        size={80}
-      />
+    <div className="flex flex-col items-center justify-center gap-11">
+      <HeartButton key={heartKey} oklchVal={active.oklch} size={80} />
 
-      {/* Pill swatch tray */}
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 8,
-          justifyContent: 'center',
-          maxWidth: 230,
-          padding: '12px 16px',
-          borderRadius: 999,
-          background: '#f4f4f5',
-        }}
-      >
+      <div className="flex max-w-[230px] flex-wrap justify-center gap-2 rounded-full bg-muted px-4 py-3">
         {COLORS.map((c) => (
           <Swatch
             key={c.key}
@@ -325,3 +304,6 @@ export default function HeartWithPicker() {
     </div>
   )
 }
+
+export { COLORS }
+export type { ColorKey }
