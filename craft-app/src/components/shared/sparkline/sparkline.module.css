@@ -1,0 +1,185 @@
+/*
+ * Design tokens this component reads. They follow a shadcn theme when one is
+ * present (--background, --border, …) and fall back to neutral values otherwise.
+ */
+:root {
+  --arc-foreground: var(--foreground, #0a0a0a);
+  --arc-text-secondary: oklch(46% 0 0);
+  --arc-border: var(--border, #e5e5e5);
+  --arc-border-strong: oklch(82% 0 0);
+  --arc-accent: oklch(33% 0 0);
+  --arc-accent-strong: oklch(24% 0 0);
+  --arc-success: oklch(54% 0.13 152);
+  --arc-warning: oklch(70% 0.15 72);
+  --arc-danger: oklch(56% 0.19 27);
+  --arc-tracking-body: -0.01em;
+  --arc-text-xs: 0.75rem;
+  --arc-text-sm: 0.875rem;
+  --arc-text-lg: 1.125rem;
+  --arc-space-2: 0.5rem;
+  --arc-space-3: 0.75rem;
+  --arc-radius-control: 1.125rem;
+  --arc-duration-standard: 0.24s;
+  --arc-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:global(.dark) {
+  --arc-text-secondary: oklch(77% 0 0);
+  --arc-border-strong: oklch(40% 0 0);
+  --arc-accent: oklch(80% 0 0);
+  --arc-accent-strong: oklch(91% 0 0);
+  --arc-success: oklch(78% 0.18 150);
+  --arc-warning: oklch(83% 0.17 80);
+  --arc-danger: oklch(76% 0.2 25);
+}
+
+.figure {
+  display: grid;
+  min-width: 0;
+  gap: var(--arc-space-3);
+  margin: 0;
+  color: var(--arc-foreground);
+}
+.caption {
+  display: flex;
+  align-items: baseline;
+  gap: var(--arc-space-2);
+  min-width: 0;
+  color: var(--arc-text-secondary);
+  font-size: var(--arc-text-sm);
+}
+.label {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.caption strong {
+  margin-left: auto;
+  color: var(--arc-foreground);
+  font-size: var(--arc-text-lg);
+  font-weight: 500;
+  letter-spacing: var(--arc-tracking-body);
+  font-variant-numeric: tabular-nums;
+}
+.caption small {
+  flex: none;
+  font-size: var(--arc-text-xs);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  transition: color var(--arc-duration-standard) var(--arc-ease-standard);
+}
+.accent {
+  color: var(--arc-accent-strong);
+  stroke: var(--arc-accent);
+}
+.success {
+  color: var(--arc-success);
+  stroke: var(--arc-success);
+}
+.warning {
+  color: var(--arc-warning);
+  stroke: var(--arc-warning);
+}
+.danger {
+  color: var(--arc-danger);
+  stroke: var(--arc-danger);
+}
+/* The scrubbed date is context, not a change, so it stays neutral whatever the tone. */
+.point {
+  color: var(--arc-text-secondary);
+}
+
+/* Changing text rolls in place. Outgoing pieces are popped out of flow, so the wrapper never holds both widths; numbers stay anchored to their right edge. */
+.roll {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+  overflow-x: clip;
+  white-space: pre;
+  vertical-align: top;
+}
+.roll[data-end] {
+  justify-content: flex-end;
+}
+.track,
+.slot,
+.glyph {
+  position: relative;
+  display: inline-block;
+  white-space: pre;
+}
+.roll[data-whole] .track,
+.roll[data-whole] .slot,
+.roll[data-whole] .glyph {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+}
+.sizer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  white-space: pre;
+  pointer-events: none;
+}
+
+/* The plot is the scrubber: hover or drag across it, or focus it and use the arrow keys. Vertical swipes still scroll the page. */
+.plot {
+  position: relative;
+  min-width: 0;
+  border-radius: calc(var(--arc-radius-control) / 2);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.plot[data-interactive] {
+  touch-action: pan-y;
+  cursor: default;
+  user-select: none;
+}
+.plot:focus-visible {
+  --focus-outline-offset: 8px;
+}
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.baseline {
+  stroke: var(--arc-border);
+  stroke-width: 1;
+}
+/* The area under the line carries a faint wash of the line tone. */
+.area.area {
+  fill: color-mix(in oklab, currentColor 9%, transparent);
+  stroke: none;
+}
+.line,
+.trail {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.line {
+  transition: stroke var(--arc-duration-standard) var(--arc-ease-standard);
+}
+.trail {
+  stroke: var(--arc-border-strong);
+}
+.cursor {
+  stroke: var(--arc-border-strong);
+  stroke-width: 1;
+}
+.end {
+  transition: stroke var(--arc-duration-standard) var(--arc-ease-standard);
+}
+@media (prefers-reduced-motion: reduce) {
+  .line,
+  .end,
+  .caption small {
+    transition: none;
+  }
+}

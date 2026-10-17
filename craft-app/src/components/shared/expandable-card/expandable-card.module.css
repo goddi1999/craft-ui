@@ -1,0 +1,141 @@
+/*
+ * Design tokens this component reads. They follow a shadcn theme when one is
+ * present (--background, --border, …) and fall back to neutral values otherwise.
+ */
+:root {
+  --arc-foreground: var(--foreground, #0a0a0a);
+  --arc-surface: var(--card, #fff);
+  --arc-surface-muted: var(--muted, #f5f5f5);
+  --arc-text-secondary: oklch(46% 0 0);
+  --arc-text-muted: var(--muted-foreground, #737373);
+  --arc-border: var(--border, #e5e5e5);
+  --arc-shadow-resting: 0 1px 2px oklch(0% 0 0 / 0.035);
+  --arc-text-xs: 0.75rem;
+  --arc-text-sm: 0.875rem;
+  --arc-space-4: 1rem;
+  --arc-space-5: 1.25rem;
+  --arc-radius-surface: 2.125rem;
+  --arc-duration-fast: 0.16s;
+  --arc-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:global(.dark) {
+  --arc-text-secondary: oklch(77% 0 0);
+  --arc-shadow-resting: 0 1px 2px oklch(0% 0 0 / 0.18);
+}
+
+/* The track centers the card and measures the room it may grow into. */
+.track {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  justify-content: center;
+}
+.card {
+  width: 100%;
+  max-width: var(--expandable-card-width, 100%);
+  overflow: hidden;
+  border: 1px solid var(--arc-border);
+  border-radius: var(--arc-radius-surface);
+  background: var(--arc-surface);
+  box-shadow: var(--arc-shadow-resting);
+}
+.card[data-expanded='true'] {
+  max-width: var(
+    --expandable-card-expanded-width,
+    var(--expandable-card-width, 100%)
+  );
+}
+/* Once measured, the width is animated in px, so the CSS cap steps aside and never clamps the morph. */
+.card[data-measured] {
+  max-width: 100%;
+}
+/* The card clips the header to its corners, so the header's hover fill never changes shape while the card opens or closes. */
+.trigger {
+  display: flex;
+  width: 100%;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--arc-space-5);
+  border: 0;
+  padding: var(--arc-space-4) var(--arc-space-5);
+  background: transparent;
+  color: var(--arc-foreground);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--arc-duration-fast) var(--arc-ease-standard);
+}
+@media (hover: hover) and (pointer: fine) {
+  .trigger:hover {
+    background: var(--arc-surface-muted);
+  }
+  .trigger:hover .arrow {
+    color: var(--arc-foreground);
+  }
+}
+.trigger:active {
+  background: var(--arc-surface-muted);
+}
+.copy {
+  min-width: 0;
+}
+.copy strong {
+  display: block;
+  font-size: var(--arc-text-sm);
+  font-weight: 500;
+}
+.description {
+  display: block;
+  margin-top: 4px;
+  color: var(--arc-text-muted);
+  font-size: var(--arc-text-xs);
+  font-variant-numeric: tabular-nums;
+}
+.roll {
+  position: relative;
+  display: block;
+}
+.word {
+  display: inline-block;
+  white-space: pre;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.arrow {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: var(--arc-text-muted);
+  transition: color var(--arc-duration-fast) var(--arc-ease-standard);
+}
+.card[data-expanded='true'] .arrow {
+  color: var(--arc-foreground);
+}
+/* The divider is an inset line rather than a border, so a collapsed panel is truly zero height and nothing pops at the end of the close. */
+.panel {
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 var(--arc-border);
+  background: var(--arc-surface-muted);
+  color: var(--arc-text-secondary);
+  font-size: var(--arc-text-sm);
+}
+.panelInner {
+  max-width: none;
+  padding: var(--arc-space-4) var(--arc-space-5) var(--arc-space-5);
+}
+@media (prefers-reduced-motion: reduce) {
+  .trigger,
+  .arrow {
+    transition: none;
+  }
+}

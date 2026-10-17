@@ -1,0 +1,321 @@
+/*
+ * Design tokens this component reads. They follow a shadcn theme when one is
+ * present (--background, --border, …) and fall back to neutral values otherwise.
+ */
+:root {
+  --arc-foreground: var(--foreground, #0a0a0a);
+  --arc-surface: var(--card, #fff);
+  --arc-surface-raised: var(--popover, #fff);
+  --arc-text-secondary: oklch(46% 0 0);
+  --arc-text-muted: var(--muted-foreground, #737373);
+  --arc-border: var(--border, #e5e5e5);
+  --arc-border-subtle: oklch(96.5% 0 0);
+  --arc-series-1: oklch(58% 0.15 250);
+  --arc-shadow-floating: 0 20px 48px oklch(0% 0 0 / 0.105), 0 3px 10px oklch(0% 0 0 / 0.045);
+  --arc-font-body: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+  --arc-leading-body: 1.4;
+  --arc-tracking-body: -0.01em;
+  --arc-text-xs: 0.75rem;
+  --arc-text-sm: 0.875rem;
+  --arc-space-3: 0.75rem;
+  --arc-duration-instant: 0.12s;
+  --arc-duration-fast: 0.16s;
+  --arc-duration-standard: 0.24s;
+  --arc-duration-considered: 0.48s;
+  --arc-duration-spring: 0.58s;
+  --arc-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --arc-ease-spring: linear(0, 0.0258, 0.09, 0.1763, 0.2732, 0.3724, 0.4683, 0.5573, 0.6376, 0.7082, 0.7689, 0.8202, 0.8628, 0.8976, 0.9256, 0.9476, 0.9648, 0.9778, 0.9875, 0.9945, 0.9994, 1.0026, 1.0047, 1.0058, 1.0062, 1.0062, 1.0059, 1.0055, 1.0049, 1.0043, 1.0036, 1.0031, 1.0025, 1.002, 1.0016, 1.0013, 1);
+}
+
+:global(.dark) {
+  --arc-text-secondary: oklch(77% 0 0);
+  --arc-border-subtle: oklch(25% 0 0);
+  --arc-series-1: oklch(73% 0.15 250);
+  --arc-shadow-floating: 0 22px 55px oklch(0% 0 0 / 0.34);
+}
+
+.figure {
+  display: grid;
+  min-width: 0;
+  margin: 0;
+  color: var(--arc-foreground);
+  font-family: var(--arc-font-body);
+  letter-spacing: var(--arc-tracking-body);
+}
+
+/* Series colors (--arc-series-1 to --series-4) come from registry/foundation.css. */
+
+.plot {
+  position: relative;
+  min-width: 0;
+  outline: none;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: crosshair;
+}
+.svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: visible;
+}
+
+/* Ridges are opaque, so each one hides the valleys of the row behind it. */
+.ridge {
+  transition: opacity var(--arc-duration-standard) var(--arc-ease-standard);
+}
+.fill {
+  fill: color-mix(in oklab, var(--ridge) 34%, var(--arc-surface));
+  stroke: none;
+  transition: fill var(--arc-duration-considered) var(--arc-ease-standard);
+}
+.line {
+  fill: none;
+  stroke: var(--ridge);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transition: stroke var(--arc-duration-considered) var(--arc-ease-standard);
+}
+.median {
+  stroke: color-mix(in oklab, var(--ridge) 55%, var(--arc-surface));
+  stroke-width: 1;
+  transition: stroke var(--arc-duration-considered) var(--arc-ease-standard);
+}
+.plot[data-active] .ridge[data-dim] {
+  opacity: 0.38;
+}
+.ridge[data-lifted] {
+  opacity: 0;
+  transition-duration: var(--arc-duration-instant);
+}
+
+/* The lifted ridge is a copy drawn above the rest, so it can rise over its neighbours. */
+.lens {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0);
+  transition:
+    opacity var(--arc-duration-fast) var(--arc-ease-standard),
+    transform var(--arc-duration-spring) var(--arc-ease-spring);
+}
+.lens[data-on] {
+  opacity: 1;
+  transform: translateY(-6px);
+}
+.lensFill {
+  fill: color-mix(in oklab, var(--ridge) 18%, var(--arc-surface));
+  stroke: none;
+}
+.lensBand {
+  fill: color-mix(in oklab, var(--ridge) 48%, var(--arc-surface));
+  stroke: none;
+}
+.lensMedian {
+  stroke: var(--arc-foreground);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.lensLine {
+  fill: none;
+  stroke: var(--ridge);
+  stroke-width: 2.25;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.ticks {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  pointer-events: none;
+}
+.tick {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: var(--arc-border-subtle);
+  will-change: transform;
+  animation: tickIn var(--arc-duration-standard) var(--arc-ease-standard);
+}
+.tickLabel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  color: var(--arc-text-muted);
+  font-size: var(--arc-text-xs);
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  translate: -50% 0;
+}
+@keyframes tickIn {
+  from {
+    opacity: 0;
+  }
+}
+
+.crosshair {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  background: var(--arc-foreground);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--arc-duration-instant) var(--arc-ease-standard);
+}
+.plot[data-cursor] .crosshair {
+  opacity: 0.35;
+}
+
+.labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.rowLabel {
+  position: absolute;
+  left: 0;
+  overflow: hidden;
+  color: var(--arc-text-secondary);
+  font-size: var(--arc-text-xs);
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--arc-duration-fast) var(--arc-ease-standard);
+}
+.rowLabel[data-active] {
+  color: var(--arc-foreground);
+  font-weight: 500;
+}
+
+.message {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  color: var(--arc-text-muted);
+  font-size: var(--arc-text-sm);
+  pointer-events: none;
+}
+
+.tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: grid;
+  min-width: 170px;
+  max-width: min(240px, 100%);
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--arc-border);
+  border-radius: 14px;
+  background: var(--arc-surface-raised);
+  box-shadow: var(--arc-shadow-floating);
+  opacity: 0;
+  pointer-events: none;
+  scale: 0.96;
+  transition:
+    opacity var(--arc-duration-fast) var(--arc-ease-standard),
+    scale var(--arc-duration-fast) var(--arc-ease-standard);
+}
+.plot[data-active] .tooltip {
+  opacity: 1;
+  scale: 1;
+}
+.tipTitle {
+  margin: 0 0 2px;
+  color: var(--arc-text-secondary);
+  font-size: var(--arc-text-xs);
+  line-height: var(--arc-leading-body);
+}
+.tipValue,
+.tipRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.tipValue {
+  color: var(--arc-foreground);
+  font-size: var(--arc-text-sm);
+  font-weight: 500;
+  line-height: 1.4;
+}
+.tipRow {
+  color: var(--arc-foreground);
+  font-size: var(--arc-text-xs);
+  line-height: var(--arc-leading-body);
+}
+.tipKey {
+  color: var(--arc-text-muted);
+  font-weight: 400;
+}
+.tipValue .tipKey {
+  font-size: var(--arc-text-xs);
+}
+.tipNote {
+  margin: 4px 0 0;
+  color: var(--arc-text-muted);
+  font-size: var(--arc-text-xs);
+  line-height: var(--arc-leading-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.scale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: var(--arc-space-3);
+  color: var(--arc-text-muted);
+  font-size: var(--arc-text-xs);
+  line-height: var(--arc-leading-body);
+  font-variant-numeric: tabular-nums;
+}
+.scaleLabel {
+  margin-right: 4px;
+  color: var(--arc-text-secondary);
+}
+.steps {
+  display: inline-flex;
+  gap: 2px;
+}
+.step {
+  width: 18px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--ridge);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ridge,
+  .lens,
+  .crosshair,
+  .tooltip,
+  .rowLabel {
+    transition: none;
+  }
+  .tick {
+    animation: none;
+  }
+}

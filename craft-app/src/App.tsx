@@ -2,50 +2,8 @@ import { ThemeProvider } from 'next-themes'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import { DemoLayout } from '@/components/layout'
-import {
-  AgentComputerIconPage,
-  AnimatedBeamPage,
-  BounceSidebarPage,
-  CalendarWidgetPage,
-  CardSwipePage,
-  Carousel3DPage,
-  CarouselSliderPage,
-  CodeBlockPage,
-  CurvedScrollbarPage,
-  EmojiSpreeChipsPage,
-  FlickeringGridPage,
-  FundWidgetPage,
-  FuseButtonPage,
-  GithubCalendarPage,
-  HeartPage,
-  HyperspeedPage,
-  SparkleButtonPage,
-  FauxPipVideoPage,
-  LinePathAnimationPage,
-  MacOSSidebarPage,
-  MultiplayerMaskPage,
-  NumberAnimationPage,
-  OptionWheelPage,
-  PinItemPage,
-  ProductSpotlightPage,
-  ProgressiveBlurPage,
-  ProximitySidebarPage,
-  PulseHeartPage,
-  ScrollDrivenIndexPage,
-  ScrollProgressPage,
-  ScrollToTypePage,
-  StyleableSelectPage,
-  SwitchModePage,
-  TextRevealPage,
-  TheCraftOfUiPlaybookCssScrollAnimationWSubgridPage,
-  TreeMenuPage,
-  VoiceNotePage,
-  YearInDotsPage,
-  YouCanScrollPage,
-  YoutubeEmbedPage,
-} from '@/components/shared'
+import { GALLERY_EXAMPLES, examplePath } from '@/features/gallery'
 import { HomePage } from '@/pages/HomePage'
-import { TreeSearchPage } from '@/pages/TreeSearchPage'
 
 export function App() {
   return (
@@ -54,128 +12,9 @@ export function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route element={<DemoLayout />}>
-            <Route
-              path="/examples/scroll-driven-index"
-              element={<ScrollDrivenIndexPage />}
-            />
-            <Route
-              path="/examples/faux-pip-video"
-              element={<FauxPipVideoPage />}
-            />
-            <Route
-              path="/examples/the-craft-of-ui-playbook-css-scroll-animation-w-subgrid"
-              element={<TheCraftOfUiPlaybookCssScrollAnimationWSubgridPage />}
-            />
-            <Route
-              path="/examples/you-can-select-things-styleable-select"
-              element={<StyleableSelectPage />}
-            />
-            <Route
-              path="/examples/you-can-scroll"
-              element={<YouCanScrollPage />}
-            />
-            <Route
-              path="/examples/line-path-animation"
-              element={<LinePathAnimationPage />}
-            />
-            <Route
-              path="/examples/curved-scrollbar"
-              element={<CurvedScrollbarPage />}
-            />
-            <Route
-              path="/examples/agent-computer-icon"
-              element={<AgentComputerIconPage />}
-            />
-            <Route path="/examples/heart" element={<HeartPage />} />
-            <Route path="/examples/pulse-heart" element={<PulseHeartPage />} />
-            <Route
-              path="/examples/sparkle-button"
-              element={<SparkleButtonPage />}
-            />
-            <Route path="/examples/fuse-button" element={<FuseButtonPage />} />
-            <Route
-              path="/examples/multiplayer-masking-with-grid-mask"
-              element={<MultiplayerMaskPage />}
-            />
-            <Route
-              path="/examples/product-spotlight-cards"
-              element={<ProductSpotlightPage />}
-            />
-            <Route
-              path="/examples/pure-css-3d-animated-carousel"
-              element={<Carousel3DPage />}
-            />
-            <Route
-              path="/examples/scroll-driven-progressive-blur-w-contrast"
-              element={<ProgressiveBlurPage />}
-            />
-            <Route
-              path="/examples/css-number-animation"
-              element={<NumberAnimationPage />}
-            />
-            <Route
-              path="/examples/css-responsive-scroll-driven-text-reveals"
-              element={<TextRevealPage />}
-            />
-            <Route
-              path="/examples/css-scroll-to-type"
-              element={<ScrollToTypePage />}
-            />
-            <Route
-              path="/examples/carousel-slider"
-              element={<CarouselSliderPage />}
-            />
-            <Route path="/examples/option-wheel" element={<OptionWheelPage />} />
-            <Route path="/examples/year-in-dots" element={<YearInDotsPage />} />
-            <Route
-              path="/examples/youtube-embed"
-              element={<YoutubeEmbedPage />}
-            />
-            <Route
-              path="/examples/animated-beam"
-              element={<AnimatedBeamPage />}
-            />
-            <Route
-              path="/examples/bounce-sidebar"
-              element={<BounceSidebarPage />}
-            />
-            <Route path="/examples/code-block" element={<CodeBlockPage />} />
-            <Route
-              path="/examples/flickering-grid"
-              element={<FlickeringGridPage />}
-            />
-            <Route path="/examples/hyperspeed" element={<HyperspeedPage />} />
-            <Route
-              path="/examples/github-calendar"
-              element={<GithubCalendarPage />}
-            />
-            <Route
-              path="/examples/proximity-sidebar"
-              element={<ProximitySidebarPage />}
-            />
-            <Route
-              path="/examples/scroll-progress"
-              element={<ScrollProgressPage />}
-            />
-            <Route
-              path="/examples/calendar-widget"
-              element={<CalendarWidgetPage />}
-            />
-            <Route path="/examples/card-swipe" element={<CardSwipePage />} />
-            <Route
-              path="/examples/emoji-spree-chips"
-              element={<EmojiSpreeChipsPage />}
-            />
-            <Route path="/examples/fund-widget" element={<FundWidgetPage />} />
-            <Route
-              path="/examples/macos-sidebar"
-              element={<MacOSSidebarPage />}
-            />
-            <Route path="/examples/pin-item" element={<PinItemPage />} />
-            <Route path="/examples/switch-mode" element={<SwitchModePage />} />
-            <Route path="/examples/tree-menu" element={<TreeMenuPage />} />
-            <Route path="/examples/tree-search" element={<TreeSearchPage />} />
-            <Route path="/examples/voice-note" element={<VoiceNotePage />} />
+            {GALLERY_EXAMPLES.map(({ slug, page: Page }) => (
+              <Route key={slug} path={examplePath(slug)} element={<Page />} />
+            ))}
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
