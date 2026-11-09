@@ -1,10 +1,9 @@
 import { useState } from 'react'
 
+import { AnimatedCounter } from '@/components/ui/animated-counter'
 import { Button } from '@/components/ui/button'
 
 import { DemoPage } from '../demo-page'
-
-import { AnimatedCounter } from './AnimatedCounter'
 
 const INITIAL_AMOUNT = 128_450
 const DONATION = 2_500
@@ -14,7 +13,7 @@ export function AnimatedCounterPage() {
 
   return (
     <DemoPage
-      eyebrow="shared / animated-counter"
+      eyebrow="ui / animated-counter"
       title="Animated counter"
       description="A number that springs to each new value, counting up when it scrolls into view."
     >

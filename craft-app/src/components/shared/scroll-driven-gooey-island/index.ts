@@ -1,0 +1,1 @@
+export { ScrollDrivenGooeyIslandPage } from './page'

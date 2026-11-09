@@ -86,21 +86,11 @@ export type {
   LinePathAnimationProps,
   LinePathAnimationTheme,
 } from './line-path-animation'
-export { AgentComputerIcon, AgentComputerIconPage } from './ai-agent'
-export type {
-  AgentComputerIconAnimation,
-  AgentComputerIconState,
-  AgentComputerIconVariant,
-} from './ai-agent'
+export { AgentComputerIconPage } from './ai-agent'
 export { HeartPage } from './heart'
 export { PulseHeartPage } from './pulse-heart'
 export { FuseButtonPage } from './fuse-button'
-export { SparkleButton, SparkleButtonPage, sparkleButtonVariants } from './sparkle-button'
-export type {
-  SparkleButtonHue,
-  SparkleButtonProps,
-  SparkleButtonSize,
-} from './sparkle-button'
+export { SparkleButtonPage } from './sparkle-button'
 export {
   MultiplayerMask,
   MultiplayerMaskItem,
@@ -354,8 +344,7 @@ export { Sparkline, SparklinePage } from './sparkline'
 export type { SparklineProps } from './sparkline'
 export { Gauge, GaugePage } from './gauge'
 export type { GaugeProps, GaugeThreshold } from './gauge'
-export { AnimatedCounter, AnimatedCounterPage } from './animated-counter'
-export type { AnimatedCounterProps } from './animated-counter'
+export { AnimatedCounterPage } from './animated-counter'
 export { Ridgeline, RidgelinePage } from './ridgeline'
 export type { RidgelineProps, RidgelineSeries } from './ridgeline'
 export { GradualBlur, GradualBlurPage } from './gradual-blur'
@@ -388,3 +377,11 @@ export type {
 } from './folder-float'
 export { CometDial, CometDialPage } from './comet-dial'
 export type { CometDialChangeDetail, CometDialProps } from './comet-dial'
+export { CuisineSelectorPage } from './cuisine-selector'
+export { CanvasSnowBannerPage } from './canvas-snow-banner'
+export { CanvasPointerLinesPage } from './canvas-pointer-lines'
+export { GsapInfiniteLoopPage } from './gsap-infinite-loop'
+export { PixelTransitionPage } from './pixel-transition'
+export { SvgFilterScrollerPage } from './svg-filter-scroller'
+export { ScrollDrivenGooeyIslandPage } from './scroll-driven-gooey-island'
+export { CssSpriteScrubbingPage } from './css-sprite-scrubbing'

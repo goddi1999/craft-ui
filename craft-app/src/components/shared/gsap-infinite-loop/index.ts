@@ -1,0 +1,1 @@
+export { GsapInfiniteLoopPage } from './page'

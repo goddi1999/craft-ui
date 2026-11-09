@@ -1,12 +1,12 @@
 import { useState } from 'react'
 
-import { Button } from '@/components/ui/button'
 import {
   AgentComputerIcon,
   type AgentComputerIconAnimation,
   type AgentComputerIconState,
   type AgentComputerIconVariant,
-} from './AgentComputerIcon'
+} from '@/components/ui/agent-computer-icon'
+import { Button } from '@/components/ui/button'
 
 const STATES: { state: AgentComputerIconState; label: string; hint: string }[] =
   [
@@ -74,7 +74,7 @@ export function AgentComputerIconPage() {
       <div className="mx-auto flex max-w-4xl flex-col gap-12">
         <header className="text-center">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            shared / ai-agent
+            ui / agent-computer-icon
           </p>
           <h1 className="mt-3 text-4xl font-medium tracking-tight text-foreground">
             Agent computer icon

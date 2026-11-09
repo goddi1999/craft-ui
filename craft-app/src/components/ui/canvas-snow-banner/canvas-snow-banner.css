@@ -1,0 +1,15 @@
+[data-slot='canvas-snow-banner'] {
+  --banner-height: 120;
+  position: relative;
+  height: calc(var(--banner-height) * 1px);
+  width: 100%;
+  overflow: hidden;
+}
+
+[data-slot='canvas-snow-banner'] canvas {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: transparent;
+  mask: linear-gradient(#fff 65%, #0000);
+}

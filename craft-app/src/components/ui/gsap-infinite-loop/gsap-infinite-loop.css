@@ -1,0 +1,109 @@
+[data-slot='gsap-infinite-loop'] {
+  --font-level: 8;
+  --font-size-min: 16;
+  --font-size-max: 20;
+  --font-ratio-min: 1.2;
+  --font-ratio-max: 1.33;
+  --font-width-min: 375;
+  --font-width-max: 1500;
+  --fluid-min: calc(
+    var(--font-size-min) * pow(var(--font-ratio-min), var(--font-level, 0))
+  );
+  --fluid-max: calc(
+    var(--font-size-max) * pow(var(--font-ratio-max), var(--font-level, 0))
+  );
+  --fluid-preferred: calc(
+    (var(--fluid-max) - var(--fluid-min)) /
+      (var(--font-width-max) - var(--font-width-min))
+  );
+  --fluid-type: clamp(
+    (var(--fluid-min) / 16) * 1rem,
+    ((var(--fluid-min) / 16) * 1rem) -
+      (((var(--fluid-preferred) * var(--font-width-min)) / 16) * 1rem) +
+      (var(--fluid-preferred) * 100vi),
+    (var(--fluid-max) / 16) * 1rem
+  );
+  font-size: var(--fluid-type);
+  height: 3lh;
+  display: flex;
+  place-items: center;
+  mask: linear-gradient(
+    #0000 0.25lh,
+    #fff calc(50% - 0.5lh) calc(50% + 0.5lh),
+    #0000 calc(100% - 0.25lh)
+  );
+  color: color-mix(in lch, canvasText, canvas 15%);
+  text-align: center;
+  position: relative;
+}
+
+[data-slot='gsap-infinite-loop'] [data-slot='gsap-infinite-loop-list'] {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  text-transform: uppercase;
+  line-height: 1;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  height: 1lh;
+  display: inline-grid;
+  flex-direction: column;
+  position: relative;
+  padding-inline: 0.25em;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+[data-slot='gsap-infinite-loop'] [data-slot='gsap-infinite-loop-indicator'] {
+  --c: 0.175em;
+  --h: 320;
+  --width: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 1lh;
+  translate: -50% -50%;
+  border: 0.05em solid oklch(0.75 1 var(--h, 320));
+  transition:
+    width 0.25s,
+    border-color 0.25s;
+  width: calc((var(--width) * 1px) + var(--c));
+  clip-path: polygon(
+    0 0,
+    var(--c) 0,
+    var(--c) var(--c),
+    0 var(--c),
+    0 100%,
+    0 calc(100% - var(--c)),
+    var(--c) calc(100% - var(--c)),
+    var(--c) 100%,
+    0 100%,
+    calc(100% - var(--c)) 100%,
+    calc(100% - var(--c)) calc(100% - var(--c)),
+    100% calc(100% - var(--c)),
+    100% 100%,
+    100% var(--c),
+    calc(100% - var(--c)) var(--c),
+    calc(100% - var(--c)) 0,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+  pointer-events: none;
+}
+
+[data-slot='gsap-infinite-loop'] [data-slot='gsap-infinite-loop-item'] {
+  display: inline-block;
+  width: fit-content;
+  height: 1lh;
+  grid-area: 1 / 1;
+  line-height: 1.2;
+}
+
+[data-slot='gsap-infinite-loop']
+  [data-slot='gsap-infinite-loop-item'][data-emoji='true'] {
+  width: 1.5em;
+  text-transform: none;
+}

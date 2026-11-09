@@ -1,0 +1,1 @@
+export { CanvasSnowBannerPage } from './page'

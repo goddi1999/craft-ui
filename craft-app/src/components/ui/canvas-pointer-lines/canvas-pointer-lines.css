@@ -1,0 +1,41 @@
+[data-slot='canvas-pointer-lines'] {
+  --mx: 0;
+  --my: 0;
+  --intensity: 0.1;
+  --mask-size: 100;
+  --mask-s1: 100;
+  --mask-s2: 100;
+  --mask-angle: 0;
+  position: relative;
+  display: inline-block;
+  color: canvasText;
+}
+
+[data-slot='canvas-pointer-lines'] [data-slot='canvas-pointer-lines-frame'] {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+[data-slot='canvas-pointer-lines'][data-spotlight='true']
+  [data-slot='canvas-pointer-lines-frame'] {
+  --size: calc(var(--mask-size, 100) * 1px);
+  mask: radial-gradient(
+    var(--size) var(--size) at calc(var(--mx, 0) * 1px)
+      calc(var(--my, 0) * 1px),
+    hsl(0 0% 100%),
+    hsl(0 0% 100% / var(--intensity, 0.2)) 80%
+  );
+}
+
+[data-slot='canvas-pointer-lines'] canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  mask: linear-gradient(
+    calc(var(--mask-angle, 90) * 1deg),
+    #fff calc(var(--mask-s1) * 1%),
+    #0000 calc(var(--mask-s2) * 1%)
+  );
+}

@@ -7,7 +7,7 @@ import {
   useReducedMotion,
   type Variants,
 } from 'motion/react'
-import { AnimatedCounter } from '../animated-counter'
+import { AnimatedCounter } from '@/components/ui/animated-counter'
 import styles from './metric-card.module.css'
 
 /** Durations, easings, and springs this component animates with. */

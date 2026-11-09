@@ -1,0 +1,1 @@
+export { CuisineSelectorPage } from './page'

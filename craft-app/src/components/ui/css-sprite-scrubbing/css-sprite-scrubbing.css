@@ -1,0 +1,198 @@
+@layer css-sprite-scrubbing {
+  [data-slot='css-sprite-scrubbing'] {
+    --css-scrub-height: 300;
+    --css-scrub-transition: 0;
+    --css-scrub-frames: 64;
+    --css-scrubbed: 0;
+    --css-stepped: 0;
+
+    position: relative;
+    width: 100%;
+    color: canvasText;
+    background: canvas;
+    font-family:
+      'SF Pro Text', 'SF Pro Icons', 'AOS Icons', 'Helvetica Neue', Helvetica,
+      Arial, sans-serif, system-ui;
+  }
+
+  [data-slot='css-sprite-scrubbing'] * {
+    box-sizing: border-box;
+  }
+
+  [data-slot='css-sprite-scrubbing']::before {
+    --size: 45px;
+    --line: color-mix(in lch, canvasText, transparent 70%);
+    content: '';
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 50%
+        50% / var(--size) var(--size),
+      linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% /
+        var(--size) var(--size);
+    mask: linear-gradient(-20deg, transparent 50%, white);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @property --css-scrubbed {
+    initial-value: 0;
+    syntax: '<number>';
+    inherits: true;
+  }
+
+  @property --css-stepped {
+    initial-value: 0;
+    syntax: '<integer>';
+    inherits: true;
+  }
+
+  [data-slot='css-sprite-scrubbing'] .css-scrub__header {
+    view-timeline-name: --css-scrub-header;
+    view-timeline-axis: block;
+    height: calc(var(--css-scrub-height) * 1vh);
+    position: relative;
+    z-index: 4;
+  }
+
+  [data-slot='css-sprite-scrubbing']
+    :is(.css-scrub__title, .css-scrub__subtitle, .css-scrub__timeline) {
+    transition: scale 0.25s;
+  }
+
+  [data-slot='css-sprite-scrubbing'][data-steps='true'] .css-scrub__track {
+    translate: 0 calc(var(--css-stepped) * -100%);
+  }
+
+  [data-slot='css-sprite-scrubbing'] .css-scrub__timeline {
+    --css-scrubbed: 0;
+    animation: css-scrub-pan both linear;
+    overflow: hidden;
+    animation-timeline: --css-scrub-header;
+    animation-range: entry 100% entry 250%;
+    position: sticky;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  [data-slot='css-sprite-scrubbing'] .css-scrub__track {
+    transition:
+      --css-scrubbed calc(var(--css-scrub-transition) * 1s),
+      --css-stepped calc(var(--css-scrub-transition) * 1s);
+    translate: 0 calc(var(--css-scrubbed) * -100%);
+    height: 100vh;
+    width: 100%;
+    display: grid;
+    grid-auto-rows: 100vh;
+  }
+
+  [data-slot='css-sprite-scrubbing'][data-play='true'] .css-scrub__timeline {
+    animation: none;
+  }
+
+  [data-slot='css-sprite-scrubbing'][data-play='true'] .css-scrub__track {
+    --css-scrubbed: 0;
+    --css-stepped: 0;
+    /* Step count / duration applied inline from frameCount props */
+    animation-name: css-scrub-translate;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+  }
+
+  @keyframes css-scrub-translate {
+    to {
+      translate: 0 calc((var(--css-scrub-frames) - 1) * -100%);
+    }
+  }
+
+  @keyframes css-scrub-pan {
+    to {
+      --css-scrubbed: calc(var(--css-scrub-frames) - 1);
+      --css-stepped: calc(var(--css-scrub-frames) - 1);
+    }
+  }
+
+  [data-slot='css-sprite-scrubbing'] .css-scrub__title,
+  [data-slot='css-sprite-scrubbing'] .css-scrub__subtitle {
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    position: sticky;
+    top: 0;
+  }
+
+  [data-slot='css-sprite-scrubbing'] .css-scrub__heading {
+    margin: 0;
+    line-height: 1;
+    position: relative;
+    z-index: 6;
+    white-space: nowrap;
+    word-spacing: -0.5ch;
+    font-size: clamp(2.5rem, 8vw + 1rem, 7rem);
+    font-weight: 700;
+    animation: css-scrub-scale both linear;
+    animation-timeline: --css-scrub-header;
+    animation-range: entry 100% entry 200%;
+  }
+
+  [data-slot='css-sprite-scrubbing'] .css-scrub__eyebrow {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    display: inline-block;
+    translate: -50% 50%;
+    font-size: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: hsl(6 100% 50%);
+  }
+
+  @keyframes css-scrub-scale {
+    75% {
+      opacity: 1;
+    }
+    to {
+      pointer-events: none;
+      scale: 1.25;
+      opacity: 0;
+    }
+  }
+
+  [data-slot='css-sprite-scrubbing'] .css-scrub__subheading {
+    margin: 0;
+    line-height: 1;
+    display: grid;
+    width: 100%;
+    text-align: center;
+    font-size: clamp(1.5rem, 4vw + 0.5rem, 3.5rem);
+    font-weight: 600;
+    animation: css-scrub-reveal both linear;
+    animation-timeline: --css-scrub-header;
+    animation-range: entry 225% entry 250%;
+  }
+
+  @keyframes css-scrub-reveal {
+    0% {
+      opacity: 0;
+    }
+  }
+
+  [data-slot='css-sprite-scrubbing'] .css-scrub__track img {
+    width: 100%;
+    height: 100svh;
+    object-fit: cover;
+    object-position: center calc(-17.5vh + 50%);
+  }
+
+  [data-slot='css-sprite-scrubbing'] .css-scrub__body {
+    position: relative;
+    z-index: 1;
+    min-height: 40vh;
+  }
+}

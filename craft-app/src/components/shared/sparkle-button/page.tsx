@@ -1,9 +1,11 @@
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
-
-import { SparkleButton } from './SparkleButton'
-import type { SparkleButtonHue, SparkleButtonSize } from './sparkle-button.types'
+import {
+  SparkleButton,
+  type SparkleButtonHue,
+  type SparkleButtonSize,
+} from '@/components/ui/sparkle-button'
 
 const HUES: SparkleButtonHue[] = [
   'violet',
@@ -42,7 +44,7 @@ export function SparkleButtonPage() {
       <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col gap-12 px-4 py-16">
         <header className="text-center">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/50">
-            shared / sparkle-button
+            ui / sparkle-button
           </p>
           <h1 className="mt-3 text-4xl font-medium tracking-tight text-white">
             Sparkle button

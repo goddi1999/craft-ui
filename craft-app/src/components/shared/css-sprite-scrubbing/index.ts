@@ -1,0 +1,1 @@
+export { CssSpriteScrubbingPage } from './page'
