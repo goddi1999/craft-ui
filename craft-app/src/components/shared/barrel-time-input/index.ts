@@ -1,0 +1,1 @@
+export { BarrelTimeInputPage } from './page'

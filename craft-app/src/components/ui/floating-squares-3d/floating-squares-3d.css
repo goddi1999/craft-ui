@@ -1,0 +1,67 @@
+@layer floating-squares-3d {
+  [data-slot='floating-squares-3d'] {
+    --floating-squares-size: 40px;
+    --floating-squares-rotate: 40deg;
+    --floating-squares-perspective: 80cqi;
+    container-type: inline-size;
+    width: 100%;
+    /* The near edge swings toward the viewer and magnifies — keep it in the box. */
+    overflow: clip;
+    pointer-events: none;
+  }
+
+  [data-slot='floating-squares-3d'] [data-floating-squares-stage] {
+    transform-style: preserve-3d;
+    perspective: var(--floating-squares-perspective);
+  }
+
+  [data-slot='floating-squares-3d'] [data-floating-squares-plane] {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    transform-origin: 100% 50%;
+    rotate: y var(--floating-squares-rotate);
+    container-type: inline-size;
+    mask: linear-gradient(
+      90deg,
+      #0000 0 var(--floating-squares-size),
+      #fff,
+      #0000 calc(100% - var(--floating-squares-size)) 100%
+    );
+  }
+
+  [data-slot='floating-squares-3d'][data-guides] [data-floating-squares-plane] {
+    outline: 2px dashed oklch(0.63 0.24 27);
+    outline-offset: -2px;
+  }
+
+  [data-slot='floating-squares-3d'] [data-floating-squares-plane] > span {
+    position: absolute;
+    top: calc(var(--y) * 1%);
+    left: 0;
+    width: var(--floating-squares-size);
+    aspect-ratio: 1;
+    background: hsl(var(--hue) 90% 60%);
+    animation-name: floating-squares-3d-travel;
+    animation-timing-function: ease;
+    animation-iteration-count: infinite;
+    animation-delay: calc(var(--d) * -1s);
+    animation-duration: calc(var(--a) * 1s);
+    will-change: translate;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='floating-squares-3d'] [data-floating-squares-plane] > span {
+      animation-play-state: paused;
+    }
+  }
+
+  @keyframes floating-squares-3d-travel {
+    0% {
+      translate: 100cqi 0;
+    }
+    100% {
+      translate: -100% 0;
+    }
+  }
+}

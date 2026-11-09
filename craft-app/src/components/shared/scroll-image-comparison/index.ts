@@ -1,0 +1,1 @@
+export { ScrollImageComparisonPage } from './page'

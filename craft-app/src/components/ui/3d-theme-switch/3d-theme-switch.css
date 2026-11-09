@@ -1,0 +1,266 @@
+@layer theme-switch-3d {
+  /* The root is the sky that shows behind the face while it turns. */
+  [data-slot='3d-theme-switch'] {
+    --theme-switch-3d-sky-duration: 1.2s;
+    --theme-switch-3d-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --theme-switch-3d-day: #34d0ff;
+    --theme-switch-3d-night: #01022e;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    border-radius: 1.5rem;
+    background-color: var(--theme-switch-3d-night);
+    transition: background-color calc(var(--theme-switch-3d-sky-duration) * 0.25)
+      calc(var(--theme-switch-3d-sky-duration) * 0.5) ease-out;
+  }
+
+  [data-slot='3d-theme-switch']::before,
+  [data-slot='3d-theme-switch']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background-size: cover;
+    background-position: 50% 50%;
+    transition:
+      opacity calc(var(--theme-switch-3d-sky-duration) * 0.25)
+        calc(var(--theme-switch-3d-sky-duration) * 0.5) ease-out,
+      background-position var(--theme-switch-3d-sky-duration) ease-out;
+  }
+
+  /* ::before === clouds, ::after === stars */
+  [data-slot='3d-theme-switch']::before {
+    background-image: url(https://assets.codepen.io/605876/clouds.svg);
+  }
+
+  [data-slot='3d-theme-switch']::after {
+    background-image: url(https://assets.codepen.io/605876/stars.svg);
+  }
+
+  /* Night sky: stars out, clouds faint and drifted. */
+  [data-slot='3d-theme-switch']:is(
+      [data-state='checked'][data-invert='false'],
+      [data-state='unchecked'][data-invert='true']
+    ) {
+    background-color: var(--theme-switch-3d-night);
+  }
+
+  [data-slot='3d-theme-switch']:is(
+      [data-state='checked'][data-invert='false'],
+      [data-state='unchecked'][data-invert='true']
+    )::before {
+    opacity: 0.1;
+    background-position: 0% 50%;
+  }
+
+  [data-slot='3d-theme-switch']:is(
+      [data-state='checked'][data-invert='false'],
+      [data-state='unchecked'][data-invert='true']
+    )::after {
+    opacity: 1;
+  }
+
+  /* Day sky: clouds in, stars gone. */
+  [data-slot='3d-theme-switch']:is(
+      [data-state='unchecked'][data-invert='false'],
+      [data-state='checked'][data-invert='true']
+    ) {
+    background-color: var(--theme-switch-3d-day);
+  }
+
+  [data-slot='3d-theme-switch']:is(
+      [data-state='unchecked'][data-invert='false'],
+      [data-state='checked'][data-invert='true']
+    )::before {
+    opacity: 1;
+  }
+
+  [data-slot='3d-theme-switch']:is(
+      [data-state='unchecked'][data-invert='false'],
+      [data-state='checked'][data-invert='true']
+    )::after {
+    opacity: 0;
+  }
+
+  /* The face: a self-contained light or dark surface. */
+  [data-slot='3d-theme-switch'] [data-theme-switch-face] {
+    position: relative;
+    z-index: 1;
+    min-height: 20rem;
+    padding: 2rem;
+    border-radius: inherit;
+    overflow: hidden;
+    color-scheme: light;
+    background: light-dark(#fff, #000);
+    color: light-dark(#0a0a0a, #fafafa);
+  }
+
+  [data-slot='3d-theme-switch'] [data-theme-switch-face][data-state='checked'] {
+    color-scheme: dark;
+  }
+
+  /* Faded grid from the original pen. */
+  [data-slot='3d-theme-switch'] [data-theme-switch-face]::before {
+    --size: 45px;
+    --line: color-mix(in hsl, canvasText, transparent 80%);
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 50%
+        50% / var(--size) var(--size),
+      linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% /
+        var(--size) var(--size);
+    mask: linear-gradient(-20deg, transparent 50%, white);
+  }
+
+  [data-slot='3d-theme-switch'] [data-theme-switch-control] {
+    position: absolute;
+    z-index: 1;
+    top: 1.25rem;
+    right: 1.25rem;
+    display: flex;
+    align-items: center;
+    width: 3.25rem;
+    height: 1.75rem;
+    padding: 3px;
+    border: 1px solid color-mix(in oklab, currentColor 18%, transparent);
+    border-radius: 999px;
+    background: color-mix(in oklab, currentColor 8%, transparent);
+    color: inherit;
+    cursor: pointer;
+    transition:
+      scale 160ms var(--theme-switch-3d-ease-out),
+      background-color 160ms ease;
+  }
+
+  [data-slot='3d-theme-switch'] [data-theme-switch-control]:active {
+    scale: 0.97;
+  }
+
+  [data-slot='3d-theme-switch'] [data-theme-switch-control]:focus-visible {
+    outline: 2px solid color-mix(in oklab, currentColor 60%, transparent);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    [data-slot='3d-theme-switch'] [data-theme-switch-control]:hover {
+      background: color-mix(in oklab, currentColor 14%, transparent);
+    }
+  }
+
+  [data-slot='3d-theme-switch'] [data-theme-switch-thumb] {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: light-dark(#0a0a0a, #fafafa);
+    color: light-dark(#fafafa, #0a0a0a);
+    transition: translate 200ms var(--theme-switch-3d-ease-out);
+  }
+
+  [data-slot='3d-theme-switch'] [data-theme-switch-control][data-state='checked'] [data-theme-switch-thumb] {
+    translate: 24px 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='3d-theme-switch'],
+    [data-slot='3d-theme-switch']::before,
+    [data-slot='3d-theme-switch']::after,
+    [data-slot='3d-theme-switch'] [data-theme-switch-thumb] {
+      transition-duration: 0s;
+      transition-delay: 0s;
+    }
+  }
+
+  /*
+   * View transition pseudo-elements live on the document root, so they can't
+   * be scoped under the slot. They only match the transition name the
+   * component assigns to its face for the duration of a toggle, and read
+   * their values from custom properties it sets on <html> while turning.
+   */
+  ::view-transition-image-pair(theme-switch-3d) {
+    isolation: auto;
+  }
+
+  ::view-transition-group(theme-switch-3d) {
+    animation-duration: var(--theme-switch-3d-duration, 1.2s);
+  }
+
+  ::view-transition-new(theme-switch-3d),
+  ::view-transition-old(theme-switch-3d) {
+    transform: perspective(var(--theme-switch-3d-perspective)) translate3d(0, 0, 0);
+    animation: theme-switch-3d-travel var(--theme-switch-3d-duration, 1.2s) both;
+    backface-visibility: hidden;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-new(theme-switch-3d) {
+    --rotation-start: 90deg;
+    --rotation-end: 0deg;
+    --depth-start: 1;
+    --depth-end: 0;
+  }
+
+  ::view-transition-old(theme-switch-3d) {
+    --rotation-start: 0deg;
+    --rotation-end: -90deg;
+    --depth-start: 0;
+    --depth-end: 1;
+  }
+
+  @keyframes theme-switch-3d-travel {
+    0% {
+      animation-timing-function: ease-in;
+      transform: perspective(var(--theme-switch-3d-perspective))
+        translate3d(
+          0,
+          0,
+          calc(
+            var(--theme-switch-3d-perspective) * var(--theme-switch-3d-distance) *
+              var(--depth-start)
+          )
+        )
+        rotateY(var(--rotation-start, 0deg))
+        translate3d(0, 0, calc(var(--theme-switch-3d-half) * var(--depth-start)));
+    }
+    25% {
+      animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+      transform: perspective(var(--theme-switch-3d-perspective))
+        translate3d(
+          0,
+          0,
+          calc(var(--theme-switch-3d-perspective) * var(--theme-switch-3d-distance))
+        )
+        rotateY(var(--rotation-start, 0deg))
+        translate3d(0, 0, var(--theme-switch-3d-half));
+    }
+    75% {
+      animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+      transform: perspective(var(--theme-switch-3d-perspective))
+        translate3d(
+          0,
+          0,
+          calc(var(--theme-switch-3d-perspective) * var(--theme-switch-3d-distance))
+        )
+        rotateY(var(--rotation-end, -90deg))
+        translate3d(0, 0, var(--theme-switch-3d-half));
+    }
+    100% {
+      transform: perspective(var(--theme-switch-3d-perspective))
+        translate3d(
+          0,
+          0,
+          calc(
+            var(--theme-switch-3d-perspective) * var(--theme-switch-3d-distance) *
+              var(--depth-end)
+          )
+        )
+        rotateY(var(--rotation-end, 0deg))
+        translate3d(0, 0, calc(var(--theme-switch-3d-half) * var(--depth-end)));
+    }
+  }
+}

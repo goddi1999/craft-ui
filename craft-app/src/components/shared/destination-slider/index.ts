@@ -1,0 +1,1 @@
+export { DestinationSliderPage } from './page'

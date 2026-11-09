@@ -1,0 +1,373 @@
+/*
+ * Sub-layers mirror the original pen's cascade order: later layers win.
+ * Filter URLs are injected per instance through custom properties so several
+ * inputs can live on one page without their SVG filter ids colliding.
+ */
+@layer input-dissolution {
+  @layer demo, debug, motion, explode;
+
+  @layer demo {
+    [data-slot='input-dissolution'] {
+      --peak: 4%;
+      --spread: 200px;
+      --speed: 2;
+      --scrub: 0;
+      --progress: 0;
+      --idis-ink: var(--foreground);
+      --idis-accent: #ff1e1e;
+      /* Light canvas: multiply darkens the noise in; dark canvas: plus-lighter. */
+      --idis-blend: multiply;
+      box-sizing: border-box;
+      color: var(--idis-ink);
+    }
+
+    :where(.dark) [data-slot='input-dissolution'] {
+      --idis-blend: plus-lighter;
+    }
+
+    [data-slot='input-dissolution'] *,
+    [data-slot='input-dissolution'] *::before,
+    [data-slot='input-dissolution'] *::after {
+      box-sizing: border-box;
+    }
+
+    [data-slot='input-dissolution'] .idis__defs {
+      position: absolute;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    [data-slot='input-dissolution'] .idis__stage {
+      position: relative;
+      font-size: 2.25rem;
+      line-height: 1;
+    }
+
+    [data-slot='input-dissolution'] .idis__form {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      column-gap: 0.25rem;
+    }
+
+    [data-slot='input-dissolution'] .idis__field {
+      position: relative;
+    }
+
+    [data-slot='input-dissolution'] .idis__wrap {
+      position: relative;
+      padding: 1rem;
+      overflow: hidden;
+    }
+
+    [data-slot='input-dissolution'] .idis__wrap input {
+      width: min(360px, 70vw);
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      caret-color: var(--idis-accent);
+      caret-shape: block;
+      outline: 0;
+    }
+
+    [data-slot='input-dissolution'] .idis__wrap input::placeholder {
+      color: inherit;
+      opacity: 0.5;
+    }
+
+    [data-slot='input-dissolution'] .idis__wrap .idis__dupe {
+      position: absolute;
+      inset: 1rem;
+      overflow: auto;
+      pointer-events: none;
+      white-space: nowrap;
+      mix-blend-mode: var(--idis-blend);
+    }
+
+    [data-slot='input-dissolution'] .idis__dupe {
+      scrollbar-width: none;
+    }
+
+    [data-slot='input-dissolution'] .idis__dupe::-webkit-scrollbar {
+      display: none;
+    }
+
+    [data-slot='input-dissolution'] .idis__displacer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    [data-slot='input-dissolution'][data-filtered='true'] .idis__filtered {
+      filter: blur(1px) var(--idis-dissolve);
+    }
+
+    [data-slot='input-dissolution'] ::selection {
+      background: var(--idis-accent);
+      color: #fff;
+    }
+
+    [data-slot='input-dissolution'] .idis__submit {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 1.125rem;
+      line-height: 1.75rem;
+      text-transform: uppercase;
+      opacity: 0.5;
+      cursor: pointer;
+      outline: 0 solid var(--idis-accent);
+      outline-offset: 4px;
+      transition:
+        opacity 150ms cubic-bezier(0.23, 1, 0.32, 1),
+        transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    [data-slot='input-dissolution'] .idis__submit:focus-visible {
+      opacity: 1;
+      outline-width: 2px;
+    }
+
+    [data-slot='input-dissolution'] .idis__submit:active {
+      transform: scale(0.97);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      [data-slot='input-dissolution'] .idis__submit:hover {
+        opacity: 1;
+      }
+    }
+
+    /* Debug layers: flat copies of each pass, only shown when exploded. */
+    [data-slot='input-dissolution'] .idis__layer {
+      position: absolute;
+      inset: 1rem;
+      pointer-events: none;
+    }
+
+    [data-slot='input-dissolution'] .idis__label {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      right: -7px;
+      padding-inline: 0.5rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 1rem;
+      line-height: 1.5rem;
+      background: var(--idis-ink);
+      color: var(--background);
+    }
+
+    [data-slot='input-dissolution'] .idis__debug-wrapper {
+      height: 100%;
+      overflow: auto;
+    }
+
+    [data-slot='input-dissolution'] .idis__debug-wrapper > div {
+      height: 100%;
+      white-space: nowrap;
+    }
+
+    [data-slot='input-dissolution'] .idis__displace-debug {
+      background: currentColor;
+    }
+  }
+
+  @layer debug {
+    [data-slot='input-dissolution'] .idis__field .idis__debug-wrapper {
+      outline: 1px solid var(--idis-ink);
+      outline-offset: 6px;
+    }
+
+    [data-slot='input-dissolution'] .idis__displace-debug {
+      filter: var(--idis-noise);
+    }
+
+    [data-slot='input-dissolution'][data-debug='true'] {
+      --progress: var(--scrub, 0);
+    }
+
+    [data-slot='input-dissolution'][data-rtl='true'] {
+      .idis__wrap input,
+      .idis__input-debug {
+        clip-path: inset(
+          0 calc((-10% + (var(--progress) * (120% + var(--spread)))) - var(--peak))
+            0 0
+        );
+      }
+      .idis__wrap .idis__dupe,
+      .idis__filter-debug {
+        clip-path: inset(
+          0 0 0 calc(110% - (var(--progress) * (120% + var(--spread))))
+        );
+        mask-image: linear-gradient(
+          90deg,
+          #0000 0 52%,
+          #fff calc(54% + 4px),
+          #0000 calc(54% + 200px) 100%
+        );
+        mask-position: calc(-5% + (var(--progress) * (120% - var(--spread))))
+          0;
+      }
+      .idis__displacer,
+      .idis__displace-debug {
+        translate: calc(100% - (var(--progress) * (100% + var(--spread)))) 0;
+        mask: linear-gradient(90deg, #fff, #0000);
+      }
+    }
+
+    [data-slot='input-dissolution'][data-rtl='false'] {
+      .idis__wrap input,
+      .idis__input-debug {
+        clip-path: inset(
+          0 0 0
+            calc((-10% + (var(--progress) * (120% + var(--spread)))) - var(--peak))
+        );
+      }
+      .idis__wrap .idis__dupe,
+      .idis__filter-debug {
+        clip-path: inset(
+          0 calc(110% - (var(--progress) * (120% + var(--spread)))) 0 0
+        );
+        mask-image: linear-gradient(
+          90deg,
+          #0000 0 calc(46% - var(--spread)),
+          #fff calc(46% - 4px),
+          #0000 48% 100%
+        );
+        mask-position: calc(105% - (var(--progress) * (120% - var(--spread))))
+          0;
+      }
+      .idis__displacer,
+      .idis__displace-debug {
+        mask-image: linear-gradient(90deg, #0000, #fff);
+        translate: calc(-100% + (var(--progress) * (100% + var(--spread)))) 0;
+      }
+    }
+
+    [data-slot='input-dissolution'] .idis__wrap input,
+    [data-slot='input-dissolution'] .idis__wrap .idis__dupe,
+    [data-slot='input-dissolution'] .idis__debug-wrapper > div {
+      line-height: 3rem;
+    }
+
+    [data-slot='input-dissolution'] .idis__filter-debug,
+    [data-slot='input-dissolution'] .idis__wrap .idis__dupe {
+      backdrop-filter: brightness(2);
+      mask-size: 200% 100%;
+    }
+
+    [data-slot='input-dissolution'] .idis__displacer {
+      mix-blend-mode: var(--idis-blend);
+      backdrop-filter: brightness(1) contrast(2) var(--idis-dissolve);
+    }
+  }
+
+  @layer motion {
+    [data-slot='input-dissolution'][data-submitted='true'] .idis__form {
+      --progress: 1;
+    }
+
+    [data-slot='input-dissolution'][data-submitted='false'] .idis__wrap input {
+      animation: idis-reveal 1s both;
+    }
+
+    @keyframes idis-reveal {
+      0% {
+        opacity: 0;
+      }
+    }
+
+    [data-slot='input-dissolution'][data-debug='false'][data-submitted='true'] {
+      .idis__wrap input {
+        transition: clip-path calc(var(--speed) * 1s);
+      }
+      .idis__wrap .idis__dupe {
+        transition:
+          clip-path calc(var(--speed) * 1s),
+          mask-position calc(var(--speed) * 1s);
+      }
+      .idis__displacer {
+        transition: translate calc(var(--speed) * 1s);
+      }
+    }
+
+    /* Reduced motion: keep a calm wipe, drop the travelling noise passes. */
+    @media (prefers-reduced-motion: reduce) {
+      [data-slot='input-dissolution'][data-debug='false'] {
+        .idis__wrap .idis__dupe,
+        .idis__displacer {
+          display: none;
+        }
+      }
+
+      [data-slot='input-dissolution'][data-submitted='false']
+        .idis__wrap
+        input {
+        animation-duration: 0.3s;
+      }
+    }
+  }
+
+  @layer explode {
+    [data-slot='input-dissolution'] .idis__stage {
+      transition-property: transform;
+      transition-duration: 1s;
+      transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    [data-slot='input-dissolution'] .idis__layer {
+      opacity: 0;
+      transition-property: opacity, translate;
+      transition-duration: 1s;
+      transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    [data-slot='input-dissolution'][data-explode='false'] {
+      .idis__layer {
+        transition-delay: 0s;
+      }
+      .idis__stage {
+        transition-delay: 1s;
+      }
+    }
+
+    [data-slot='input-dissolution'][data-explode='true'] {
+      .idis__layer {
+        transition-delay: 1s;
+      }
+      .idis__stage {
+        transition-delay: 0s;
+        transform: rotateX(32deg) rotateY(-32deg);
+      }
+    }
+
+    [data-slot='input-dissolution'][data-exploding='true'] *,
+    [data-slot='input-dissolution'][data-explode='true'] * {
+      transform-style: preserve-3d;
+    }
+
+    [data-slot='input-dissolution'][data-explode='true'] .idis__layer {
+      --depth-step: 6rem;
+      translate: 0 0 calc(var(--step, 1) * var(--depth-step));
+      opacity: 1;
+    }
+
+    [data-slot='input-dissolution'] .idis__layer--displace {
+      --step: 1;
+    }
+
+    [data-slot='input-dissolution'] .idis__layer--filter {
+      --step: 2;
+    }
+
+    [data-slot='input-dissolution'] .idis__layer--input {
+      --step: 3;
+    }
+  }
+}

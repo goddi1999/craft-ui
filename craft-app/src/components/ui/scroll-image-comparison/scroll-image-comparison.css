@@ -1,0 +1,225 @@
+@layer scroll-image-comparison {
+  @property --sic-compare {
+    inherits: true;
+    syntax: '<integer>';
+    initial-value: 0;
+  }
+
+  [data-slot='scroll-image-comparison'] {
+    --sic-step: 150px;
+    --sic-ease: cubic-bezier(0.77, 0, 0.175, 1);
+    --sic-outline: color-mix(in oklch, var(--background), var(--foreground) 75%);
+    --sic-shadow: hsl(0 0% 0% / 0.6);
+
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    padding-block: 2rem;
+    color: var(--foreground);
+    /* Lets the frame read the thumb's view timeline declared deeper down. */
+    timeline-scope: --sic-control;
+  }
+
+  :where(.dark) [data-slot='scroll-image-comparison'] {
+    --sic-shadow: hsl(0 0% 0% / 1);
+  }
+
+  [data-slot='scroll-image-comparison'] *,
+  [data-slot='scroll-image-comparison'] *::before,
+  [data-slot='scroll-image-comparison'] *::after {
+    box-sizing: border-box;
+    transform-style: preserve-3d;
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__stage {
+    display: grid;
+    place-items: center;
+    width: 100%;
+  }
+
+  /* Frame */
+  [data-slot='scroll-image-comparison'] .sic__frame {
+    --d: -2;
+    position: relative;
+    width: clamp(300px, 80vmin, 1080px);
+    max-width: 100%;
+    aspect-ratio: 4 / 3;
+    margin: 0 auto;
+    container-type: inline-size;
+    border: 2px solid
+      color-mix(in oklch, var(--background), var(--foreground));
+    box-shadow: 0 1rem 2rem -1rem var(--sic-shadow);
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__frame:has(.sic__slider:focus-visible) {
+    outline: 2px solid var(--ring);
+    outline-offset: 4px;
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__frame :not(input) {
+    pointer-events: none;
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__frame img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    user-select: none;
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__after {
+    --d: 1;
+    clip-path: inset(0 0 0 calc(var(--sic-compare, 0) * 1%));
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__slider {
+    --d: 2;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    cursor: grab;
+    accent-color: var(--sic-accent, red);
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__slider:active {
+    cursor: grabbing;
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__drag {
+    --d: 3;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    height: 40px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid color-mix(in oklch, var(--foreground), var(--background) 40%);
+    color: var(--background);
+    background: var(--foreground);
+    rotate: 90deg;
+    translate: calc(-50% + (var(--sic-compare, 0) * 1cqi)) -50%;
+    transition: opacity 0.2s ease-out;
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__drag svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__frame:active .sic__drag {
+    opacity: 0;
+  }
+
+  /* Exploded 3D view */
+  [data-slot='scroll-image-comparison'] .sic__frame::before,
+  [data-slot='scroll-image-comparison'] .sic__frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    outline: 4px dashed var(--sic-outline);
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__frame::before {
+    --d: 2;
+  }
+
+  [data-slot='scroll-image-comparison'] .sic__frame::after {
+    --d: 1;
+  }
+
+  [data-slot='scroll-image-comparison'][data-reveal='false'] .sic__stage {
+    transition: transform 1s var(--sic-ease) 1s;
+  }
+
+  [data-slot='scroll-image-comparison'][data-reveal='false']
+    :is(.sic__frame, .sic__after, .sic__slider, .sic__drag) {
+    transition:
+      transform 1s var(--sic-ease),
+      opacity 0.2s ease-out;
+  }
+
+  [data-slot='scroll-image-comparison'][data-reveal='false'] .sic__frame::before,
+  [data-slot='scroll-image-comparison'][data-reveal='false'] .sic__frame::after,
+  [data-slot='scroll-image-comparison'][data-reveal='false'] .sic__slider {
+    opacity: 0;
+    transition:
+      transform 1s var(--sic-ease),
+      opacity 0.5s ease-out;
+  }
+
+  [data-slot='scroll-image-comparison'][data-reveal='true'] .sic__stage {
+    rotate: var(--sic-yp, 0) calc(var(--sic-xp, 0) * -1) 0 8deg;
+    transform: rotateX(-24deg) rotateY(50deg);
+    transition:
+      transform 1s var(--sic-ease),
+      rotate 0.3s ease-out;
+  }
+
+  [data-slot='scroll-image-comparison'][data-reveal='true']
+    :is(.sic__frame, .sic__after, .sic__slider, .sic__drag) {
+    transform: translate3d(0, 0, calc(var(--sic-step) * var(--d, 1)));
+    transition:
+      transform 1s var(--sic-ease) 1s,
+      opacity 0.2s ease-out;
+  }
+
+  [data-slot='scroll-image-comparison'][data-reveal='true'] .sic__frame::before,
+  [data-slot='scroll-image-comparison'][data-reveal='true'] .sic__frame::after {
+    opacity: 1;
+    transform: translate3d(0, 0, calc(var(--sic-step) * var(--d, 1)));
+    transition:
+      transform 1s var(--sic-ease) 1s,
+      opacity 0.5s ease-out 1s;
+  }
+
+  [data-slot='scroll-image-comparison'][data-reveal='true'] .sic__slider {
+    opacity: 1;
+    transition:
+      transform 1s var(--sic-ease) 1s,
+      opacity 0.5s ease-out 1s;
+  }
+
+  /* The trick: the thumb's inline view timeline animates --sic-compare. */
+  @supports (animation-timeline: scroll()) and (animation-range: entry) {
+    [data-slot='scroll-image-comparison'] .sic__frame {
+      animation: sic-sync both linear reverse;
+      animation-timeline: --sic-control;
+      animation-range: contain;
+    }
+
+    [data-slot='scroll-image-comparison'] .sic__slider::-webkit-slider-thumb {
+      view-timeline: --sic-control inline;
+    }
+  }
+
+  /* Explicit `from`: the inline fallback value must not become the start. */
+  @keyframes sic-sync {
+    from {
+      --sic-compare: 0;
+    }
+    to {
+      --sic-compare: 100;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='scroll-image-comparison']
+      :is(.sic__stage, .sic__frame, .sic__frame img, .sic__slider, .sic__drag),
+    [data-slot='scroll-image-comparison'] .sic__frame::before,
+    [data-slot='scroll-image-comparison'] .sic__frame::after {
+      transition-property: opacity;
+    }
+  }
+}

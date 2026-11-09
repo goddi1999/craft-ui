@@ -1,0 +1,331 @@
+@layer scroll-driven-video-masking {
+  [data-slot='scroll-driven-video-masking'] {
+    /* Paper is what the page looks like; ink is where the video shows. In
+       light mode white paper + black ink blend with `lighten`; in dark mode
+       the pair flips and blends with `darken`. */
+    --sdvm-paper: var(--background);
+    --sdvm-ink: #000;
+    --sdvm-blend: lighten;
+    --sdvm-accent: hsl(6 100% 50%);
+    --sdvm-scroll-ease: linear(
+      0 0%,
+      0.0048 9.8%,
+      0.0192 19.5%,
+      0.043 29.02%,
+      0.0761 38.26%,
+      0.1181 47.13%,
+      0.1685 55.56%,
+      0.227 63.44%,
+      0.2929 70.71%,
+      0.3656 77.3%,
+      0.4445 83.15%,
+      0.5285 88.19%,
+      0.6173 92.39%,
+      0.7099 95.7%,
+      0.805 98.08%,
+      0.9021 99.52%,
+      1 100%
+    );
+    --sdvm-font-size-min: 16;
+    --sdvm-font-size-max: 20;
+    --sdvm-font-ratio-min: 1.2;
+    --sdvm-font-ratio-max: 1.33;
+    --sdvm-font-width-min: 320;
+    --sdvm-font-width-max: 1500;
+
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    color: var(--foreground);
+    font-family:
+      'SF Pro Text', 'SF Pro Icons', 'AOS Icons', 'Helvetica Neue', Helvetica,
+      Arial, sans-serif, system-ui;
+  }
+
+  :where(.dark) [data-slot='scroll-driven-video-masking'] {
+    --sdvm-ink: #fff;
+    --sdvm-blend: darken;
+  }
+
+  [data-slot='scroll-driven-video-masking'] *,
+  [data-slot='scroll-driven-video-masking'] *::before,
+  [data-slot='scroll-driven-video-masking'] *::after {
+    box-sizing: border-box;
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__fluid {
+    --sdvm-fluid-min: calc(
+      var(--sdvm-font-size-min) *
+        pow(var(--sdvm-font-ratio-min), var(--sdvm-font-level, 0))
+    );
+    --sdvm-fluid-max: calc(
+      var(--sdvm-font-size-max) *
+        pow(var(--sdvm-font-ratio-max), var(--sdvm-font-level, 0))
+    );
+    --sdvm-fluid-preferred: calc(
+      (var(--sdvm-fluid-max) - var(--sdvm-fluid-min)) /
+        (var(--sdvm-font-width-max) - var(--sdvm-font-width-min))
+    );
+    font-size: clamp(
+      (var(--sdvm-fluid-min) / 16) * 1rem,
+      ((var(--sdvm-fluid-min) / 16) * 1rem) -
+        (((var(--sdvm-fluid-preferred) * var(--sdvm-font-width-min)) / 16) *
+          1rem) + (var(--sdvm-fluid-preferred) * 100vi),
+      (var(--sdvm-fluid-max) / 16) * 1rem
+    );
+  }
+
+  /* Hero */
+  [data-slot='scroll-driven-video-masking'] .sdvm__header {
+    position: relative;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    text-align: center;
+    background: linear-gradient(transparent 50%, var(--sdvm-paper));
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__header::before {
+    --size: 45px;
+    --line: color-mix(in lch, var(--foreground), transparent 80%);
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 50%
+        50% / var(--size) var(--size),
+      linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% /
+        var(--size) var(--size);
+    mask:
+      linear-gradient(-20deg, transparent 50%, white),
+      linear-gradient(transparent, white 25%);
+    mask-composite: intersect;
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__title {
+    --sdvm-font-level: 7;
+    position: relative;
+    margin: 0;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__title span {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    display: inline-block;
+    translate: -50% 50%;
+    font-size: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--sdvm-accent);
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__subtitle {
+    --sdvm-font-level: 1;
+    margin: 0;
+    font-weight: 700;
+    opacity: 0.5;
+    text-transform: uppercase;
+  }
+
+  /* Mask layer */
+  [data-slot='scroll-driven-video-masking'] .sdvm__section {
+    position: relative;
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__content {
+    position: relative;
+    z-index: 2;
+    background: var(--sdvm-paper);
+    mix-blend-mode: var(--sdvm-blend);
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__content svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__content path {
+    stroke: var(--sdvm-ink);
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__text {
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    background: var(--sdvm-ink);
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__text p {
+    --sdvm-font-level: 5;
+    margin: 0;
+    padding-inline: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2lh;
+    font-weight: 600;
+    line-height: 1.1;
+    text-align: center;
+    text-wrap: balance;
+    color: var(--sdvm-paper);
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__stick {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  [data-slot='scroll-driven-video-masking'] video {
+    position: sticky;
+    top: 0;
+    display: block;
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+    filter: brightness(0.65);
+  }
+
+  /* Outro */
+  [data-slot='scroll-driven-video-masking'] .sdvm__footer {
+    position: relative;
+    height: 100vh;
+    display: grid;
+    align-content: end;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__outro {
+    --sdvm-font-level: 5;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    z-index: -2;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  [data-slot='scroll-driven-video-masking'] .sdvm__note {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  /* Debug knobs */
+  [data-slot='scroll-driven-video-masking'][data-blend='false'] .sdvm__content {
+    mix-blend-mode: normal;
+  }
+
+  [data-slot='scroll-driven-video-masking'][data-debug='true']
+    .sdvm__content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 10px dashed hotpink;
+    pointer-events: none;
+  }
+
+  [data-slot='scroll-driven-video-masking'][data-debug='true']
+    .sdvm__content
+    svg {
+    outline: 10px dashed hotpink;
+  }
+
+  /* Scroll-driven layer: without support the scribbles stay fully drawn and
+     the lines stay visible, so the mask still reads. */
+  @supports (animation-timeline: view()) {
+    [data-slot='scroll-driven-video-masking'] .sdvm__text p span {
+      opacity: 0;
+      animation: sdvm-activate both ease-in-out;
+      animation-timeline: view();
+    }
+
+    [data-slot='scroll-driven-video-masking'] .sdvm__content {
+      margin-bottom: 15vh;
+    }
+
+    [data-slot='scroll-driven-video-masking'] .sdvm__buffer {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      height: 15vh;
+      background: linear-gradient(var(--sdvm-paper), transparent);
+    }
+
+    [data-slot='scroll-driven-video-masking'] .sdvm__content svg:nth-of-type(1) path {
+      --sdvm-dest: 0;
+      stroke-dasharray: 1.025;
+      stroke-dashoffset: 1.025;
+      animation: sdvm-draw both var(--sdvm-scroll-ease);
+      animation-timeline: view();
+      animation-range: entry 25% entry 75%;
+    }
+
+    [data-slot='scroll-driven-video-masking'] .sdvm__content svg:nth-of-type(2) {
+      translate: 0 2%;
+    }
+
+    [data-slot='scroll-driven-video-masking'] .sdvm__content svg:nth-of-type(2) path {
+      --sdvm-dest: -1.025;
+      stroke-dasharray: 1.025;
+      stroke-dashoffset: 0;
+      animation: sdvm-draw both ease-out;
+      animation-timeline: view();
+      animation-range: exit -25% exit 50%;
+    }
+
+    [data-slot='scroll-driven-video-masking'] .sdvm__footer {
+      view-timeline: --sdvm-footer;
+    }
+
+    [data-slot='scroll-driven-video-masking'] .sdvm__outro {
+      position: fixed;
+      animation: sdvm-reveal both linear;
+      animation-timeline: --sdvm-footer;
+      animation-range: entry 75% entry 100%;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      [data-slot='scroll-driven-video-masking'] .sdvm__outro {
+        animation-name: sdvm-fade;
+      }
+    }
+  }
+
+  @keyframes sdvm-activate {
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes sdvm-draw {
+    to {
+      stroke-dashoffset: var(--sdvm-dest, 1.025);
+    }
+  }
+
+  @keyframes sdvm-reveal {
+    0% {
+      filter: blur(10px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes sdvm-fade {
+    0% {
+      opacity: 0;
+    }
+  }
+}

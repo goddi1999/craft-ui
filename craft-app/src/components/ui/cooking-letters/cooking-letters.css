@@ -1,0 +1,206 @@
+@font-face {
+  font-family: 'Cooking Letters Geist';
+  src: url('https://assets.codepen.io/605876/GeistVF.ttf');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@layer cooking-letters {
+  [data-slot='cooking-letters'] {
+    --cooking-letters-duration: 2.2s;
+    --cooking-letters-progress: 0;
+    --cooking-letters-ink: var(--foreground);
+    --cooking-letters-ease: cubic-bezier(0.77, 0, 0.175, 1);
+    --font-level: 4;
+    --font-size-min: 16;
+    --font-size-max: 20;
+    --font-ratio-min: 1.2;
+    --font-ratio-max: 1.33;
+    --font-width-min: 375;
+    --font-width-max: 1500;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transform-style: preserve-3d;
+    transition: transform 0.5s var(--cooking-letters-ease);
+  }
+
+  [data-slot='cooking-letters'] *,
+  [data-slot='cooking-letters'] *::before,
+  [data-slot='cooking-letters'] *::after {
+    box-sizing: border-box;
+    transform-style: preserve-3d;
+  }
+
+  [data-slot='cooking-letters'] .cooking-letters__line {
+    --fluid-min: calc(
+      var(--font-size-min) * pow(var(--font-ratio-min), var(--font-level, 0))
+    );
+    --fluid-max: calc(
+      var(--font-size-max) * pow(var(--font-ratio-max), var(--font-level, 0))
+    );
+    --fluid-preferred: calc(
+      (var(--fluid-max) - var(--fluid-min)) /
+        (var(--font-width-max) - var(--font-width-min))
+    );
+    --fluid-type: clamp(
+      (var(--fluid-min) / 16) * 1rem,
+      ((var(--fluid-min) / 16) * 1rem) -
+        (((var(--fluid-preferred) * var(--font-width-min)) / 16) * 1rem) +
+        (var(--fluid-preferred) * 100vi),
+      (var(--fluid-max) / 16) * 1rem
+    );
+    font-size: var(--fluid-type);
+    margin: 0;
+    font-family: 'Cooking Letters Geist', 'Geist', 'Inter Variable', sans-serif;
+    font-weight: 120;
+    width: fit-content;
+    line-height: 1;
+    vertical-align: baseline;
+    transition: opacity 0.5s var(--cooking-letters-ease);
+  }
+
+  [data-slot='cooking-letters'] .cooking-letters__glyphs,
+  [data-slot='cooking-letters'] .cooking-letters__word,
+  [data-slot='cooking-letters'] .cooking-letters__char,
+  [data-slot='cooking-letters'] .cooking-letters__char::before,
+  [data-slot='cooking-letters'] .cooking-letters__char::after {
+    display: inline-block;
+  }
+
+  /*
+   * Each glyph is a tiny cube: ::after is the front face, ::before the face
+   * underneath. Rotating the char 90deg on X rolls the next face into view.
+   */
+  [data-slot='cooking-letters'] .cooking-letters__char {
+    --delay: calc(
+      (
+          sin((var(--char-index) / var(--char-total)) * 90deg) *
+            (var(--cooking-letters-duration) * 0.25)
+        ) - (var(--idx) * -0.25s)
+    );
+    color: transparent;
+    position: relative;
+    height: 0.9lh;
+    line-height: 1;
+    vertical-align: middle;
+    animation: cooking-letters-flip var(--cooking-letters-duration)
+      var(--delay) infinite ease;
+  }
+
+  [data-slot='cooking-letters'] .cooking-letters__char::before,
+  [data-slot='cooking-letters'] .cooking-letters__char::after {
+    color: var(--cooking-letters-ink);
+    content: attr(data-char);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 1lh;
+    width: 100%;
+    animation: cooking-letters-fade var(--cooking-letters-duration)
+      var(--delay) infinite ease;
+  }
+
+  [data-slot='cooking-letters'] .cooking-letters__char::before {
+    transform-origin: 50% 50%;
+    translate: -50% -50%;
+    transform: rotateX(-90deg) translate3d(0, 0, 0.45lh);
+    opacity: 0;
+    --opacity: 1;
+  }
+
+  [data-slot='cooking-letters'] .cooking-letters__char::after {
+    translate: -50% -50%;
+    transform: translate3d(0, 0, 0.45lh);
+  }
+
+  @keyframes cooking-letters-flip {
+    25%,
+    100% {
+      transform: rotateX(90deg);
+    }
+  }
+
+  @keyframes cooking-letters-flip-debug {
+    0%,
+    25% {
+      transform: rotateX(0deg);
+    }
+    50%,
+    100% {
+      transform: rotateX(90deg);
+    }
+  }
+
+  @keyframes cooking-letters-fade {
+    30%,
+    100% {
+      opacity: var(--opacity, 0);
+    }
+  }
+
+  /* Debug: tilt the stage to expose the cube faces of a single line. */
+  [data-slot='cooking-letters'][data-debug='true'] {
+    transform: rotateX(-23deg) rotateY(45deg);
+  }
+
+  [data-slot='cooking-letters'][data-debug='true']
+    .cooking-letters__line:not([data-focus]) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  [data-slot='cooking-letters'][data-debug='true'] .cooking-letters__char {
+    outline: 2px solid red;
+    animation: cooking-letters-flip-debug
+      calc(var(--cooking-letters-duration) * 2) var(--delay) infinite ease;
+  }
+
+  [data-slot='cooking-letters'][data-debug='true'] .cooking-letters__char,
+  [data-slot='cooking-letters'][data-debug='true']
+    .cooking-letters__char::before,
+  [data-slot='cooking-letters'][data-debug='true']
+    .cooking-letters__char::after {
+    --opacity: 1;
+    opacity: 1;
+  }
+
+  [data-slot='cooking-letters'][data-debug='true']
+    .cooking-letters__char::before,
+  [data-slot='cooking-letters'][data-debug='true']
+    .cooking-letters__char::after {
+    animation: none;
+  }
+
+  [data-slot='cooking-letters'][data-debug='true']
+    .cooking-letters__char::before {
+    -webkit-text-stroke: 2px
+      color-mix(in oklab, var(--cooking-letters-ink), transparent 50%);
+    color: color-mix(in oklab, var(--cooking-letters-ink), transparent 75%);
+  }
+
+  [data-slot='cooking-letters'][data-debug='true'][data-scrub='true']
+    .cooking-letters__char {
+    --offset: calc(
+      (sin((var(--char-index) / var(--char-total)) * 90deg) * 100)
+    );
+    --r: calc((var(--cooking-letters-progress) * 2) - var(--offset));
+    animation: none;
+    transform: rotateX(calc((clamp(0, var(--r), 100) / 100) * 90deg));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='cooking-letters'] {
+      transition: none;
+    }
+
+    [data-slot='cooking-letters']:not([data-debug='true'])
+      .cooking-letters__char,
+    [data-slot='cooking-letters']:not([data-debug='true'])
+      .cooking-letters__char::before,
+    [data-slot='cooking-letters']:not([data-debug='true'])
+      .cooking-letters__char::after {
+      animation: none;
+    }
+  }
+}

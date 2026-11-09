@@ -1,0 +1,1 @@
+export { ShimmerAccordionPage } from './page'

@@ -1,0 +1,150 @@
+@layer barrel-time-input {
+  [data-slot='barrel-time-input'] {
+    --barrel-line: 34px;
+    --barrel-radius: 325px;
+    --barrel-step: 6deg;
+    --barrel-perspective: 60px;
+    --barrel-visor: color-mix(in oklab, var(--foreground) 10%, var(--background));
+    --barrel-face: color-mix(in oklab, var(--foreground) 82%, var(--background));
+    --barrel-selected: var(--foreground);
+    --barrel-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    display: inline-flex;
+    justify-content: center;
+    color: var(--barrel-face);
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  [data-slot='barrel-time-input'] [data-barrel-columns] {
+    position: relative;
+    display: flex;
+    padding-inline: 4.5rem;
+    transform-style: preserve-3d;
+    transition: transform 250ms var(--barrel-ease-out);
+  }
+
+  /* The shared selection band behind every column. */
+  [data-slot='barrel-time-input'] [data-barrel-columns]::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: var(--barrel-line);
+    border-radius: 8px;
+    background: var(--barrel-visor);
+    transform: translate3d(0, -50%, -1px);
+    pointer-events: none;
+  }
+
+  [data-slot='barrel-time-input'] [data-barrel-column] {
+    position: relative;
+    width: 56px;
+    height: 220px;
+    display: grid;
+    place-items: center;
+    perspective: var(--barrel-perspective);
+    transform-style: preserve-3d;
+    mask: linear-gradient(#0000, #fff, #0000);
+    touch-action: none;
+    cursor: grab;
+    outline: none;
+    transition: opacity 250ms ease;
+  }
+
+  [data-slot='barrel-time-input'] [data-barrel-column]:active {
+    cursor: grabbing;
+  }
+
+  /* The 3D ring of faces, rotated by the hook. */
+  [data-slot='barrel-time-input'] [data-barrel-wheel] {
+    position: absolute;
+    top: calc(50% - var(--barrel-line) / 2);
+    left: 0;
+    width: 100%;
+    height: var(--barrel-line);
+    font-size: 1.4rem;
+    transform-style: preserve-3d;
+    pointer-events: none;
+  }
+
+  [data-slot='barrel-time-input'] [data-barrel-face] {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    backface-visibility: hidden;
+    transform: rotateX(calc(var(--index) * var(--barrel-step) * -1))
+      translateZ(var(--barrel-radius));
+  }
+
+  /* Flat, crisp copy of the selected row that sits over the ring. */
+  [data-slot='barrel-time-input'] [data-barrel-visor] {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: var(--barrel-line);
+    translate: 0 -50%;
+    overflow: hidden;
+    background: var(--barrel-visor);
+    color: var(--barrel-selected);
+    pointer-events: none;
+    border-radius: 6px;
+  }
+
+  [data-slot='barrel-time-input'] [data-barrel-track] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    font-size: 1.45rem;
+    font-weight: 400;
+    text-align: center;
+  }
+
+  [data-slot='barrel-time-input'] [data-barrel-track] > span {
+    display: block;
+    height: var(--barrel-line);
+    line-height: var(--barrel-line);
+  }
+
+  [data-slot='barrel-time-input'] [data-barrel-column]:focus-visible [data-barrel-visor] {
+    box-shadow: inset 0 0 0 2px var(--ring);
+  }
+
+  /* Reveal: tilt the barrels and expose the hours ring. */
+  [data-slot='barrel-time-input'][data-reveal] [data-barrel-columns] {
+    transform: rotateX(-24deg) rotateY(42deg);
+  }
+
+  [data-slot='barrel-time-input'][data-reveal] [data-barrel-column]:not([data-kind='hours']) {
+    opacity: 0.2;
+  }
+
+  [data-slot='barrel-time-input'][data-reveal] [data-barrel-column][data-kind='hours'] {
+    mask: none;
+    perspective: 360px;
+    background: repeating-linear-gradient(
+      45deg,
+      hsl(0 100% 50% / 0.6) 0 1px,
+      hsl(0 100% 50% / 0.1) 1px 10px
+    );
+    outline: 2px dashed hsl(0 100% 50% / 0.5);
+  }
+
+  [data-slot='barrel-time-input'][data-reveal] [data-kind='hours'] [data-barrel-face] {
+    backface-visibility: visible;
+    outline: 1px dashed hsl(0 100% 50% / 0.5);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='barrel-time-input'] [data-barrel-columns],
+    [data-slot='barrel-time-input'] [data-barrel-column] {
+      transition: none;
+    }
+  }
+}

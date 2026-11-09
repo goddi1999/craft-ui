@@ -1,0 +1,117 @@
+@layer lil-loader {
+  @property --lil-loader-hue {
+    syntax: '<number>';
+    initial-value: 0;
+    inherits: true;
+  }
+
+  [data-slot='lil-loader'] {
+    --lil-loader-size: 120px;
+    --lil-loader-speed: 3.5s;
+    --lil-loader-bars: 10;
+    --lil-loader-glow: hsl(30 80% 50% / 0.35);
+    --lil-loader-rim: hsl(30 80% 90% / 0.75);
+    box-sizing: border-box;
+    width: var(--lil-loader-size);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    background: color-mix(in oklab, var(--card), var(--foreground) 2%);
+    border-radius: calc(var(--lil-loader-size) * 0.2);
+    border: 1px solid color-mix(in oklab, var(--border), transparent 20%);
+    box-shadow:
+      0 40px 30px -18px var(--lil-loader-glow),
+      0 20px 20px -12px var(--lil-loader-glow),
+      0 -2px 4px 2px var(--lil-loader-rim) inset;
+  }
+
+  :where(.dark) [data-slot='lil-loader'] {
+    --lil-loader-glow: hsl(30 80% 50% / 0.22);
+    --lil-loader-rim: hsl(30 80% 70% / 0.12);
+  }
+
+  [data-slot='lil-loader'] .lil-loader__stack {
+    width: 75%;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    container-type: size;
+    scale: 1 -1;
+    transform-style: preserve-3d;
+  }
+
+  [data-slot='lil-loader'] .lil-loader__bar {
+    --lil-loader-delay: calc(
+      (-1 * var(--lil-loader-speed)) * (var(--idx) / var(--lil-loader-bars))
+    );
+    --lil-loader-bg: hsl(var(--lil-loader-hue) 85% 58% / 0.85);
+    box-sizing: border-box;
+    width: 90%;
+    aspect-ratio: 10 / 2.25;
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    translate: -50% 0%;
+    border-radius: 50%;
+    border: 1px solid color-mix(in hsl, var(--lil-loader-bg), white 20%);
+    background:
+      radial-gradient(hsl(0 0% 100% / 0.25), #0000), var(--lil-loader-bg);
+    scale: 0.25;
+    animation:
+      lil-loader-hue var(--lil-loader-speed) var(--lil-loader-delay) infinite
+        ease-in-out reverse,
+      lil-loader-travel var(--lil-loader-speed) var(--lil-loader-delay)
+        infinite linear,
+      lil-loader-scale calc(var(--lil-loader-speed) * 0.5)
+        var(--lil-loader-delay) infinite alternate;
+  }
+
+  @keyframes lil-loader-hue {
+    0% {
+      --lil-loader-hue: 350;
+    }
+    100% {
+      --lil-loader-hue: 40;
+    }
+  }
+
+  @keyframes lil-loader-scale {
+    0% {
+      opacity: 0;
+    }
+    15%,
+    25% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  @keyframes lil-loader-travel {
+    0%,
+    5% {
+      transform: translate3d(0, 0, 0);
+      translate: -50% -5%;
+    }
+    95%,
+    100% {
+      transform: translate3d(0, 0, 10px);
+      translate: -50% calc(100cqb - 95%);
+    }
+  }
+
+  /*
+   * Reduced motion: freeze the stack into its fanned-out resting shape and
+   * keep only the hue cycling, which still signals "working" without movement.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='lil-loader'] .lil-loader__bar {
+      --lil-loader-t: calc(var(--idx) / var(--lil-loader-bars));
+      animation: lil-loader-hue var(--lil-loader-speed)
+        var(--lil-loader-delay) infinite ease-in-out reverse;
+      translate: -50% calc(-5% + (100cqb - 90%) * var(--lil-loader-t));
+      scale: calc(0.4 + 0.6 * var(--lil-loader-t));
+    }
+  }
+}

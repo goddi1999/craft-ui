@@ -1,0 +1,1 @@
+export { IntelligentTextRevealsPage } from './page'

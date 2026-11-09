@@ -1,0 +1,1 @@
+export { AnimatedHoverDisclosuresPage } from './page'

@@ -1,0 +1,199 @@
+@layer css-carousels {
+  [data-slot='css-carousels'] {
+    --css-carousels-chrome: #fafafa;
+    --css-carousels-duration: 0.5s;
+    --css-carousels-exit: 0.2s;
+    --css-carousels-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --css-carousels-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    position: relative;
+    width: 400px;
+    max-width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 5px;
+    background: var(--muted);
+    text-align: center;
+    isolation: isolate;
+    outline: 2px solid transparent;
+    outline-offset: 3px;
+  }
+
+  [data-slot='css-carousels']:has(.css-carousels__activator:focus-visible) {
+    outline-color: var(--ring);
+  }
+
+  /* The radios hold the state; they stay focusable for arrow-key paging. */
+  [data-slot='css-carousels'] .css-carousels__activator {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+    opacity: 0;
+  }
+
+  [data-slot='css-carousels'] .css-carousels__track {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  [data-slot='css-carousels'] .css-carousels__slide {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background-color: var(--muted);
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition:
+      opacity var(--css-carousels-exit) var(--css-carousels-ease-out),
+      scale var(--css-carousels-exit) var(--css-carousels-ease-out);
+  }
+
+  [data-slot='css-carousels'] .css-carousels__slide[data-state='active'] {
+    z-index: 1;
+    opacity: 1;
+    transition-duration: var(--css-carousels-duration);
+  }
+
+  [data-slot='css-carousels'] .css-carousels__caption {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    translate: 0 -50%;
+    font-size: 50px;
+    font-weight: 900;
+    line-height: 50px;
+    color: var(--css-carousels-chrome);
+    text-shadow: 0 2px 12px rgb(0 0 0 / 0.35);
+  }
+
+  /* slide: the whole track pans, every slide stays visible */
+  [data-slot='css-carousels'][data-variant='slide'] .css-carousels__track {
+    translate: calc(var(--css-carousels-active) * -100%) 0;
+    transition: translate var(--css-carousels-duration)
+      var(--css-carousels-ease-in-out);
+  }
+
+  [data-slot='css-carousels'][data-variant='slide'] .css-carousels__slide {
+    opacity: 1;
+    translate: calc(var(--css-carousels-i) * 100%) 0;
+    transition: none;
+  }
+
+  /* scale: incoming slide grows from the centre */
+  [data-slot='css-carousels'][data-variant='scale'] .css-carousels__slide {
+    scale: 0.4;
+  }
+
+  [data-slot='css-carousels'][data-variant='scale']
+    .css-carousels__slide[data-state='active'] {
+    scale: 1;
+  }
+
+  /* arrows */
+  [data-slot='css-carousels'] .css-carousels__control {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    display: block;
+    width: 30px;
+    height: 30px;
+    margin-top: -15px;
+    border-style: solid;
+    border-width: 5px 5px 0 0;
+    border-color: var(--css-carousels-chrome);
+    opacity: 0.35;
+    cursor: pointer;
+    transition:
+      opacity 0.15s ease,
+      scale 0.12s var(--css-carousels-ease-out);
+  }
+
+  [data-slot='css-carousels'] .css-carousels__control[data-direction='backward'] {
+    left: 14px;
+    rotate: -135deg;
+  }
+
+  [data-slot='css-carousels'] .css-carousels__control[data-direction='forward'] {
+    right: 14px;
+    rotate: 45deg;
+  }
+
+  [data-slot='css-carousels'] .css-carousels__control:active {
+    opacity: 1;
+    scale: 0.88;
+  }
+
+  /* indicators */
+  [data-slot='css-carousels'] .css-carousels__indicators {
+    position: absolute;
+    bottom: 20px;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+  }
+
+  [data-slot='css-carousels'] .css-carousels__indicator {
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+    background-color: var(--css-carousels-chrome);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.35;
+    cursor: pointer;
+    transition:
+      opacity 0.15s ease,
+      scale 0.12s var(--css-carousels-ease-out);
+  }
+
+  [data-slot='css-carousels'] .css-carousels__indicator:active {
+    scale: 0.9;
+  }
+
+  [data-slot='css-carousels'] .css-carousels__indicator[data-state='active'] {
+    opacity: 1;
+  }
+
+  [data-slot='css-carousels'][data-variant='thumbnails']
+    .css-carousels__indicator {
+    width: 30px;
+    height: 30px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    [data-slot='css-carousels'] .css-carousels__control:hover {
+      opacity: 1;
+    }
+
+    [data-slot='css-carousels']
+      .css-carousels__indicator:not([data-state='active']):hover {
+      opacity: 0.75;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='css-carousels'] {
+      --css-carousels-duration: 0.2s;
+    }
+
+    [data-slot='css-carousels'][data-variant='slide'] .css-carousels__track {
+      transition: none;
+    }
+
+    [data-slot='css-carousels'][data-variant='scale'] .css-carousels__slide {
+      scale: 1;
+    }
+  }
+}

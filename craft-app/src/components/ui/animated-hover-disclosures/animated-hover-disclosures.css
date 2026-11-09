@@ -1,0 +1,171 @@
+@layer animated-hover-disclosures {
+  [data-slot='animated-hover-disclosures'] {
+    --gap: 8px;
+    --base: clamp(2rem, 8cqi, 80px);
+    --speed: 0.6s;
+    /* Long-tailed ease-out: columns snap open then settle. */
+    --easing: linear(
+      0 0%,
+      0.1538 4.09%,
+      0.2926 8.29%,
+      0.4173 12.63%,
+      0.5282 17.12%,
+      0.6255 21.77%,
+      0.7099 26.61%,
+      0.782 31.67%,
+      0.8425 37%,
+      0.8887 42.23%,
+      0.9257 47.79%,
+      0.9543 53.78%,
+      0.9752 60.32%,
+      0.9883 67.11%,
+      0.9961 75%,
+      1 100%
+    );
+    display: grid;
+    container-type: inline-size;
+    gap: var(--gap);
+    list-style-type: none;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    width: 820px;
+    max-width: 100%;
+    height: clamp(300px, 40dvh, 474px);
+    color: var(--foreground);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    transition: grid-template-columns var(--speed) var(--easing);
+  }
+
+  [data-slot='animated-hover-disclosures'] > li {
+    position: relative;
+    overflow: hidden;
+    min-width: var(--base);
+    border-radius: 8px;
+    border: 1px solid
+      color-mix(in oklch, var(--background), var(--foreground) 50%);
+    background: var(--background);
+  }
+
+  [data-slot='animated-hover-disclosures'] article {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(var(--article-width, 0) * 1px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-inline: calc(var(--base) * 0.5 - 9px);
+    padding-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  [data-slot='animated-hover-disclosures'] h3 {
+    position: absolute;
+    top: 1rem;
+    left: calc(var(--base) * 0.5);
+    margin: 0;
+    transform-origin: 0 50%;
+    rotate: 90deg;
+    white-space: nowrap;
+    font-size: 1rem;
+    font-weight: 300;
+    text-transform: uppercase;
+  }
+
+  [data-slot='animated-hover-disclosures'] article > svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  [data-slot='animated-hover-disclosures'] p {
+    --opacity: 0.8;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+
+  [data-slot='animated-hover-disclosures'] a {
+    position: absolute;
+    bottom: 1rem;
+    height: 18px;
+    line-height: 1;
+    color: inherit;
+    outline: none;
+  }
+
+  [data-slot='animated-hover-disclosures'] a span {
+    display: inline-block;
+    line-height: 18px;
+    translate: calc(var(--base) * 0.5);
+    font-weight: 500;
+  }
+
+  [data-slot='animated-hover-disclosures'] a:focus-visible span {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    [data-slot='animated-hover-disclosures'] a:hover span {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+  }
+
+  [data-slot='animated-hover-disclosures'] img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    mask: radial-gradient(100% 100% at 100% 0, #fff, #0000);
+    filter: grayscale(1) brightness(1.5);
+    scale: 1.1;
+    transition-property: filter, scale;
+    transition-duration: calc(var(--speed) * 1.2);
+    transition-timing-function: var(--easing);
+  }
+
+  [data-slot='animated-hover-disclosures'] li :is(svg, h3) {
+    opacity: 0.6;
+    transition: opacity calc(var(--speed) * 1.2) var(--easing);
+  }
+
+  [data-slot='animated-hover-disclosures'] li :is(a, p) {
+    width: fit-content;
+    opacity: 0;
+    transition: opacity calc(var(--speed) * 1.2) var(--easing);
+  }
+
+  [data-slot='animated-hover-disclosures'] [data-active='true'] :is(a, p, h3, svg) {
+    opacity: var(--opacity, 1);
+  }
+
+  [data-slot='animated-hover-disclosures'] [data-active='true'] :is(a, p) {
+    transition-delay: calc(var(--speed) * 0.25);
+  }
+
+  [data-slot='animated-hover-disclosures'] [data-active='true'] img {
+    filter: grayscale(0) brightness(1);
+    scale: 1;
+    transition-delay: calc(var(--speed) * 0.25);
+  }
+
+  /* Reduced motion: columns and images jump, copy still fades in. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='animated-hover-disclosures'] {
+      transition: none;
+    }
+
+    [data-slot='animated-hover-disclosures'] img {
+      scale: 1;
+      transition-property: filter;
+    }
+  }
+}

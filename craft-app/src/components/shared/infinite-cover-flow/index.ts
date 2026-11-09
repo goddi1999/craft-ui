@@ -1,0 +1,1 @@
+export { InfiniteCoverFlowPage } from './page'

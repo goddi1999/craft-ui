@@ -1,0 +1,170 @@
+@layer shimmer-accordion {
+  [data-slot='shimmer-accordion'] {
+    --speed: 0.26s;
+    --ease: cubic-bezier(0.215, 0.61, 0.355, 1);
+    width: 480px;
+    max-width: 100%;
+    color: var(--foreground);
+  }
+
+  [data-slot='shimmer-accordion'] ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  [data-slot='shimmer-accordion'] li {
+    width: 100%;
+  }
+
+  [data-slot='shimmer-accordion'] li:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+  }
+
+  [data-slot='shimmer-accordion'] button {
+    position: relative;
+    display: flex;
+    width: 100%;
+    padding: 1rem 2rem 1rem 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    user-select: none;
+    outline-color: var(--ring);
+    -webkit-tap-highlight-color: #0000;
+  }
+
+  [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-plus'] {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    translate: 0 -50%;
+    opacity: 0.3;
+  }
+
+  [data-slot='shimmer-accordion']
+    button:focus-visible
+    [data-slot='shimmer-accordion-plus'],
+  [data-slot='shimmer-accordion']
+    [data-open]
+    [data-slot='shimmer-accordion-plus'] {
+    opacity: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    [data-slot='shimmer-accordion'] button:hover [data-slot='shimmer-accordion-plus'] {
+      opacity: 1;
+    }
+  }
+
+  [data-slot='shimmer-accordion'] [data-open] [data-slot='shimmer-accordion-plus'] {
+    rotate: 225deg;
+  }
+
+  /* Icons slide in by growing a grid column rather than toggling display. */
+  [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-label'] {
+    display: grid;
+    flex: 1;
+    grid-template-columns: 0px 1fr;
+    align-items: center;
+  }
+
+  [data-slot='shimmer-accordion'][data-icons='true']
+    [data-slot='shimmer-accordion-label'] {
+    grid-template-columns: 1.75rem 1fr;
+  }
+
+  [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-icon'] {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-panel'] {
+    display: grid;
+    grid-template-rows: 0fr;
+  }
+
+  [data-slot='shimmer-accordion'] [data-open] [data-slot='shimmer-accordion-panel'] {
+    grid-template-rows: 1fr;
+  }
+
+  [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-content'] {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-body'] {
+    padding-bottom: 1rem;
+  }
+
+  [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-answer'] {
+    margin: 0;
+    color: color-mix(in oklch, var(--foreground), var(--background) 30%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-plus'] {
+      transition-property: opacity, rotate;
+      transition-duration: var(--speed);
+      transition-timing-function: var(--ease);
+    }
+
+    [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-label'] {
+      transition: grid-template-columns var(--speed) var(--ease);
+    }
+
+    [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-panel'] {
+      transition: grid-template-rows var(--speed) var(--ease);
+    }
+
+    [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-content'] {
+      translate: 0 1lh;
+      opacity: 0.7;
+      transition-property: translate, opacity;
+      transition-duration: var(--speed);
+      transition-timing-function: var(--ease);
+    }
+
+    [data-slot='shimmer-accordion'] [data-open] [data-slot='shimmer-accordion-content'] {
+      translate: 0 0;
+      opacity: 1;
+    }
+
+    /* The shimmer: layered text-clipped gradients built in buildShimmerStyle. */
+    [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-answer'] {
+      display: var(--shimmer-display, inline);
+      color: #0000;
+      background-image: var(--shimmer-image);
+      background-size: var(--shimmer-size);
+      background-position: var(--shimmer-closed);
+      background-repeat: no-repeat;
+      background-clip: text;
+      -webkit-background-clip: text;
+      /* Closing: hold the revealed text while the panel collapses, then snap back. */
+      transition-property: background-position, opacity;
+      transition-duration: 0s, var(--speed);
+      transition-delay: var(--speed), 0s;
+      transition-timing-function: var(--ease);
+    }
+
+    [data-slot='shimmer-accordion'] [data-open] [data-slot='shimmer-accordion-answer'] {
+      background-position: var(--shimmer-open);
+      transition-duration:
+        calc(var(--char-count, 200) / var(--cps, 50) * 1s),
+        var(--speed);
+      transition-delay: 0s;
+    }
+
+    [data-slot='shimmer-accordion'] [data-slot='shimmer-accordion-answer']::selection {
+      background: var(--shimmer-selection);
+      color: var(--background);
+    }
+  }
+}

@@ -1,0 +1,1 @@
+export { WqDashboardPage } from './page'

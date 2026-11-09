@@ -1,0 +1,1 @@
+export { MorphingDisclosurePage } from './page'

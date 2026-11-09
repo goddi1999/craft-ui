@@ -1,0 +1,242 @@
+@layer gooey-popover {
+  [data-slot='gooey-popover'] {
+    --gooey-size: 44px;
+    --gooey-width: 200px;
+    --gooey-height: 88px;
+    --gooey-speed: 0.2s;
+    --gooey-radius: 18px;
+    --gooey-bg: var(--primary);
+    --gooey-color: var(--primary-foreground);
+    /* Accent tints for content, mixed toward the page like the original. */
+    --gooey-blue: color-mix(in hsl, hsl(210 80% 50%), var(--background) 25%);
+    --gooey-green: color-mix(in hsl, hsl(140 80% 45%), var(--background) 25%);
+    --gooey-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --gooey-power-1-in: linear(
+      0 0%,
+      0.0027 3.64%,
+      0.0106 7.29%,
+      0.0425 14.58%,
+      0.0957 21.87%,
+      0.1701 29.16%,
+      0.2477 35.19%,
+      0.3401 41.23%,
+      0.5982 55.18%,
+      0.7044 61.56%,
+      0.7987 68.28%,
+      0.875 75%,
+      0.9297 81.25%,
+      0.9687 87.5%,
+      0.9922 93.75%,
+      1 100%
+    );
+    --gooey-elastic: linear(
+      0 0%,
+      -0.0055 4.83%,
+      -0.0317 15.58%,
+      -0.0351 20.24%,
+      -0.031 23.11%,
+      -0.0216 25.78%,
+      -0.0065 28.32%,
+      0.0143 30.74%,
+      0.0478 33.58%,
+      0.0907 36.32%,
+      0.2048 41.53%,
+      0.3517 46.27%,
+      0.6096 52.68%,
+      0.7371 56.42%,
+      0.8583 61.09%,
+      0.9466 66.02%,
+      0.9811 68.81%,
+      1.0068 71.72%,
+      1.0241 74.79%,
+      1.0334 78.07%,
+      1.0326 83.83%,
+      1.0053 95.23%,
+      1 100%
+    );
+    position: relative;
+    display: inline-grid;
+    width: var(--gooey-size);
+    height: var(--gooey-size);
+  }
+
+  /* The round call-to-action that anchors the popover. */
+  [data-slot='gooey-popover'] [data-gooey-trigger] {
+    anchor-name: var(--gooey-anchor);
+    width: var(--gooey-size);
+    aspect-ratio: 1;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--gooey-bg);
+    color: var(--gooey-color);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: scale 160ms var(--gooey-ease-out);
+  }
+
+  [data-slot='gooey-popover'] [data-gooey-trigger]:active {
+    scale: 0.97;
+  }
+
+  [data-slot='gooey-popover'] [data-gooey-trigger]:focus-visible,
+  [data-slot='gooey-popover'] button[data-gooey-blob]:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  [data-slot='gooey-popover'] :is([data-gooey-trigger], [data-gooey-blob]) svg {
+    width: 50%;
+    height: 50%;
+  }
+
+  /* The popover sits exactly on top of the trigger and grows from it. */
+  [data-slot='gooey-popover'] [data-gooey-popover] {
+    position-anchor: var(--gooey-anchor);
+    inset: unset;
+    left: anchor(left);
+    bottom: anchor(bottom);
+    width: var(--gooey-size);
+    height: var(--gooey-size);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    overflow: visible;
+    background: var(--gooey-bg);
+    color: var(--gooey-color);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8125rem;
+    line-height: 1;
+    container-type: size;
+    pointer-events: none;
+    transition-property: display, overlay;
+    transition-duration: calc(var(--gooey-speed) * 3);
+    transition-behavior: allow-discrete;
+  }
+
+  [data-slot='gooey-popover'] [data-gooey-layer] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  [data-slot='gooey-popover'] [data-gooey-layer='filtered'] {
+    filter: var(--gooey-filter);
+  }
+
+  [data-slot='gooey-popover'] [data-gooey-layer='unfiltered'] {
+    z-index: 10;
+  }
+
+  /* Both blobs cover the trigger footprint. */
+  [data-slot='gooey-popover'] [data-gooey-blob] {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--gooey-bg);
+    color: var(--gooey-color);
+    display: grid;
+    place-items: center;
+  }
+
+  [data-slot='gooey-popover'] button[data-gooey-blob] {
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  /* The morphing panel: shrinks to the blob when closed. */
+  [data-slot='gooey-popover'] [data-gooey-content] {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--gooey-bg);
+    color: var(--gooey-color);
+    transition-property: width, height, translate, border-radius;
+    transition-duration: var(--gooey-speed);
+    transition-delay: 0s, 0s, calc(var(--gooey-speed) * 0.25), 0s;
+    transition-timing-function:
+      var(--gooey-power-1-in), var(--gooey-power-1-in), var(--gooey-elastic),
+      var(--gooey-power-1-in);
+  }
+
+  [data-slot='gooey-popover'] [data-gooey-layer='unfiltered'] [data-gooey-content] {
+    overflow: hidden;
+  }
+
+  [data-slot='gooey-popover'] [data-gooey-popover]:popover-open [data-gooey-content] {
+    width: var(--gooey-width);
+    height: var(--gooey-height);
+    border-radius: var(--gooey-radius);
+    translate: 0 calc(100cqh * -1 - 1.5rem);
+    transition-delay:
+      calc(var(--gooey-speed) * 0.575), calc(var(--gooey-speed) * 0.575), 0s,
+      calc(var(--gooey-speed) * 0.575);
+    transition-timing-function: var(--gooey-power-1-in);
+  }
+
+  [data-slot='gooey-popover'] [data-gooey-popover]:popover-open [data-gooey-layer='unfiltered'] [data-gooey-content] {
+    pointer-events: auto;
+  }
+
+  /* Content fades up once the panel has room. */
+  [data-slot='gooey-popover'] [data-gooey-body] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--gooey-width);
+    padding: 1rem;
+    opacity: 0;
+    translate: 0 1lh;
+    transition-property: opacity, translate;
+    transition-duration: var(--gooey-speed);
+    transition-delay: 0s;
+    transition-timing-function: var(--gooey-power-1-in);
+  }
+
+  [data-slot='gooey-popover'] [data-gooey-popover]:popover-open [data-gooey-body] {
+    opacity: 1;
+    translate: 0 0;
+    transition-delay: calc(var(--gooey-speed) * 0.575);
+  }
+
+  @starting-style {
+    [data-slot='gooey-popover'] [data-gooey-popover]:popover-open [data-gooey-content] {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      translate: 0 0;
+    }
+
+    [data-slot='gooey-popover'] [data-gooey-popover]:popover-open [data-gooey-body] {
+      opacity: 0;
+      translate: 0 1lh;
+    }
+  }
+
+  /* Keep the filter defs out of layout without display: none. */
+  [data-slot='gooey-popover'] [data-gooey-filter] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='gooey-popover'] [data-gooey-popover],
+    [data-slot='gooey-popover'] [data-gooey-popover] [data-gooey-content],
+    [data-slot='gooey-popover'] [data-gooey-popover] [data-gooey-body] {
+      transition-property: none;
+    }
+  }
+}

@@ -1,0 +1,279 @@
+@layer sticky-progressive-blur {
+  [data-slot='sticky-progressive-blur'] {
+    --spb-accent: hsl(0 90% 50%);
+    --spb-img-size: clamp(120px, 40vmin, 380px);
+    --spb-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    /* The blur layers reach far past the edges; clip without creating a
+       scroll container so `position: sticky` keeps working. */
+    overflow-x: clip;
+    color: var(--foreground);
+    font-family:
+      'Inter Variable', 'Inter', 'SF Pro Text', 'Helvetica Neue', Helvetica,
+      Arial, sans-serif, system-ui;
+  }
+
+  [data-slot='sticky-progressive-blur'] *,
+  [data-slot='sticky-progressive-blur'] *::before,
+  [data-slot='sticky-progressive-blur'] *::after {
+    box-sizing: border-box;
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__header {
+    width: 1200px;
+    max-width: 100%;
+    min-height: 100vh;
+    margin: 0 auto;
+    /* Room for the tilted tag, which would otherwise be clipped. */
+    padding-inline: 1rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+  }
+
+  /* Sticky copy */
+  [data-slot='sticky-progressive-blur'] .spb__intro {
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    grid-area: 1 / 1;
+    width: fit-content;
+    max-width: 280px;
+    height: fit-content;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-wrap: balance;
+    transition: opacity 0.26s var(--spb-ease-out);
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__tag {
+    display: inline-grid;
+    place-items: center;
+    width: fit-content;
+    margin: 0;
+    padding: 0.25rem;
+    translate: -10% 10%;
+    rotate: -6deg;
+    font-family: 'Special Elite', ui-monospace, monospace;
+    font-size: 0.875rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 0 1px #111;
+    background: var(--spb-accent);
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__heading {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__description {
+    margin: 1rem 0;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__cta {
+    display: inline-block;
+    width: fit-content;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--foreground);
+    font-weight: 500;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      color 0.2s var(--spb-ease-out),
+      background-color 0.2s var(--spb-ease-out),
+      scale 0.16s var(--spb-ease-out);
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__cta:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    color: var(--background);
+    background-color: var(--foreground);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    [data-slot='sticky-progressive-blur'] .spb__cta:hover {
+      color: var(--background);
+      background-color: var(--foreground);
+    }
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__cta:active {
+    scale: 0.97;
+  }
+
+  /* Scrolling images */
+  [data-slot='sticky-progressive-blur'] .spb__images {
+    grid-area: 1 / 2;
+    display: flex;
+    flex-direction: column;
+    gap: 6rem;
+    margin: 0;
+    padding: 0;
+    padding-block: calc(
+      (var(--spb-padding) * 1vh) - (var(--spb-img-size) * 0.5)
+    );
+    list-style-type: none;
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__images li {
+    width: var(--spb-img-size);
+    aspect-ratio: 1;
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__images img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+    filter: contrast(1.1) saturate(var(--spb-saturate, 0.1));
+  }
+
+  /* Progressive blur: layer i blurs less and masks a taller band, so the
+     stack ramps from sharp to heavily blurred towards the bottom edge. */
+  [data-slot='sticky-progressive-blur'] .spb__blur {
+    position: sticky;
+    top: 0;
+    grid-area: 1 / 2;
+    justify-self: center;
+    width: 100%;
+    height: 100vh;
+    pointer-events: none;
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__blur > div {
+    --spb-blur: calc(
+      sin(((var(--spb-layers) - var(--i)) / var(--spb-layers)) * 90deg) *
+        var(--spb-blur-max)
+    );
+    --spb-stop: calc(
+      sin((var(--i) / var(--spb-layers)) * 90deg) * var(--spb-mask-stop)
+    );
+    position: absolute;
+    inset: 0;
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__blur > div::after {
+    content: '';
+    position: absolute;
+    inset: 0 -250%;
+    backdrop-filter: blur(calc(var(--spb-blur) * 1px));
+    mask: linear-gradient(
+      180deg,
+      #0000 0 calc((100 - var(--spb-stop)) * 1%),
+      #000 100%
+    );
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__blur > div::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 20000;
+    height: calc(var(--spb-stop) * 1%);
+    clip-path: inset(-100% 0 -100% 0);
+  }
+
+  /* Debug overlay */
+  [data-slot='sticky-progressive-blur'] .spb__blur::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__blur::after,
+  [data-slot='sticky-progressive-blur'] .spb__blur > div::before {
+    outline: 4px dashed #0000;
+    transition: outline-color 0.26s var(--spb-ease-out);
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__label {
+    position: sticky;
+    top: 0;
+    grid-area: 1 / 2;
+    height: 100vh;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.26s var(--spb-ease-out);
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__label::after {
+    content: 'blur overlay';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    z-index: 2;
+    padding: 0.25rem;
+    font-family: 'Special Elite', ui-monospace, monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 0 1px #111;
+    background: var(--spb-accent);
+    transform: rotate(-90deg) translateX(100%);
+    transform-origin: 0 100%;
+  }
+
+  [data-slot='sticky-progressive-blur'] .spb__label::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.5;
+    background: repeating-linear-gradient(
+      45deg,
+      #0000 0 8px,
+      var(--spb-accent) 8px 10px
+    );
+  }
+
+  [data-slot='sticky-progressive-blur'][data-debug='true'] .spb__blur::after,
+  [data-slot='sticky-progressive-blur'][data-debug='true']
+    .spb__blur
+    > div::before {
+    outline-color: var(--spb-accent);
+  }
+
+  [data-slot='sticky-progressive-blur'][data-debug='true'] .spb__label {
+    opacity: 1;
+  }
+
+  [data-slot='sticky-progressive-blur'][data-debug='true'] .spb__intro {
+    opacity: 0.25;
+  }
+
+  @media (max-width: 640px) {
+    [data-slot='sticky-progressive-blur'] .spb__header {
+      gap: 1rem;
+    }
+
+    [data-slot='sticky-progressive-blur'] .spb__intro {
+      max-width: 40vw;
+    }
+
+    [data-slot='sticky-progressive-blur'] .spb__heading {
+      font-size: 1.375rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='sticky-progressive-blur'] .spb__cta:active {
+      scale: 1;
+    }
+  }
+}

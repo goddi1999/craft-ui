@@ -1,0 +1,1 @@
+export { InputDissolutionPage } from './page'

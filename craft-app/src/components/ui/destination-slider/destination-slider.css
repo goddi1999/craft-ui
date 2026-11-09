@@ -1,0 +1,168 @@
+@layer destination-slider {
+  [data-slot='destination-slider'] {
+    --destination-slider-accent: hsl(10 100% 65%);
+    --destination-slider-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+    width: 260px;
+    max-width: 100%;
+    height: 44px;
+    color: var(--foreground);
+    touch-action: none;
+    animation: destination-slider-in 1s 0.25s
+      cubic-bezier(0.215, 0.61, 0.355, 1) both;
+  }
+
+  [data-slot='destination-slider'] .destination-slider__input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    margin: 0;
+    opacity: 0;
+    filter: blur(4px);
+    accent-color: var(--foreground);
+    cursor: grab;
+    transition-property: filter, opacity, translate;
+    transition-duration: 0.22s;
+    transition-timing-function: var(--destination-slider-ease-out);
+  }
+
+  [data-slot='destination-slider'] .destination-slider__input:active {
+    cursor: grabbing;
+  }
+
+  [data-slot='destination-slider'][data-explode='true']
+    .destination-slider__input {
+    opacity: 1;
+    filter: blur(0);
+    translate: 0 100px;
+  }
+
+  [data-slot='destination-slider'] svg {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    overflow: visible;
+    translate: 0 -50%;
+    pointer-events: none;
+  }
+
+  [data-slot='destination-slider'] circle {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  [data-slot='destination-slider'] .destination-slider__track {
+    stroke: currentColor;
+    stroke-width: 3px;
+    stroke-dasharray: 0 15;
+    stroke-dashoffset: -0.5;
+    stroke-linecap: round;
+  }
+
+  [data-slot='destination-slider'] .destination-slider__track[data-progress] {
+    stroke-dasharray: 0 0;
+  }
+
+  [data-slot='destination-slider'] .destination-slider__stop {
+    fill: currentColor;
+  }
+
+  [data-slot='destination-slider'] circle.destination-slider__stop {
+    stroke: currentColor;
+  }
+
+  [data-slot='destination-slider'] .destination-slider__stop[data-end] {
+    fill: var(--background);
+  }
+
+  [data-slot='destination-slider'] .destination-slider__marker-fill {
+    fill: var(--destination-slider-accent);
+    stroke: var(--destination-slider-accent);
+  }
+
+  /* Starts tucked inside the marker dot so it never pops from nothing. */
+  [data-slot='destination-slider'] .destination-slider__balloon {
+    transform-box: fill-box;
+    transform-origin: center;
+    scale: 0.3;
+    translate: 0 0;
+    transition-property: translate, scale;
+    transition-duration: 0.15s;
+    transition-timing-function: var(--destination-slider-ease-out);
+  }
+
+  [data-slot='destination-slider'] .destination-slider__symbols {
+    transform-box: fill-box;
+    transform-origin: center;
+    scale: 0.5;
+    opacity: 0;
+    transition-property: translate, scale, opacity;
+    transition-duration: 0.15s;
+    transition-timing-function: var(--destination-slider-ease-out);
+  }
+
+  [data-slot='destination-slider']
+    .destination-slider__input:is(:active, :focus-visible)
+    + svg
+    .destination-slider__balloon {
+    scale: 1;
+    translate: 0 -42px;
+  }
+
+  [data-slot='destination-slider']
+    .destination-slider__input:is(:active, :focus-visible)
+    + svg
+    .destination-slider__symbols {
+    translate: -0.5px -50px;
+    opacity: 1;
+    scale: 1.6;
+  }
+
+  [data-slot='destination-slider'] .destination-slider__symbol {
+    stroke: var(--background);
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity 0.15s ease-out;
+  }
+
+  [data-slot='destination-slider'] .destination-slider__symbol[data-symbol='triangle'] {
+    translate: -1px -1px;
+    scale: 0.9;
+  }
+
+  [data-slot='destination-slider'] .destination-slider__symbol[data-symbol='square'] {
+    scale: 0.9;
+  }
+
+  [data-slot='destination-slider'] .destination-slider__symbol[data-symbol='star'] {
+    stroke-width: 1.6px;
+    scale: 1.1;
+    translate: 1px 0;
+  }
+
+  [data-slot='destination-slider'] .destination-slider__symbol[data-active] {
+    opacity: 1;
+  }
+
+  @keyframes destination-slider-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='destination-slider'] {
+      animation-duration: 0.2s;
+      animation-delay: 0s;
+    }
+
+    [data-slot='destination-slider'] .destination-slider__balloon,
+    [data-slot='destination-slider'] .destination-slider__symbols {
+      transition-duration: 0s;
+    }
+  }
+}

@@ -1,0 +1,467 @@
+@layer morphing-disclosure {
+  /* Sub-layers keep the pen's cascade: border variants beat motion beats base. */
+  @layer base, motion, borders;
+
+  @layer base {
+    [data-slot='morphing-disclosure'] {
+      --md-bg: var(--card);
+      --md-hover-bg: color-mix(in oklch, var(--card), var(--foreground) 6%);
+      --md-border: color-mix(in oklch, var(--card), var(--foreground) 20%);
+      --border-color: var(--md-border);
+      width: 340px;
+      max-width: 100%;
+      color: var(--foreground);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      letter-spacing: -0.025em;
+    }
+
+    [data-slot='morphing-disclosure'] details {
+      position: relative;
+      background: var(--md-bg);
+      border-inline: var(--border-width) solid var(--border-color);
+    }
+
+    [data-slot='morphing-disclosure'] summary {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      padding: 0.875rem 1rem;
+      cursor: pointer;
+      list-style: none;
+      outline-color: hsl(10 90% 50%);
+      -webkit-tap-highlight-color: #0000;
+    }
+
+    [data-slot='morphing-disclosure'] summary::-webkit-details-marker,
+    [data-slot='morphing-disclosure'] summary::marker {
+      display: none;
+      font-size: 0;
+    }
+
+    /* Full-row hit area that follows the row's morphing corners. */
+    [data-slot='morphing-disclosure'] summary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+    }
+
+    [data-slot='morphing-disclosure'] summary > span {
+      grid-column: 2;
+    }
+
+    [data-slot='morphing-disclosure'] summary > svg {
+      width: 18px;
+      height: 18px;
+      opacity: 0.7;
+    }
+
+    [data-slot='morphing-disclosure'] summary > svg:last-child {
+      grid-column: 3;
+      width: 16px;
+      height: 16px;
+      transition-property: rotate, opacity;
+      transition-duration: var(--duration);
+      transition-timing-function: var(--ease);
+    }
+
+    [data-slot='morphing-disclosure'] details[open] summary > svg:last-child {
+      rotate: 225deg;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      [data-slot='morphing-disclosure'] details:has(summary:hover) {
+        background: var(--md-hover-bg);
+      }
+
+      [data-slot='morphing-disclosure']
+        details:has(summary:hover)
+        summary
+        > svg:last-child {
+        opacity: 1;
+      }
+    }
+
+    [data-slot='morphing-disclosure'] [data-slot='morphing-disclosure-content'] {
+      padding: 0 1rem 1rem;
+      translate: 0 calc(var(--translate-y, 1) * 1rem);
+      opacity: var(--opacity, 0.4);
+      filter: blur(calc(var(--blur, 4) * 1px));
+      color: color-mix(in oklch, currentColor, #0000 30%);
+    }
+
+    [data-slot='morphing-disclosure'] [data-slot='morphing-disclosure-content'] p {
+      margin: 0;
+      padding: 0;
+    }
+
+    [data-slot='morphing-disclosure'][data-style='border'] details:first-of-type {
+      border-top: var(--border-width) solid var(--border-color);
+    }
+
+    [data-slot='morphing-disclosure'][data-style='border'] details:last-of-type {
+      border-bottom: var(--border-width) solid var(--border-color);
+    }
+
+    [data-slot='morphing-disclosure'] details:first-of-type,
+    [data-slot='morphing-disclosure'] details:first-of-type summary::after {
+      border-radius: 1rem 1rem 0 0;
+    }
+
+    [data-slot='morphing-disclosure'] details:last-of-type,
+    [data-slot='morphing-disclosure'] details:last-of-type summary::after {
+      border-radius: 0 0 1rem 1rem;
+    }
+
+    [data-slot='morphing-disclosure'] details:has(+ details[open]),
+    [data-slot='morphing-disclosure'] details:has(+ details[open]) summary::after {
+      border-bottom-left-radius: 1rem;
+      border-bottom-right-radius: 1rem;
+    }
+
+    [data-slot='morphing-disclosure'] details[open] + details,
+    [data-slot='morphing-disclosure'] details[open] + details summary::after {
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+    }
+
+    [data-slot='morphing-disclosure'] details::before,
+    [data-slot='morphing-disclosure'] details::after {
+      pointer-events: none;
+      position: absolute;
+      inset: calc(var(--border-width) * -1);
+      z-index: 2;
+      border-radius: inherit;
+      border: var(--border-width) solid var(--border-color);
+      transform: translateZ(0);
+      opacity: 0;
+      clip-path: inset(0 0 0 0);
+    }
+
+    [data-slot='morphing-disclosure'] details:has(+ details[open])::after,
+    [data-slot='morphing-disclosure'] details[open] + details::before,
+    [data-slot='morphing-disclosure'] details[open]::before,
+    [data-slot='morphing-disclosure'] details[open]::after {
+      opacity: 1;
+    }
+
+    [data-slot='morphing-disclosure'] details[open] {
+      margin-block: calc(var(--translate-margin, 1) * 1rem);
+      border-radius: 1rem;
+      z-index: 2;
+    }
+
+    [data-slot='morphing-disclosure'] details[open] summary::after {
+      border-radius: 1rem;
+    }
+
+    [data-slot='morphing-disclosure'] details[open]:first-of-type {
+      margin-block-start: 0;
+    }
+
+    [data-slot='morphing-disclosure'] details[open]:last-of-type {
+      margin-block-end: 0;
+    }
+  }
+
+  @layer motion {
+    [data-slot='morphing-disclosure'] {
+      /* Spring-ish overshoot for the panel height. */
+      --bounce: linear(
+        0 0%, 0.5571 7.53%, 0.8252 11.98%, 0.9337 14.38%, 1.0166 16.8%,
+        1.0765 19.31%, 1.1146 21.97%, 1.1263 23.47%, 1.1325 25.06%,
+        1.133 26.76%, 1.128 28.62%, 1.1094 31.9%, 1.0484 39.77%,
+        1.0218 43.85%, 1.0011 48.42%, 0.9895 53.23%, 0.9861 59.8%,
+        1 81.27% 100%
+      );
+      /* Strong ease-out for borders, radii, and content. */
+      --ease: linear(
+        0 0%, 0.2688 9.91%, 0.3859 15%, 0.4917 20.19%, 0.5865 25.5%,
+        0.6705 30.93%, 0.7441 36.51%, 0.8075 42.26%, 0.8593 47.98%,
+        0.9022 53.93%, 0.9366 60.13%, 0.963 66.67%, 0.9812 73.4%,
+        0.9929 80.76%, 0.9986 88.89%, 1 100%
+      );
+      --bounce-duration: calc((1 / var(--speed, 1)) * 1s);
+      --duration: calc((0.26 / var(--speed, 1)) * 1s);
+    }
+
+    [data-slot='morphing-disclosure'] details {
+      transition-property: border-radius, margin, background-color,
+        border-color, border-width, transform, translate, opacity, color;
+      transition-duration: var(--duration);
+      transition-timing-function: var(--ease);
+      transform: translateZ(0);
+    }
+
+    [data-slot='morphing-disclosure'] details::before,
+    [data-slot='morphing-disclosure'] details::after {
+      transition-property: opacity, border-color, border-radius;
+      transition-duration: var(--duration);
+      transition-timing-function: var(--ease);
+    }
+
+    [data-slot='morphing-disclosure'] [data-slot='morphing-disclosure-content'] {
+      transition-property: translate, opacity, filter;
+      transition-duration: var(--duration);
+      transition-timing-function: var(--ease);
+    }
+
+    [data-slot='morphing-disclosure'] details,
+    [data-slot='morphing-disclosure'] details::details-content {
+      interpolate-size: allow-keywords;
+    }
+
+    [data-slot='morphing-disclosure'] details::details-content {
+      height: 0;
+      overflow: hidden;
+      transition-property: content-visibility, height;
+      transition-behavior: allow-discrete;
+      transition-duration: var(--bounce-duration);
+      transition-timing-function: var(--bounce);
+    }
+
+    [data-slot='morphing-disclosure'] details[open]::details-content {
+      height: var(--content-height);
+    }
+
+    @supports (interpolate-size: allow-keywords) {
+      [data-slot='morphing-disclosure'] details[open]::details-content {
+        height: fit-content;
+      }
+    }
+
+    [data-slot='morphing-disclosure']
+      details[open]
+      [data-slot='morphing-disclosure-content'] {
+      translate: 0 0;
+      opacity: 1;
+      filter: blur(0);
+    }
+
+    /* Reduced motion: no springing or sliding; content still fades in. */
+    @media (prefers-reduced-motion: reduce) {
+      [data-slot='morphing-disclosure'] details,
+      [data-slot='morphing-disclosure'] details::details-content {
+        transition-duration: 0s;
+      }
+
+      [data-slot='morphing-disclosure'] [data-slot='morphing-disclosure-content'] {
+        translate: 0 0;
+        filter: none;
+        transition-property: opacity;
+      }
+    }
+  }
+
+  @layer borders {
+    [data-slot='morphing-disclosure'] {
+      transform-style: preserve-3d;
+      perspective: 120px;
+    }
+
+    /* depth: open row lifts towards the viewer, the rest recede and fade */
+    [data-slot='morphing-disclosure'][data-depth='true'] {
+      pointer-events: none;
+    }
+
+    [data-slot='morphing-disclosure'][data-depth='true'] details {
+      pointer-events: all;
+      transform: translateZ(0);
+    }
+
+    [data-slot='morphing-disclosure'][data-depth='true'] details[open] {
+      transform: translateZ(calc(var(--translate-depth, 0.5) * 1rem));
+    }
+
+    [data-slot='morphing-disclosure'][data-depth='true']:has([open])
+      details:not([open]) {
+      transform: translateZ(calc(var(--translate-depth, 0.5) * -1rem));
+      color: color-mix(in oklch, currentColor, #0000);
+    }
+
+    [data-slot='morphing-disclosure'][data-style='pseudo'] details::before,
+    [data-slot='morphing-disclosure'][data-style='pseudo'] details::after {
+      content: '';
+    }
+
+    [data-slot='morphing-disclosure'][data-style='border'][data-bordered='true']
+      details {
+      border-block-start: var(--border-width) solid var(--border-color);
+      border-block-end: var(--border-width) solid var(--border-color);
+    }
+
+    /* bordered: rows overlap by one border width so separators never double */
+    [data-slot='morphing-disclosure'][data-bordered='true'] details {
+      transform: translate(
+        0,
+        calc(var(--border-width) * (var(--level, 1) - 1))
+      );
+      z-index: var(--level, 1);
+    }
+
+    [data-slot='morphing-disclosure'][data-bordered='true']
+      details:has(+ details + details[open]) {
+      --level: 2;
+    }
+    [data-slot='morphing-disclosure'][data-bordered='true']
+      details:has(+ details + details + details[open]) {
+      --level: 3;
+    }
+    [data-slot='morphing-disclosure'][data-bordered='true']
+      details:has(+ details + details + details + details[open]) {
+      --level: 4;
+    }
+    [data-slot='morphing-disclosure'][data-bordered='true']
+      details[open]
+      + details
+      + details {
+      --level: 0;
+    }
+    [data-slot='morphing-disclosure'][data-bordered='true']
+      details[open]
+      + details
+      + details
+      + details {
+      --level: -1;
+    }
+    [data-slot='morphing-disclosure'][data-bordered='true']
+      details[open]
+      + details
+      + details
+      + details
+      + details {
+      --level: -2;
+    }
+
+    [data-slot='morphing-disclosure'][data-bordered='true']:not(:has([open]))
+      details:nth-of-type(2) {
+      --level: 0;
+    }
+    [data-slot='morphing-disclosure'][data-bordered='true']:not(:has([open]))
+      details:nth-of-type(3) {
+      --level: -1;
+    }
+    [data-slot='morphing-disclosure'][data-bordered='true']:not(:has([open]))
+      details:nth-of-type(4) {
+      --level: -2;
+    }
+    [data-slot='morphing-disclosure'][data-bordered='true']:not(:has([open]))
+      details:nth-of-type(5) {
+      --level: -3;
+    }
+
+    [data-slot='morphing-disclosure'][data-bordered='true'][data-depth='true']
+      details {
+      transform: translate3d(
+        0,
+        calc(var(--border-width) * (var(--level, 1) - 1)),
+        0
+      );
+    }
+
+    [data-slot='morphing-disclosure'][data-bordered='true'][data-depth='true']:has(
+        [open]
+      )
+      details:not([open]) {
+      transform: translate3d(
+        0,
+        calc(var(--border-width) * (var(--level, 1) - 1)),
+        calc(var(--translate-depth, 0.5) * -1rem)
+      );
+    }
+
+    [data-slot='morphing-disclosure'][data-style='pseudo'] details::before {
+      display: none;
+    }
+
+    /* pseudo + unbordered: rings hug only the outer edges of each group */
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false'] details:last-of-type::before,
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false'] details:last-of-type::after,
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false']
+      details:has(+ details[open])::before,
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false']
+      details:has(+ details[open])::after {
+      border-bottom-left-radius: calc(1rem + var(--border-width));
+      border-bottom-right-radius: calc(1rem + var(--border-width));
+      border-bottom-color: var(--border-color);
+    }
+
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false'] details:first-of-type::before,
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false'] details:first-of-type::after,
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false']
+      details[open]
+      + details::before,
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false']
+      details[open]
+      + details::after {
+      border-top-left-radius: calc(1rem + var(--border-width));
+      border-top-right-radius: calc(1rem + var(--border-width));
+      border-top-color: var(--border-color);
+    }
+
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false'] details::before,
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false'] details::after {
+      opacity: 1;
+      border-block-color: #0000;
+    }
+
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false'] details::after {
+      border-inline-color: var(--border-color);
+    }
+
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false'] details[open]::before,
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='false'] details[open]::after {
+      border-radius: calc(1rem + var(--border-width));
+      border-block-color: var(--border-color);
+    }
+
+    /* border style: real borders only where a group starts or ends */
+    [data-slot='morphing-disclosure'][data-style='border'] details {
+      border-block-start: 0px solid #0000;
+      border-block-end: 0px solid var(--border-color);
+    }
+
+    [data-slot='morphing-disclosure'][data-style='border'] details:first-of-type,
+    [data-slot='morphing-disclosure'][data-style='border'] details[open] + details {
+      border-block-start: var(--border-width) solid var(--border-color);
+    }
+
+    [data-slot='morphing-disclosure'][data-style='border'] details:last-of-type,
+    [data-slot='morphing-disclosure'][data-style='border'] details:has(+ details[open]) {
+      border-block-end: var(--border-width) solid var(--border-color);
+    }
+
+    [data-slot='morphing-disclosure'][data-style='border'] details[open] {
+      border-block-start: var(--border-width) solid var(--border-color);
+      border-block-end: var(--border-width) solid var(--border-color);
+    }
+
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='true'] details {
+      border-block: var(--border-width) solid #0000;
+    }
+
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='true'] details::before,
+    [data-slot='morphing-disclosure'][data-style='pseudo'][data-bordered='true'] details::after {
+      opacity: 1;
+    }
+
+    /* translate: siblings slide away instead of the open row gaining margin */
+    [data-slot='morphing-disclosure'][data-translate='true'] details[open] {
+      margin-block: 0;
+    }
+
+    [data-slot='morphing-disclosure'][data-translate='true'] details:has(~ details[open]) {
+      translate: 0 calc(var(--translate-margin, 1.5) * -1rem);
+    }
+
+    [data-slot='morphing-disclosure'][data-translate='true'] details[open] ~ details {
+      translate: 0 calc(var(--translate-margin, 1.5) * 1rem);
+    }
+
+    [data-slot='morphing-disclosure'][data-highlight='true'] details[open] {
+      --border-color: var(--foreground);
+    }
+  }
+}

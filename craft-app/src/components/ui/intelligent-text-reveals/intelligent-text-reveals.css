@@ -1,0 +1,323 @@
+@layer intelligent-text-reveals {
+  @property --itr-progress {
+    initial-value: 0;
+    syntax: '<number>';
+    inherits: true;
+  }
+
+  [data-slot='intelligent-text-reveals'] {
+    --itr-start-mask: -70;
+    --itr-start-bg: 132;
+    --itr-end-bg: 16;
+    --itr-duration: 1.4;
+    --itr-delay: 0.5;
+    --itr-blur: 4;
+    --itr-color: hsl(220 73% 72% / 0.64);
+    --itr-ink: var(--foreground);
+    --itr-body: color-mix(in oklab, var(--foreground), var(--background) 30%);
+    box-sizing: border-box;
+    font-family: 'Inter Variable', Inter, ui-sans-serif, system-ui, sans-serif;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    width: 50ch;
+    max-width: 100%;
+  }
+
+  [data-slot='intelligent-text-reveals'][data-signature='true'] {
+    padding-bottom: 9rem;
+  }
+
+  [data-slot='intelligent-text-reveals'] *,
+  [data-slot='intelligent-text-reveals'] *::before,
+  [data-slot='intelligent-text-reveals'] *::after {
+    box-sizing: border-box;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__main,
+  [data-slot='intelligent-text-reveals'] .itr__container {
+    position: relative;
+  }
+
+  /* Invisible copy that gives the stack its natural height. */
+  [data-slot='intelligent-text-reveals'] .itr__text {
+    width: 50ch;
+    max-width: 100%;
+    padding: 1rem;
+    font-weight: 300;
+    opacity: 0;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__dupe {
+    position: absolute;
+    container-type: inline-size;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    min-height: 100%;
+    width: 50ch;
+    max-width: 100%;
+    font-weight: 300;
+    display: grid;
+    place-items: end;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__dupe-content {
+    padding: 1rem;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__dupe--reveal {
+    place-items: start;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__dupe--reveal .itr__dupe-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  [data-slot='intelligent-text-reveals'] :is(.itr__dupe, .itr__text) {
+    color: var(--itr-body);
+  }
+
+  [data-slot='intelligent-text-reveals'] :is(.itr__dupe, .itr__text) a {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  [data-slot='intelligent-text-reveals']
+    :is(.itr__dupe, .itr__text):not(.itr__dupe--hide)
+    :is(a, strong) {
+    color: var(--itr-ink);
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__dupe--reveal a:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__rule {
+    width: calc(100% - 1rem);
+    height: 0;
+    margin-block: 2rem;
+    border: 0;
+    border-top: 1px solid currentColor;
+    opacity: 0.2;
+    display: inline-block;
+    animation: itr-fade 1s
+      calc((var(--itr-duration) + var(--itr-delay)) * 1.1s) both;
+  }
+
+  @keyframes itr-fade {
+    0% {
+      opacity: 0;
+    }
+  }
+
+  /* The wipe: a radial mask sweeps down while a tinted, blurred copy leads it. */
+  [data-slot='intelligent-text-reveals'] :is(.itr__dupe--hide, .itr__dupe--reveal) {
+    animation:
+      itr-reveal calc(var(--itr-duration) * 1s) calc(var(--itr-delay) * 1s)
+        ease-in both,
+      itr-compress calc(var(--itr-duration) * 0.5s)
+        calc((var(--itr-delay) * 1s) + (var(--itr-duration) * 0.44s))
+        ease-in-out both;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__dupe--reveal {
+    --itr-movement: 0.15lh;
+    --itr-compression: 1.55;
+    line-height: 1.46;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__dupe--reveal .itr__dupe-content {
+    mask-image: radial-gradient(
+      180cqmax 180cqmax at 50%
+        calc(
+          (var(--itr-start-mask) * 1cqmax) +
+            ((var(--itr-progress) - 1) * (var(--itr-start-mask) * -1cqmax))
+        ),
+      #fff 38%,
+      #0000 40%
+    );
+    mask-composite: exclude;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__dupe--hide {
+    --itr-compression: 1.4;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__dupe--hide .itr__dupe-content {
+    filter: blur(calc(var(--itr-blur, 0) * 1px));
+    background: radial-gradient(
+        180cqmax 180cqmax at 50%
+          calc(
+            (var(--itr-start-bg) * 1cqmax) -
+              (
+                clamp(0, var(--itr-progress), 1) *
+                  ((var(--itr-start-bg) - var(--itr-end-bg)) * 1cqmax)
+              )
+          ),
+        var(--itr-color) 25%,
+        var(--itr-ink),
+        #0000
+      )
+      50% 50% / 100% 100% no-repeat;
+    color: #0000;
+    background-clip: text;
+    mask-image:
+      radial-gradient(
+        180cqmax 180cqmax at 50%
+          calc(
+            (var(--itr-start-mask) * 1cqmax) +
+              ((var(--itr-progress) - 1) * (var(--itr-start-mask) * -1cqmax))
+          ),
+        #fff 43%,
+        #0000 45%
+      ),
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+  }
+
+  @keyframes itr-reveal {
+    0% {
+      --itr-progress: 0;
+      animation-timing-function: ease-in;
+    }
+    40% {
+      --itr-progress: 1;
+      animation-timing-function: ease-out;
+    }
+    90%,
+    100% {
+      --itr-progress: 2;
+    }
+  }
+
+  @keyframes itr-compress {
+    40% {
+      transform: translateY(var(--itr-movement, 0));
+    }
+    50% {
+      line-height: var(--itr-compression, 1.5);
+    }
+    75% {
+      transform: translateY(0);
+    }
+    100% {
+      line-height: 1.5;
+    }
+  }
+
+  /* Signature: drawn in once the copy has landed. */
+  [data-slot='intelligent-text-reveals'] .itr__sig {
+    --itr-base-delay: calc(var(--itr-duration) + var(--itr-delay));
+    --itr-natty-delay: 0.973125;
+    position: absolute;
+    top: calc(100% + 1rem);
+    width: 160px;
+    right: 0;
+    rotate: 10deg;
+    color: var(--itr-ink);
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__sig path {
+    --end: 1.025;
+    stroke-dasharray: var(--end);
+    stroke-dashoffset: var(--end);
+    animation: itr-draw calc(var(--path-speed) * 1s)
+      calc((var(--itr-base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+      forwards;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__sig :is(.itr__eye, .itr__nose) {
+    fill: hsl(0 0% 0% / 0);
+    animation:
+      itr-draw calc(var(--path-speed) * 1s)
+        calc((var(--itr-base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+        forwards,
+      itr-fill 0.5s
+        calc((var(--itr-base-delay) * 1s) + var(--itr-natty-delay) * 1s)
+        forwards;
+  }
+
+  [data-slot='intelligent-text-reveals'] .itr__sig .itr__eye {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation:
+      itr-draw calc(var(--path-speed) * 1s)
+        calc((var(--itr-base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+        forwards,
+      itr-fill 0.5s
+        calc((var(--itr-base-delay) * 1s) + var(--itr-natty-delay) * 1s)
+        forwards,
+      itr-blink 6s
+        calc((var(--itr-base-delay) * 1s) + var(--itr-natty-delay) * 1s)
+        infinite;
+  }
+
+  @keyframes itr-fill {
+    to {
+      fill: currentColor;
+    }
+  }
+
+  @keyframes itr-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes itr-blink {
+    0%,
+    46%,
+    48%,
+    50%,
+    100% {
+      transform: scaleY(1);
+    }
+    47%,
+    49% {
+      transform: scaleY(0.1);
+    }
+  }
+
+  /* Reduced motion: skip the wipe and draw, just fade the finished state in. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='intelligent-text-reveals'] .itr__dupe--hide {
+      display: none;
+    }
+
+    [data-slot='intelligent-text-reveals'] .itr__dupe--reveal {
+      animation: itr-fade 0.4s calc(var(--itr-delay) * 1s) both;
+    }
+
+    [data-slot='intelligent-text-reveals']
+      .itr__dupe--reveal
+      .itr__dupe-content {
+      mask-image: none;
+    }
+
+    [data-slot='intelligent-text-reveals'] .itr__rule {
+      animation-duration: 0.4s;
+      animation-delay: calc(var(--itr-delay) * 1s);
+    }
+
+    [data-slot='intelligent-text-reveals'] .itr__sig {
+      animation: itr-fade 0.4s calc(var(--itr-delay) * 1s) both;
+    }
+
+    [data-slot='intelligent-text-reveals'] .itr__sig path,
+    [data-slot='intelligent-text-reveals'] .itr__sig :is(.itr__eye, .itr__nose) {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+
+    [data-slot='intelligent-text-reveals'] .itr__sig :is(.itr__eye, .itr__nose) {
+      fill: currentColor;
+    }
+  }
+}
