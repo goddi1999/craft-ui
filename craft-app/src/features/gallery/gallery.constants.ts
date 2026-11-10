@@ -1,27 +1,20 @@
-import type { VariantProps } from 'class-variance-authority'
-
-import type { badgeVariants } from '@/components/ui/badge-variants'
-
 import type { GalleryCategory } from './gallery.types'
-
-type BadgeVariant = NonNullable<VariantProps<typeof badgeVariants>['variant']>
 
 type CategoryMeta = {
   label: string
-  variant: BadgeVariant
 }
 
-/** Display order of the filter chips, and the badge color for each category. */
+/** Display order of the filter chips. Badges stay neutral — no per-category color. */
 export const GALLERY_CATEGORIES: Record<GalleryCategory, CategoryMeta> = {
-  charts: { label: 'Charts', variant: 'blue' },
-  data: { label: 'Data display', variant: 'cyan' },
-  animation: { label: 'Animation', variant: 'violet' },
-  scroll: { label: 'Scroll-driven', variant: 'teal' },
-  navigation: { label: 'Navigation', variant: 'indigo' },
-  inputs: { label: 'Inputs & controls', variant: 'orange' },
-  layout: { label: 'Cards & layout', variant: 'green' },
-  effects: { label: 'Backgrounds & effects', variant: 'pink' },
-  media: { label: 'Media', variant: 'lime' },
+  charts: { label: 'Charts' },
+  data: { label: 'Data display' },
+  animation: { label: 'Animation' },
+  scroll: { label: 'Scroll-driven' },
+  navigation: { label: 'Navigation' },
+  inputs: { label: 'Inputs & controls' },
+  layout: { label: 'Cards & layout' },
+  effects: { label: 'Backgrounds & effects' },
+  media: { label: 'Media' },
 }
 
 export const CATEGORY_ORDER = Object.keys(GALLERY_CATEGORIES) as GalleryCategory[]

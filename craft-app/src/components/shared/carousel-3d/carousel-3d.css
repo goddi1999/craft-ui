@@ -11,6 +11,8 @@
     --carousel-3d-radius: 1.5em;
 
     display: grid;
+    /* Tall enough for a card seen face-on at any size, so no option crops it. */
+    min-height: calc(var(--carousel-3d-card-width) * 10 / 7 + 3em);
     /* keeps the rotated cards from spawning scrollbars */
     overflow: hidden;
     perspective: var(--carousel-3d-perspective);
@@ -21,18 +23,19 @@
     mask: linear-gradient(90deg, #0000, red 20% 80%, #0000);
   }
 
+  /* Each size caps at a share of the viewport so phones never crop a card. */
   [data-slot='carousel-3d'].carousel-3d--sm {
-    --carousel-3d-card-width: 11em;
+    --carousel-3d-card-width: min(11em, 28vw);
     --carousel-3d-radius: 1em;
   }
 
   [data-slot='carousel-3d'].carousel-3d--size-default {
-    --carousel-3d-card-width: 17.5em;
+    --carousel-3d-card-width: min(17.5em, 40vw);
     --carousel-3d-radius: 1.5em;
   }
 
   [data-slot='carousel-3d'].carousel-3d--lg {
-    --carousel-3d-card-width: 24em;
+    --carousel-3d-card-width: min(24em, 52vw);
     --carousel-3d-radius: 2em;
   }
 
@@ -120,18 +123,5 @@
     [data-slot='carousel-3d-ring'] {
       animation-duration: calc(var(--carousel-3d-duration) * 4);
     }
-  }
-
-  /* ------------------------------------------------------------------ */
-  /* demo stage                                                          */
-  /* ------------------------------------------------------------------ */
-
-  [data-slot='carousel-3d-stage'] {
-    color-scheme: light dark;
-    position: relative;
-    min-height: 100svh;
-    background: light-dark(#fff3ed, #180f0b);
-    color: canvastext;
-    overflow: hidden;
   }
 }

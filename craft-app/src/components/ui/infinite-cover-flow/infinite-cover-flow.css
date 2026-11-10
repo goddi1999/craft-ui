@@ -1,6 +1,20 @@
 @layer infinite-cover-flow {
   [data-slot='infinite-cover-flow'] {
-    --infinite-cover-flow-size: max(200px, 20vmin);
+    /* Edge of a square with the same area as one cover; sized to the
+       component (cqi), not the viewport, so it fits narrow containers. */
+    --infinite-cover-flow-size: clamp(120px, 16cqi, 300px);
+    --infinite-cover-flow-ratio: 1;
+    --infinite-cover-flow-width: calc(
+      var(--infinite-cover-flow-size) * sqrt(var(--infinite-cover-flow-ratio))
+    );
+    --infinite-cover-flow-height: calc(
+      var(--infinite-cover-flow-size) / sqrt(var(--infinite-cover-flow-ratio))
+    );
+    --infinite-cover-flow-gap: 0.5vmin;
+    /* --infinite-cover-flow-radius and --infinite-cover-flow-reflection-blur
+       are read with fallbacks below rather than declared here, so a
+       className like [--infinite-cover-flow-radius:12px] can override them
+       despite this layer outranking Tailwind's utilities. */
     --infinite-cover-flow-bg: var(--background);
     --infinite-cover-flow-chrome: color-mix(
       in oklab,
@@ -9,8 +23,9 @@
     );
     --infinite-cover-flow-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     position: relative;
+    container-type: inline-size;
     width: 100%;
-    height: 40rem;
+    height: clamp(26rem, 80vw, 40rem);
     overflow: hidden;
     background: var(--infinite-cover-flow-bg);
     outline: none;
@@ -37,29 +52,27 @@
 
   [data-slot='infinite-cover-flow'] .infinite-cover-flow__box {
     position: absolute;
-    top: 50%;
+    /* Above centre, leaving the lower band for the reflection and controls. */
+    top: 42%;
     left: 50%;
-    width: var(--infinite-cover-flow-size);
-    height: var(--infinite-cover-flow-size);
+    width: var(--infinite-cover-flow-width);
+    height: var(--infinite-cover-flow-height);
+    border-radius: var(--infinite-cover-flow-radius, 0px);
+    background: var(--muted);
     transform-style: preserve-3d;
     /* GSAP takes over opacity and transforms once the loop is built. */
     opacity: 0;
   }
 
-  [data-slot='infinite-cover-flow'] .infinite-cover-flow__box:nth-of-type(odd) {
-    background: hsl(90 80% 70%);
-  }
-
-  [data-slot='infinite-cover-flow'] .infinite-cover-flow__box:nth-of-type(even) {
-    background: hsl(90 80% 40%);
-  }
-
-  [data-slot='infinite-cover-flow'] .infinite-cover-flow__box img {
+  [data-slot='infinite-cover-flow'] .infinite-cover-flow__image,
+  [data-slot='infinite-cover-flow'] .infinite-cover-flow__reflection,
+  [data-slot='infinite-cover-flow'] .infinite-cover-flow__reflection img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    border-radius: inherit;
     object-fit: cover;
     pointer-events: none;
   }
@@ -73,13 +86,14 @@
     left: 50%;
     width: 100%;
     height: 100%;
+    border-radius: inherit;
   }
 
   [data-slot='infinite-cover-flow'] .infinite-cover-flow__box::after {
     background-image: var(--infinite-cover-flow-src);
     background-size: cover;
     transform: translate(-50%, -50%) rotate(180deg) translate(0, -100%)
-      translate(0, -0.5vmin);
+      translate(0, calc(var(--infinite-cover-flow-gap) * -1));
     opacity: 0.75;
   }
 
@@ -87,12 +101,13 @@
     z-index: 2;
     background: linear-gradient(var(--infinite-cover-flow-bg) 50%, transparent);
     transform: translate(-50%, -50%) rotate(180deg) translate(0, -100%)
-      translate(0, -0.5vmin) scale(1.01);
+      translate(0, calc(var(--infinite-cover-flow-gap) * -1)) scale(1.01);
   }
 
   @supports (-webkit-box-reflect: below) {
-    [data-slot='infinite-cover-flow'] .infinite-cover-flow__box {
-      -webkit-box-reflect: below 0.5vmin
+    [data-slot='infinite-cover-flow'][data-reflection='mirror']
+      .infinite-cover-flow__box {
+      -webkit-box-reflect: below var(--infinite-cover-flow-gap)
         linear-gradient(transparent 0 50%, white 100%);
     }
 
@@ -102,25 +117,46 @@
     }
   }
 
+  /* ---- blurred reflection ---- */
+  /* A real flipped copy of the cover, so it can take a filter — box-reflect
+     can only fade, never blur. */
+  [data-slot='infinite-cover-flow'][data-reflection='blur']
+    .infinite-cover-flow__box::before,
+  [data-slot='infinite-cover-flow'][data-reflection='blur']
+    .infinite-cover-flow__box::after {
+    display: none;
+  }
+
+  /* Blur on the wrapper, mask on the image: a filter and a mask on the same
+     element clip the blur to hard edges. */
+  [data-slot='infinite-cover-flow'] .infinite-cover-flow__reflection {
+    top: calc(100% + var(--infinite-cover-flow-gap));
+    opacity: 0.6;
+    filter: blur(var(--infinite-cover-flow-reflection-blur, 10px)) saturate(1.3);
+  }
+
+  [data-slot='infinite-cover-flow'] .infinite-cover-flow__reflection img {
+    /* The mask is in the unflipped image's space: its bottom edge lands next
+       to the cover once scaleY(-1) turns it over. */
+    mask-image: linear-gradient(to top, black, transparent 70%);
+    transform: scaleY(-1);
+  }
+
   /* ---- controls ---- */
   [data-slot='infinite-cover-flow'] .infinite-cover-flow__controls {
     position: absolute;
-    top: calc(50% + var(--infinite-cover-flow-size));
+    bottom: 1.25rem;
     left: 50%;
     z-index: 1;
     display: flex;
-    justify-content: space-between;
-    width: 20vmin;
-    min-width: 200px;
-    height: 44px;
-    transform: translate(-50%, -50%) scale(1.5);
+    gap: 0.75rem;
+    transform: translateX(-50%);
   }
 
   [data-slot='infinite-cover-flow'] .infinite-cover-flow__button {
-    position: absolute;
-    top: 0;
-    width: 48px;
-    height: 48px;
+    position: relative;
+    width: 56px;
+    height: 56px;
     padding: 0;
     border: 0;
     border-radius: 50%;
@@ -131,16 +167,6 @@
     transition:
       translate 160ms var(--infinite-cover-flow-ease-out),
       scale 160ms var(--infinite-cover-flow-ease-out);
-  }
-
-  [data-slot='infinite-cover-flow']
-    .infinite-cover-flow__button[data-direction='previous'] {
-    right: 100%;
-  }
-
-  [data-slot='infinite-cover-flow']
-    .infinite-cover-flow__button[data-direction='next'] {
-    left: 100%;
   }
 
   [data-slot='infinite-cover-flow'] .infinite-cover-flow__button::before {

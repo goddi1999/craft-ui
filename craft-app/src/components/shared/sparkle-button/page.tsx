@@ -1,6 +1,13 @@
-import { useState } from 'react'
-
-import { Button } from '@/components/ui/button'
+import {
+  DemoControlGroup,
+  DemoSettings,
+  DemoSlider,
+  DemoSwitch,
+  DemoTextField,
+  useDemoSettings,
+} from '@/components/shared/demo-controls'
+import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
+import { DemoPage } from '@/components/shared/demo-page'
 import {
   SparkleButton,
   type SparkleButtonHue,
@@ -17,10 +24,10 @@ const HUES: SparkleButtonHue[] = [
   'pink',
   'orange',
 ]
-
 const SIZES: SparkleButtonSize[] = ['sm', 'default', 'lg']
 
-const HUE_VALUE: Record<SparkleButtonHue, number> = {
+/** Matches the button's own hue map so the stage glows the same color. */
+const STAGE_HUE: Record<SparkleButtonHue, number> = {
   violet: 260,
   indigo: 275,
   blue: 220,
@@ -31,124 +38,133 @@ const HUE_VALUE: Record<SparkleButtonHue, number> = {
   orange: 35,
 }
 
+const DEFAULTS = {
+  hue: 'violet' as SparkleButtonHue,
+  size: 'default' as SparkleButtonSize,
+  label: 'Generate Site',
+  showIcon: true,
+  particleCount: 20,
+}
+
+const PROPS: DemoPropDoc[] = [
+  {
+    name: 'children',
+    type: 'ReactNode',
+    default: "'Generate Site'",
+    description: 'Button label, rendered with the gradient text.',
+  },
+  {
+    name: 'hue',
+    type: "'violet' | 'indigo' | 'blue' | 'cyan' | 'teal' | 'green' | 'pink' | 'orange'",
+    default: "'violet'",
+    description: 'Color of the glow, sparks and label gradient.',
+  },
+  {
+    name: 'size',
+    type: "'sm' | 'default' | 'lg'",
+    default: "'default'",
+    description: 'Overall scale of the pill.',
+  },
+  {
+    name: 'showIcon',
+    type: 'boolean',
+    default: 'true',
+    description: 'Show the sparkle icon before the label.',
+  },
+  {
+    name: 'particleCount',
+    type: 'number',
+    default: '20',
+    description: 'How many particles orbit the button on hover.',
+  },
+  {
+    name: '...props',
+    type: 'ButtonHTMLAttributes',
+    description: 'Any native button attribute — onClick, disabled, type…',
+  },
+]
+
 export function SparkleButtonPage() {
-  const [hue, setHue] = useState<SparkleButtonHue>('violet')
-  const [size, setSize] = useState<SparkleButtonSize>('default')
-  const [label, setLabel] = useState('Generate Site')
+  const settings = useDemoSettings(DEFAULTS)
+  const { hue, size, label, showIcon, particleCount } = settings.values
+
+  const usage = toUsageSnippet({
+    component: 'SparkleButton',
+    from: '@/components/ui/sparkle-button',
+    props: { hue, size, showIcon, particleCount },
+    defaults: DEFAULTS,
+    children: label,
+  })
 
   return (
-    <div
-      data-slot="sparkle-button-stage"
-      style={{ ['--sparkle-button-stage-hue' as string]: HUE_VALUE[hue] }}
+    <DemoPage
+      eyebrow="ui / sparkle-button"
+      title="Sparkle Button"
+      description={
+        <>
+          A hover-activated pill button with a conic spark, orbiting particles
+          and gradient label text. Ported from{' '}
+          <a href="https://codepen.io/jh3y/pen/LYJMPBL" target="_blank" rel="noreferrer">
+            jh3y&apos;s CodePen
+          </a>
+          .
+        </>
+      }
+      align="stretch"
+      bleed
+      settings={
+        <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
+          <DemoControlGroup
+            title="Hue"
+            options={HUES}
+            value={hue}
+            onChange={(value) => settings.set('hue', value)}
+          />
+          <DemoControlGroup
+            title="Size"
+            options={SIZES}
+            value={size}
+            onChange={(value) => settings.set('size', value)}
+          />
+          <DemoTextField
+            label="Label"
+            value={label}
+            onValueChange={(value) => settings.set('label', value)}
+            maxLength={32}
+          />
+          <DemoSlider
+            label="Particles"
+            value={particleCount}
+            onValueChange={(value) => settings.set('particleCount', value)}
+            min={0}
+            max={40}
+          />
+          <DemoSwitch
+            label="Show icon"
+            checked={showIcon}
+            onCheckedChange={(value) => settings.set('showIcon', value)}
+          />
+        </DemoSettings>
+      }
+      docs={{
+        paths: ['src/components/ui/sparkle-button/'],
+        usage,
+        props: PROPS,
+      }}
     >
-      <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col gap-12 px-4 py-16">
-        <header className="text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/50">
-            ui / sparkle-button
-          </p>
-          <h1 className="mt-3 text-4xl font-medium tracking-tight text-white">
-            Sparkle button
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-white/60">
-            A hover-activated pill button with conic spark, orbiting particles,
-            and gradient label text. Ported from{' '}
-            <a
-              href="https://codepen.io/jh3y/pen/LYJMPBL"
-              className="underline underline-offset-2 hover:text-white"
-              target="_blank"
-              rel="noreferrer"
-            >
-              jh3y&apos;s CodePen
-            </a>
-            .
-          </p>
-        </header>
-
-        <section className="flex flex-col items-center gap-10">
-          <SparkleButton hue={hue} size={size}>
-            {label}
-          </SparkleButton>
-
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-            <div className="flex flex-col gap-6">
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-white/50">
-                  hue
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {HUES.map((h) => (
-                    <Button
-                      key={h}
-                      size="sm"
-                      variant={hue === h ? 'default' : 'outline'}
-                      className="border-white/20 bg-white/5 text-white hover:bg-white/10"
-                      onClick={() => setHue(h)}
-                    >
-                      {h}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-white/50">
-                  size
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {SIZES.map((s) => (
-                    <Button
-                      key={s}
-                      size="sm"
-                      variant={size === s ? 'default' : 'outline'}
-                      className="border-white/20 bg-white/5 text-white hover:bg-white/10"
-                      onClick={() => setSize(s)}
-                    >
-                      {s}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-white/50">
-                  label
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {['Generate Site', 'Launch', 'Create magic'].map((text) => (
-                    <Button
-                      key={text}
-                      size="sm"
-                      variant={label === text ? 'default' : 'outline'}
-                      className="border-white/20 bg-white/5 text-white hover:bg-white/10"
-                      onClick={() => setLabel(text)}
-                    >
-                      {text}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="mb-4 text-sm font-medium uppercase tracking-[0.16em] text-white/50">
-            Variants
-          </h2>
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {HUES.map((h) => (
-              <li
-                key={h}
-                className="flex items-center justify-center rounded-xl border border-white/10 bg-white/5 p-8"
-              >
-                <SparkleButton hue={h} size="sm">
-                  {h}
-                </SparkleButton>
-              </li>
-            ))}
-          </ul>
-        </section>
+      <div
+        data-slot="sparkle-button-stage"
+        style={{ ['--sparkle-button-stage-hue' as string]: STAGE_HUE[hue] }}
+      >
+        <SparkleButton
+          hue={hue}
+          size={size}
+          showIcon={showIcon}
+          particleCount={particleCount}
+        >
+          {label || undefined}
+        </SparkleButton>
       </div>
-    </div>
+    </DemoPage>
   )
 }

@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 
 import type { DemoToggleProps, DemoToggleRowProps } from './demo-controls.types'
 
-/** An on/off control rendered as a pressed-state button. */
+/** @deprecated Use `DemoSwitch`. */
 export function DemoToggle({
   label,
   pressed,
@@ -24,7 +24,7 @@ export function DemoToggle({
   )
 }
 
-/** Groups toggles onto one line. */
+/** @deprecated Use `DemoSettings`, which lays controls out itself. */
 export function DemoToggleRow({ children, className }: DemoToggleRowProps) {
   return (
     <div

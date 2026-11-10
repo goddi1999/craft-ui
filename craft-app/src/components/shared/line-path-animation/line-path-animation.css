@@ -32,7 +32,6 @@
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
-    overscroll-behavior: contain;
   }
 
   [data-slot='line-path-animation'] section {
@@ -116,9 +115,24 @@
     text-align: right;
   }
 
+  /*
+   * Portrait: a viewport-tall section is far narrower than the 1440×4096
+   * artwork, so right-aligning it pushed the lines off screen. Instead, size
+   * the content to the artwork's x 150–1000 window (where the lines run) and
+   * shift the SVG so that window spans the full width.
+   */
   @media (orientation: portrait) {
+    [data-slot='line-path-animation'] .line-path-animation__content {
+      aspect-ratio: 850 / 4096;
+    }
+
+    [data-slot='line-path-animation'] .line-path-animation__content > section {
+      height: 25%;
+    }
+
     [data-slot='line-path-animation'] .line-path-animation__content svg {
-      display: none;
+      right: auto;
+      left: calc(-150 / 850 * 100%);
     }
   }
 

@@ -12,6 +12,13 @@ const PLAY_ICON_PATH =
 const SCROLL_ICON_PATH =
   'M20 6H23L19 2L15 6H18V18H15L19 22L23 18H20V6M9 3.09C11.83 3.57 14 6.04 14 9H9V3.09M14 11V15C14 18.3 11.3 21 8 21S2 18.3 2 15V11H14M7 9H2C2 6.04 4.17 3.57 7 3.09V9Z'
 
+/**
+ * How the floor reflection renders.
+ * - `mirror`: a crisp mirror image that fades out (the classic cover flow).
+ * - `blur`: a soft, blurred mirror — reads like a glossy floor.
+ */
+export type InfiniteCoverFlowReflection = 'mirror' | 'blur'
+
 export type InfiniteCoverFlowProps = {
   /** Covers to loop through. @default DEFAULT_COVERS (10 album covers) */
   items?: readonly CoverFlowItem[]
@@ -21,7 +28,13 @@ export type InfiniteCoverFlowProps = {
   label?: string
   /** Show the animated "scroll me" hint in the corner. @default true */
   showHint?: boolean
+  /** Floor reflection style. @default 'mirror' */
+  reflection?: InfiniteCoverFlowReflection
+  /** Cover width ÷ height, e.g. `16 / 9` for landscape stills. @default 1 */
+  aspectRatio?: number
   className?: string
+  /** Inline styles — e.g. `--infinite-cover-flow-radius`. */
+  style?: CSSProperties
 }
 
 /**
@@ -35,7 +48,10 @@ export function InfiniteCoverFlow({
   onIndexChange,
   label = 'Album covers',
   showHint = true,
+  reflection = 'mirror',
+  aspectRatio = 1,
   className,
+  style,
 }: InfiniteCoverFlowProps) {
   const stageRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -74,8 +90,10 @@ export function InfiniteCoverFlow({
       role="region"
       aria-roledescription="carousel"
       aria-label={label}
+      data-reflection={reflection}
       tabIndex={0}
       className={cn(className)}
+      style={{ '--infinite-cover-flow-ratio': aspectRatio, ...style } as CSSProperties}
       onKeyDown={handleKeyDown}
     >
       <div ref={stageRef} className="infinite-cover-flow__stage">
@@ -86,7 +104,17 @@ export function InfiniteCoverFlow({
             className="infinite-cover-flow__box"
             style={{ '--infinite-cover-flow-src': `url(${item.src})` } as CSSProperties}
           >
-            <img src={item.src} alt={item.alt} draggable={false} />
+            <img
+              className="infinite-cover-flow__image"
+              src={item.src}
+              alt={item.alt}
+              draggable={false}
+            />
+            {reflection === 'blur' && (
+              <div className="infinite-cover-flow__reflection" aria-hidden="true">
+                <img src={item.src} alt="" draggable={false} />
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -96,7 +124,7 @@ export function InfiniteCoverFlow({
           type="button"
           className="infinite-cover-flow__button"
           data-direction="previous"
-          aria-label="Previous album"
+          aria-label="Previous cover"
           onClick={handlePrevious}
         >
           <svg viewBox="0 0 448 512" aria-hidden="true">
@@ -107,7 +135,7 @@ export function InfiniteCoverFlow({
           type="button"
           className="infinite-cover-flow__button"
           data-direction="next"
-          aria-label="Next album"
+          aria-label="Next cover"
           onClick={handleNext}
         >
           <svg viewBox="0 0 448 512" aria-hidden="true">

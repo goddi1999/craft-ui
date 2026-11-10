@@ -5,6 +5,7 @@ export const switchModeVariants = cva(
   {
     variants: {
       size: {
+        xs: 'h-9 w-18 border',
         sm: 'h-14 w-28',
         default: 'h-18 w-36',
         lg: 'h-22 w-44',
@@ -36,6 +37,7 @@ export const switchModeIconVariants = cva(
   {
     variants: {
       size: {
+        xs: 'w-9 [&_svg]:size-4',
         sm: 'w-14 [&_svg]:size-6',
         default: 'w-18 [&_svg]:size-8',
         lg: 'w-22 [&_svg]:size-10',

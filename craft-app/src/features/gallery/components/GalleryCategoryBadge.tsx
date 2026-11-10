@@ -19,14 +19,14 @@ export function GalleryCategoryBadge({
   count,
   size = 'sm',
 }: GalleryCategoryBadgeProps) {
-  const { label, variant } = GALLERY_CATEGORIES[category]
+  const { label } = GALLERY_CATEGORIES[category]
 
   return (
     <Badge
       asChild
-      variant={variant}
+      variant={active ? 'default' : 'outline'}
       size={size}
-      className={active ? 'ring-2 ring-current/40' : 'opacity-80 hover:opacity-100'}
+      className="transition-[transform,background-color,color] duration-150 active:scale-[0.97]"
     >
       <button
         type="button"

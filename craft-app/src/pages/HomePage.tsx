@@ -1,3 +1,4 @@
+import { AppTopBar } from '@/components/layout'
 import {
   GALLERY_EXAMPLES,
   GalleryCard,
@@ -12,6 +13,7 @@ export function HomePage() {
 
   return (
     <div className="min-h-svh bg-background px-4 py-16">
+      <AppTopBar />
       <div className="mx-auto max-w-6xl">
         <header className="mb-10 text-center">
           <h1 className="text-4xl font-medium tracking-tight text-foreground">

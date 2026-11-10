@@ -343,7 +343,7 @@
     );
     display: grid;
     place-items: center;
-    min-height: 100svh;
+    min-height: 26rem;
     transition: background var(--sparkle-button-transition, 0.25s);
     overflow: hidden;
   }

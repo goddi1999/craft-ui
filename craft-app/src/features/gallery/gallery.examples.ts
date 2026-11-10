@@ -952,7 +952,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
     slug: 'infinite-cover-flow',
     title: 'Infinite Cover Flow',
     description:
-      'An endless 3D album carousel you can scroll, drag, click, or drive with arrow keys.',
+      'An endless 3D cover carousel you can scroll, drag, click, or drive with arrow keys — with a crisp or blurred floor mirror.',
     tech: 'GSAP · 3D',
     categories: ['media', 'navigation'],
     page: InfiniteCoverFlowPage,

@@ -193,17 +193,34 @@ export type {
 } from './text-reveal'
 export {
   DemoControlGroup,
+  DemoControlLabel,
   DemoPanel,
+  DemoSettings,
+  DemoSlider,
+  DemoSwitch,
+  DemoTextField,
   DemoToggle,
   DemoToggleRow,
+  useDemoSettings,
 } from './demo-controls'
 export type {
   DemoControlGroupProps,
   DemoControlValue,
   DemoPanelProps,
+  DemoSettingsProps,
+  DemoSliderProps,
+  DemoSwitchProps,
+  DemoTextFieldProps,
   DemoToggleProps,
   DemoToggleRowProps,
 } from './demo-controls'
+export { DemoCopyPath, DemoDocs, toUsageSnippet } from './demo-docs'
+export type {
+  DemoDocsProps,
+  DemoPropDoc,
+  UsagePropValue,
+  UsageSnippetOptions,
+} from './demo-docs'
 export { CarouselSlider, CarouselSliderPage } from './carousel-slider'
 export type { CarouselSliderProps } from './carousel-slider'
 export { OptionWheel, OptionWheelPage } from './option-wheel'
@@ -235,8 +252,12 @@ export type {
   ScrollProgressProps,
   ScrollProgressSection,
 } from './scroll-progress'
-export { DemoPage, demoPageStageVariants } from './demo-page'
-export type { DemoPageAlign, DemoPageProps } from './demo-page'
+export {
+  DemoPage,
+  demoPagePreviewVariants,
+  demoPageStageVariants,
+} from './demo-page'
+export type { DemoPageAlign, DemoPageLayout, DemoPageProps } from './demo-page'
 export { ClearableInput } from './clearable-input'
 export type { ClearableInputProps } from './clearable-input'
 export {
@@ -409,3 +430,5 @@ export { ScrollDrivenLensPage } from './scroll-driven-lens'
 export { ScrollDrivenVideoMaskingPage } from './scroll-driven-video-masking'
 export { StickyProgressiveBlurPage } from './sticky-progressive-blur'
 export { ScrollImageComparisonPage } from './scroll-image-comparison'
+export { DEMO_IMAGES } from './demo-media'
+export type { DemoImage } from './demo-media'
