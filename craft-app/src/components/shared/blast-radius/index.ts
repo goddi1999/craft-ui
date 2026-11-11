@@ -1,0 +1,1 @@
+export { BlastRadiusPage } from "./page";

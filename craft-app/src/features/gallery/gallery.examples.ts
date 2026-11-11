@@ -1,5 +1,22 @@
 import {
   AccordionPage,
+  DeployTimelinePage,
+  ToolCallGraphPage,
+  LapTimerPage,
+  UsageSummaryPage,
+  ContextWindowMeterPage,
+  EvalRacePage,
+  EvalResultsPage,
+  RunTracePage,
+RadarChartPage,
+  MatchFieldPage,
+  RadialDotsPage,
+  SlotPickerPage,
+  ToolApprovalQueuePage,
+  BlastRadiusPage,
+  TuffAccordionPage,
+  RollingNumberPage,
+  ChoiceControlsPage,
   AppleCarouselPage,
   ElasticSliderPage,
   AgentComputerIconPage,
@@ -121,6 +138,10 @@ import {
   LineNavPage,
   AvatarRingsPage,
   CloudOrbitPage,
+  PromptSuggestionsPage,
+  ConversationListPage,
+  ResponseFeedbackPage,
+  AgentComposerPage,
 } from '@/components/shared'
 import { TreeSearchPage } from '@/pages/TreeSearchPage'
 
@@ -1359,5 +1380,215 @@ export const GALLERY_EXAMPLES: GalleryExample[] = sortNewestFirst([
     tech: 'React · Motion',
     categories: ['animation', 'media'],
     page: CloudOrbitPage,
+  },
+  {
+    slug: 'usage-summary',
+    addedAt: '2026-11-11',
+    title: 'Usage Summary',
+    description:
+      'Daily cost as stacked bars per model with tooltips, a previous-period delta and a budget meter that warns and flips to over.',
+    tech: 'React · Motion',
+    categories: ['data', 'charts'],
+    page: UsageSummaryPage,
+  },
+  {
+    slug: 'context-window-meter',
+    addedAt: '2026-11-11',
+    title: 'Context Window Meter',
+    description:
+      'A cell grid showing how full a model context window is, split by source, with a warning zone and a Compact action.',
+    tech: 'React · Motion',
+    categories: ['data', 'charts'],
+    page: ContextWindowMeterPage,
+  },
+  {
+    slug: 'eval-race',
+    addedAt: '2026-11-11',
+    title: 'Eval Race',
+    description:
+      'Models scoring the same eval set drawn as a race around a stadium track, with live standings, gaps and fastest lap.',
+    tech: 'React · Motion',
+    categories: ['data', 'charts', 'animation'],
+    page: EvalRacePage,
+  },
+  {
+    slug: 'eval-results',
+    addedAt: '2026-11-11',
+    title: 'Eval Results',
+    description:
+      'A case grid for an eval run with outcome filters, a detail panel and a compare view of metrics and regressions.',
+    tech: 'React · Motion',
+    categories: ['data', 'charts'],
+    page: EvalResultsPage,
+  },
+  {
+    slug: 'run-trace',
+    addedAt: '2026-11-11',
+    title: 'Run Trace',
+    description:
+      'An agent run as a zoomable flame graph of spans, or a breakdown of time, tokens and cost by name.',
+    tech: 'React · Motion',
+    categories: ['data', 'charts', 'animation'],
+    page: RunTracePage,
+  },
+  {
+    slug: 'radar-chart',
+    addedAt: '2026-11-11',
+    title: 'Radar Chart',
+    description:
+      'A filled polygon over a few axes with a dashed baseline and every member as a dot on each spoke, readable by hover or arrow keys.',
+    tech: 'React · SVG',
+    categories: ['charts', 'data'],
+    page: RadarChartPage,
+  },
+  {
+    slug: 'match-field',
+    addedAt: '2026-11-11',
+    title: 'Match Field',
+    description:
+      'A polar fit field where sectors are categories and distance from the centre is how well each person or bot matches, with a tinted strong-fit zone.',
+    tech: 'React · SVG',
+    categories: ['charts', 'data'],
+    page: MatchFieldPage,
+  },
+  {
+    slug: 'radial-dots',
+    addedAt: '2026-11-11',
+    title: 'Radial Dots',
+    description:
+      'A daily or weekly cycle drawn as rings of dots, stacked outward per series, so you see when things happen and not just how many.',
+    tech: 'React · SVG',
+    categories: ['charts', 'data'],
+    page: RadialDotsPage,
+  },
+  {
+    slug: 'tuff-accordion',
+    addedAt: '2026-11-11',
+    title: 'Accordion & Collapsible',
+    description:
+      'Spring-height disclosure sections: a single or multiple accordion with icons and meta, and a standalone collapsible for reasoning.',
+    tech: 'React · Motion',
+    categories: ['layout', 'navigation'],
+    page: TuffAccordionPage,
+  },
+  {
+    slug: 'rolling-number',
+    addedAt: '2026-11-11',
+    title: 'Rolling Number',
+    description:
+      'An odometer-style number where each digit rolls on its own wheel, rightmost first, with plain, grouped, currency, percent and compact formats.',
+    tech: 'React · Motion',
+    categories: ['animation', 'data'],
+    page: RollingNumberPage,
+  },
+  {
+    slug: 'choice-controls',
+    addedAt: '2026-11-11',
+    title: 'Choice Controls',
+    description:
+      'A recessed switch with I / O glyphs, a checkbox with a mixed state and a radio group with roving arrow-key focus.',
+    tech: 'React',
+    categories: ['inputs'],
+    page: ChoiceControlsPage,
+  },
+  {
+    slug: 'prompt-suggestions',
+    addedAt: '2026-11-11',
+    title: 'Prompt Suggestions',
+    description:
+      'Starter prompt cards for an empty chat and one-line follow-up chips with a refresh button.',
+    tech: 'React · Motion',
+    categories: ['inputs'],
+    page: PromptSuggestionsPage,
+  },
+  {
+    slug: 'conversation-list',
+    addedAt: '2026-11-11',
+    title: 'Conversation List',
+    description:
+      'A chat sidebar with date groups, search, inline rename, pin, and undoable archive or delete.',
+    tech: 'React · Motion',
+    categories: ['navigation', 'layout'],
+    page: ConversationListPage,
+  },
+  {
+    slug: 'response-feedback',
+    addedAt: '2026-11-11',
+    title: 'Response Feedback',
+    description:
+      'Thumbs, copy and regenerate under an answer, with a reasons form or a 1-5 rating card and an undoable send.',
+    tech: 'React · Motion',
+    categories: ['inputs'],
+    page: ResponseFeedbackPage,
+  },
+  {
+    slug: 'slot-picker',
+    addedAt: '2026-11-11',
+    title: 'Slot Picker',
+    description:
+      'Meeting-time picker an agent proposes: week or day view, suggested and busy slots, a time-zone switch and a confirm step.',
+    tech: 'React · Motion',
+    categories: ['inputs'],
+    page: SlotPickerPage,
+  },
+  {
+    slug: 'agent-composer',
+    addedAt: '2026-11-11',
+    title: 'Agent Composer',
+    description:
+      'Chat input for AI agents with an Ask / Plan / Act switch, model chip, token-counted context tray, @ file and / command menus, and a message queue while the agent streams.',
+    tech: 'React · Motion',
+    categories: ['inputs'],
+    page: AgentComposerPage,
+  },
+  {
+    slug: 'deploy-timeline',
+    addedAt: '2026-11-11',
+    title: 'Deploy Timeline',
+    description:
+      'Prompt and model versions on a rail over the eval score they shipped with, with regressions, rollbacks and a live canary line.',
+    tech: 'React · SVG',
+    categories: ['charts', 'data'],
+    page: DeployTimelinePage,
+  },
+  {
+    slug: 'tool-approval-queue',
+    addedAt: '2026-11-11',
+    title: 'Tool Approval Queue',
+    description:
+      'Agent permission requests resolved one by one or in bulk, with payload previews, grant scopes, grouping by risk and an undo log.',
+    tech: 'React · Motion',
+    categories: ['inputs', 'data'],
+    page: ToolApprovalQueuePage,
+  },
+  {
+    slug: 'blast-radius',
+    addedAt: '2026-11-11',
+    title: 'Blast Radius',
+    description:
+      'Rings of hops around a leaked key or an agent, with the affected set traced back to the centre in red.',
+    tech: 'React · SVG',
+    categories: ['charts', 'data'],
+    page: BlastRadiusPage,
+  },
+  {
+    slug: 'tool-call-graph',
+    addedAt: '2026-11-11',
+    title: 'Tool Call Graph',
+    description:
+      'One agent fanned out to its tools, with edges weighted by call volume, latency or error rate and a flowing hot path.',
+    tech: 'React · SVG',
+    categories: ['charts', 'data'],
+    page: ToolCallGraphPage,
+  },
+  {
+    slug: 'lap-timer',
+    addedAt: '2026-11-11',
+    title: 'Lap Timer',
+    description:
+      'A pipeline run as a stopwatch: a sweeping hand, sector arcs coloured by split against best, and a live delta.',
+    tech: 'React · SVG',
+    categories: ['data', 'charts'],
+    page: LapTimerPage,
   },
 ])

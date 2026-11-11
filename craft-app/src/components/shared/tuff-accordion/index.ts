@@ -1,0 +1,1 @@
+export { TuffAccordionPage } from './page'

@@ -1,0 +1,1 @@
+export { RadarChartPage } from './page'

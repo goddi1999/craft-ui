@@ -1,0 +1,1 @@
+export { LapTimerPage } from './page'

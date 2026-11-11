@@ -1,5 +1,4 @@
 import { Slot } from '@radix-ui/react-slot'
-import { X } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react'
 
@@ -7,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 import { BurstEmoji } from './emoji-reaction-burst'
 import { Emoji } from './emoji-reaction-emoji'
-import { SmileIcon } from './emoji-reaction-smile-icon'
+import { TriggerGlyph } from './emoji-reaction-trigger-glyph'
 import {
   BURST_COUNT,
   DEFAULT_EMOJI_DATA,
@@ -48,7 +47,8 @@ export function EmojiReaction({
     shift: 0,
     tailX: 0,
   })
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [rawIndex, setActiveIndex] = useState(0)
+  const activeIndex = Math.min(rawIndex, Math.max(emojis.length - 1, 0))
 
   const rootRef = useRef<HTMLDivElement>(null)
   const barRef = useRef<HTMLDivElement | null>(null)
@@ -114,7 +114,9 @@ export function EmojiReaction({
     if (!open) return
 
     const handlePointerDown = (event: globalThis.PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) closeBar()
+      // composedPath is fixed at dispatch, so a target React replaced mid-event still counts as inside
+      const root = rootRef.current
+      if (root && !event.composedPath().includes(root)) closeBar()
     }
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'Escape') return
@@ -124,11 +126,14 @@ export function EmojiReaction({
 
     document.addEventListener('pointerdown', handlePointerDown)
     document.addEventListener('keydown', handleKeyDown)
+    // a held reaction never sees its pointerup if the window loses focus first
+    window.addEventListener('blur', stopHold)
     return () => {
       document.removeEventListener('pointerdown', handlePointerDown)
       document.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('blur', stopHold)
     }
-  }, [open, closeBar])
+  }, [open, closeBar, stopHold])
 
   useEffect(() => {
     const opened = open && !wasOpen.current
@@ -137,7 +142,7 @@ export function EmojiReaction({
   }, [open])
 
   const sendReaction = useCallback(
-    (name: string, from: DOMRect) => {
+    (name: string, from: HTMLElement) => {
       setLast(name)
       onReact?.(name)
 
@@ -145,14 +150,16 @@ export function EmojiReaction({
       if (reduced || !bar) return
       seed.current += BURST_COUNT
       setParticles((prev) =>
-        [...prev, ...makeParticles(name, seed.current, from, bar)].slice(-MAX_PARTICLES),
+        [...prev, ...makeParticles(name, seed.current, from.getBoundingClientRect(), bar)].slice(
+          -MAX_PARTICLES,
+        ),
       )
     },
     [onReact, reduced],
   )
 
   const startHold = useCallback(
-    (name: string, from: DOMRect) => {
+    (name: string, from: HTMLElement) => {
       sendReaction(name, from)
       stopHold()
       hold.current = window.setInterval(() => sendReaction(name, from), HOLD_INTERVAL)
@@ -179,7 +186,7 @@ export function EmojiReaction({
 
       const picked = target?.closest<HTMLElement>('[data-emoji]')
       if (picked?.dataset.emoji) {
-        sendReaction(picked.dataset.emoji, picked.getBoundingClientRect())
+        sendReaction(picked.dataset.emoji, picked)
       }
 
       // releasing off the trigger fires no click, so nothing else would clear the guard
@@ -279,13 +286,13 @@ export function EmojiReaction({
                   data-emoji={name}
                   aria-label={toLabel(name)}
                   onFocus={() => setActiveIndex(i)}
-                  onPointerDown={(event) => startHold(name, event.currentTarget.getBoundingClientRect())}
+                  onPointerDown={(event) => startHold(name, event.currentTarget)}
                   onPointerUp={stopHold}
                   onPointerLeave={stopHold}
                   onPointerCancel={stopHold}
                   // detail is 0 only for keyboard, pointer already fired above
                   onClick={(event) =>
-                    event.detail === 0 && sendReaction(name, event.currentTarget.getBoundingClientRect())
+                    event.detail === 0 && sendReaction(name, event.currentTarget)
                   }
                   className="relative z-10 rounded-full p-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   initial={reduced ? false : { scale: 0.4, opacity: 0 }}
@@ -347,12 +354,8 @@ export function EmojiReaction({
       >
         {asChild ? (
           children
-        ) : open ? (
-          <X className={s.icon} strokeWidth={2} />
-        ) : last ? (
-          <Emoji name={last} data={emojiData} size={s.emoji * 0.72} />
         ) : (
-          <SmileIcon className={s.icon} />
+          <TriggerGlyph open={open} last={last} data={emojiData} size={s} reduced={!!reduced} />
         )}
       </Trigger>
     </div>

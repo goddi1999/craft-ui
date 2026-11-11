@@ -1,0 +1,1 @@
+export { ResponseFeedbackPage } from './page'

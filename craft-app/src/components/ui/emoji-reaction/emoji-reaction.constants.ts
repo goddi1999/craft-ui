@@ -52,3 +52,6 @@ export const SIZES = {
     burst: 42,
   },
 } as const
+
+// strong ease-out for the trigger glyph swap: quick to respond, settles softly
+export const EASE_OUT = [0.23, 1, 0.32, 1] as const
