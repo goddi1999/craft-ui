@@ -35,6 +35,7 @@ RadarChartPage,
   RailTocPage,
   ThemeSelectorPage,
   DeleteButtonPage,
+  NotificationBellPage,
   StepPlayerPage,
   VoiceMessagePage,
   BarrelTimeInputPage,
@@ -1590,5 +1591,15 @@ export const GALLERY_EXAMPLES: GalleryExample[] = sortNewestFirst([
     tech: 'React · SVG',
     categories: ['data', 'charts'],
     page: LapTimerPage,
+  },
+  {
+    slug: 'notification-bell',
+    addedAt: '2026-11-11',
+    title: 'Notification Bell',
+    description:
+      'An iOS-style bell whose badge digits roll to the new count while the bell and its clapper swing.',
+    tech: 'React · Motion',
+    categories: ['animation', 'inputs'],
+    page: NotificationBellPage,
   },
 ])
