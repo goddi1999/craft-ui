@@ -1,4 +1,4 @@
-import { AppTopBar } from '@/components/layout'
+import { AppTopBar, SiteFooter } from '@/components/layout'
 import {
   GALLERY_EXAMPLES,
   GalleryCard,
@@ -71,6 +71,7 @@ export function HomePage() {
           </p>
         )}
       </div>
+      <SiteFooter />
     </div>
   )
 }

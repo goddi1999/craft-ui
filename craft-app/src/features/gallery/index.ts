@@ -1,4 +1,5 @@
 export { GalleryCard } from './components/GalleryCard'
+export { GalleryPreview } from './components/GalleryPreview'
 export { GalleryCategoryFilter } from './components/GalleryCategoryFilter'
 export { GallerySearch } from './components/GallerySearch'
 export { GALLERY_CATEGORIES, examplePath } from './gallery.constants'

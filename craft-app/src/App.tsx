@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import { DemoLayout } from '@/components/layout'
 import { GALLERY_EXAMPLES, examplePath } from '@/features/gallery'
+import { ChangelogPage } from '@/pages/ChangelogPage'
 import { HomePage } from '@/pages/HomePage'
 
 export function App() {
@@ -11,6 +12,7 @@ export function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/changelog" element={<ChangelogPage />} />
           <Route element={<DemoLayout />}>
             {GALLERY_EXAMPLES.map(({ slug, page: Page }) => (
               <Route key={slug} path={examplePath(slug)} element={<Page />} />

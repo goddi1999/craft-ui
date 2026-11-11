@@ -1,0 +1,989 @@
+{
+  "$schema": "./changelogEntries.schema.json",
+  "generatedAt": "2026-11-11",
+  "entries": [
+    {
+      "date": "2026-11-11",
+      "commit": "65b2505",
+      "summary": "Add iOS-style bell with rolling badge count",
+      "components": [
+        {
+          "slug": "notification-bell",
+          "title": "Notification Bell",
+          "description": "An iOS-style bell whose badge digits roll to the new count while the bell and its clapper swing.",
+          "categories": ["animation", "inputs"]
+        }
+      ]
+    },
+    {
+      "date": "2026-11-11",
+      "commit": "a38b31b",
+      "summary": "Port 21 TuffUI components and fix EmojiReaction trigger",
+      "components": [
+        {
+          "slug": "tuff-accordion",
+          "title": "Accordion & Collapsible",
+          "description": "Spring-height disclosure sections: a single or multiple accordion with icons and meta, and a standalone collapsible for reasoning.",
+          "categories": ["layout", "navigation"]
+        },
+        {
+          "slug": "agent-composer",
+          "title": "Agent Composer",
+          "description": "Chat input for AI agents with an Ask / Plan / Act switch, model chip, token-counted context tray, @ file and / command menus, and a message queue while the agent streams.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "blast-radius",
+          "title": "Blast Radius",
+          "description": "Rings of hops around a leaked key or an agent, with the affected set traced back to the centre in red.",
+          "categories": ["charts", "data"]
+        },
+        {
+          "slug": "choice-controls",
+          "title": "Choice Controls",
+          "description": "A recessed switch with I / O glyphs, a checkbox with a mixed state and a radio group with roving arrow-key focus.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "context-window-meter",
+          "title": "Context Window Meter",
+          "description": "A cell grid showing how full a model context window is, split by source, with a warning zone and a Compact action.",
+          "categories": ["data", "charts"]
+        },
+        {
+          "slug": "conversation-list",
+          "title": "Conversation List",
+          "description": "A chat sidebar with date groups, search, inline rename, pin, and undoable archive or delete.",
+          "categories": ["navigation", "layout"]
+        },
+        {
+          "slug": "deploy-timeline",
+          "title": "Deploy Timeline",
+          "description": "Prompt and model versions on a rail over the eval score they shipped with, with regressions, rollbacks and a live canary line.",
+          "categories": ["charts", "data"]
+        },
+        {
+          "slug": "eval-race",
+          "title": "Eval Race",
+          "description": "Models scoring the same eval set drawn as a race around a stadium track, with live standings, gaps and fastest lap.",
+          "categories": ["data", "charts", "animation"]
+        },
+        {
+          "slug": "eval-results",
+          "title": "Eval Results",
+          "description": "A case grid for an eval run with outcome filters, a detail panel and a compare view of metrics and regressions.",
+          "categories": ["data", "charts"]
+        },
+        {
+          "slug": "lap-timer",
+          "title": "Lap Timer",
+          "description": "A pipeline run as a stopwatch: a sweeping hand, sector arcs coloured by split against best, and a live delta.",
+          "categories": ["data", "charts"]
+        },
+        {
+          "slug": "match-field",
+          "title": "Match Field",
+          "description": "A polar fit field where sectors are categories and distance from the centre is how well each person or bot matches, with a tinted strong-fit zone.",
+          "categories": ["charts", "data"]
+        },
+        {
+          "slug": "prompt-suggestions",
+          "title": "Prompt Suggestions",
+          "description": "Starter prompt cards for an empty chat and one-line follow-up chips with a refresh button.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "radar-chart",
+          "title": "Radar Chart",
+          "description": "A filled polygon over a few axes with a dashed baseline and every member as a dot on each spoke, readable by hover or arrow keys.",
+          "categories": ["charts", "data"]
+        },
+        {
+          "slug": "radial-dots",
+          "title": "Radial Dots",
+          "description": "A daily or weekly cycle drawn as rings of dots, stacked outward per series, so you see when things happen and not just how many.",
+          "categories": ["charts", "data"]
+        },
+        {
+          "slug": "response-feedback",
+          "title": "Response Feedback",
+          "description": "Thumbs, copy and regenerate under an answer, with a reasons form or a 1-5 rating card and an undoable send.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "rolling-number",
+          "title": "Rolling Number",
+          "description": "An odometer-style number where each digit rolls on its own wheel, rightmost first, with plain, grouped, currency, percent and compact formats.",
+          "categories": ["animation", "data"]
+        },
+        {
+          "slug": "run-trace",
+          "title": "Run Trace",
+          "description": "An agent run as a zoomable flame graph of spans, or a breakdown of time, tokens and cost by name.",
+          "categories": ["data", "charts", "animation"]
+        },
+        {
+          "slug": "slot-picker",
+          "title": "Slot Picker",
+          "description": "Meeting-time picker an agent proposes: week or day view, suggested and busy slots, a time-zone switch and a confirm step.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "tool-approval-queue",
+          "title": "Tool Approval Queue",
+          "description": "Agent permission requests resolved one by one or in bulk, with payload previews, grant scopes, grouping by risk and an undo log.",
+          "categories": ["inputs", "data"]
+        },
+        {
+          "slug": "tool-call-graph",
+          "title": "Tool Call Graph",
+          "description": "One agent fanned out to its tools, with edges weighted by call volume, latency or error rate and a flowing hot path.",
+          "categories": ["charts", "data"]
+        },
+        {
+          "slug": "usage-summary",
+          "title": "Usage Summary",
+          "description": "Daily cost as stacked bars per model with tooltips, a previous-period delta and a budget meter that warns and flips to over.",
+          "categories": ["data", "charts"]
+        }
+      ]
+    },
+    {
+      "date": "2026-11-11",
+      "commit": "e20e336",
+      "summary": "Add cloud-orbit and four memoji avatar demos",
+      "components": [
+        {
+          "slug": "avatar-bubbles",
+          "title": "Avatar Bubbles",
+          "description": "A card clipping a loose cluster of pastel avatar circles that spring in, float, and lift on hover as they bleed off the edge.",
+          "categories": ["media", "layout", "animation"]
+        },
+        {
+          "slug": "avatar-constellation",
+          "title": "Avatar Constellation",
+          "description": "A large avatar disc ringed by app tiles that spring out from behind it, drift, follow the pointer by depth and pulse on click.",
+          "categories": ["media", "animation"]
+        },
+        {
+          "slug": "avatar-orbit",
+          "title": "Avatar Orbit",
+          "description": "Avatars spring out around a glowing centre, drift and lift on hover, with speech bubbles popping in beside them.",
+          "categories": ["media", "animation"]
+        },
+        {
+          "slug": "avatar-rings",
+          "title": "Avatar Rings",
+          "description": "A row of memoji avatars in thick coloured rings that pop in, nudge their neighbours on hover, and double as a keyboard-friendly picker.",
+          "categories": ["media", "inputs", "animation"]
+        },
+        {
+          "slug": "cloud-orbit",
+          "title": "Cloud Orbit",
+          "description": "A cloud turns into an avatar with app chips orbiting in depth, swaps person, and folds back into the cloud.",
+          "categories": ["animation", "media"]
+        }
+      ]
+    },
+    {
+      "date": "2026-11-11",
+      "commit": "d51cc41",
+      "summary": "Add 17 demos, newest-first order, preview script, demo fixes",
+      "components": [
+        {
+          "slug": "apple-carousel",
+          "title": "Apple Carousel",
+          "description": "A looping scroll-snap gallery with springy tab and play controls, where the active dot doubles as the autoplay timer.",
+          "categories": ["media", "navigation"]
+        },
+        {
+          "slug": "apple-hello-effect",
+          "title": "Apple Hello Effect",
+          "description": "A handwritten greeting that draws itself stroke by stroke, in English, Hindi, Spanish and Vietnamese.",
+          "categories": ["animation", "effects"]
+        },
+        {
+          "slug": "delete-button",
+          "title": "Delete Button",
+          "description": "A bin that lifts its lid and slides out a confirm panel, asking for confirmation in place instead of a dialog.",
+          "categories": ["inputs", "animation"]
+        },
+        {
+          "slug": "elastic-slider",
+          "title": "Elastic Slider",
+          "description": "A slider that stretches like rubber past its ends, snaps magnetically to ticks and dodges its own label.",
+          "categories": ["inputs", "animation"]
+        },
+        {
+          "slug": "emoji-reaction",
+          "title": "Emoji Reaction",
+          "description": "A tapback button whose emoji bar sends copies of your pick floating up, and keeps them coming while held.",
+          "categories": ["inputs", "animation"]
+        },
+        {
+          "slug": "fluid-orb",
+          "title": "Fluid Orb",
+          "description": "An ambient WebGL orb whose colour patches drift and re-form, in the style of a voice-mode indicator.",
+          "categories": ["effects", "animation"]
+        },
+        {
+          "slug": "grid-reveal",
+          "title": "Grid Reveal",
+          "description": "A loading grid for generated images that keeps splitting while it waits, then resolves into the picture.",
+          "categories": ["media", "effects"]
+        },
+        {
+          "slug": "hook-sidebar",
+          "title": "Hook Sidebar",
+          "description": "A table of contents whose active row is marked by a spring rail that hooks into it, with a faint second rail on hover.",
+          "categories": ["navigation"]
+        },
+        {
+          "slug": "lightbox",
+          "title": "Lightbox",
+          "description": "A full-screen photo viewer that grows out of its thumbnail, with swipe, pinch-to-zoom, pan and pull-to-dismiss.",
+          "categories": ["media", "layout"]
+        },
+        {
+          "slug": "line-nav",
+          "title": "Line Nav",
+          "description": "A table-of-contents rail of short lines where the active and hovered line stretch on a spring.",
+          "categories": ["navigation", "animation"]
+        },
+        {
+          "slug": "pull-quote",
+          "title": "Pull Quote",
+          "description": "A testimonial with hanging quote marks and a hairline to the author, linking to its source.",
+          "categories": ["layout", "data"]
+        },
+        {
+          "slug": "rail-toc",
+          "title": "Rail TOC",
+          "description": "A table of contents with a paper plane that flies along a dashed rail to the section you're reading.",
+          "categories": ["navigation", "scroll"]
+        },
+        {
+          "slug": "rolling-counter",
+          "title": "Rolling Counter",
+          "description": "An odometer-style number: every digit spins the short way to its face on a spring, with separators and new places that slide and fade in.",
+          "categories": ["data", "animation"]
+        },
+        {
+          "slug": "step-player",
+          "title": "Step Player",
+          "description": "An iOS-style story progress bar whose active dot stretches into a filling bar, with a play / pause / replay morph.",
+          "categories": ["media", "navigation"]
+        },
+        {
+          "slug": "task-list",
+          "title": "Task List",
+          "description": "A checklist whose rows tick, strike through and flick, then spring down to the bottom once done.",
+          "categories": ["inputs", "animation"]
+        },
+        {
+          "slug": "theme-selector",
+          "title": "Theme Selector",
+          "description": "A row of miniature app previews, one per theme, with a ring that marks the one you pick.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "toast",
+          "title": "Toast",
+          "description": "Squircle toasts on Sonner whose status icons pop and draw in, with promise toasts that morph from spinner to result.",
+          "categories": ["animation", "effects"]
+        },
+        {
+          "slug": "voice-message",
+          "title": "Voice Message",
+          "description": "A chat voice message with a morphing play button, a scrubbable waveform, a speed toggle and a glow that orbits the pill while it plays.",
+          "categories": ["media", "inputs"]
+        },
+        {
+          "slug": "web-search",
+          "title": "Web Search",
+          "description": "An AI search pill whose ring fills as sources stream in, with source cards, a typed-out answer and hover citations.",
+          "categories": ["data", "animation"]
+        }
+      ]
+    },
+    {
+      "date": "2026-11-09",
+      "commit": "139a8a4",
+      "summary": "Port remaining CodePen sources and WQ mockups as 24 demos",
+      "components": [
+        {
+          "slug": "animated-hover-disclosures",
+          "title": "Animated Hover Disclosures",
+          "description": "Cards where the hovered or focused column grows via grid-template-columns to reveal copy.",
+          "categories": ["layout", "animation"]
+        },
+        {
+          "slug": "css-carousels",
+          "title": "c(ss)arousel",
+          "description": "Radio-driven carousels where CSS handles fade, slide, thumbnail, and scale transitions.",
+          "categories": ["media", "navigation"]
+        },
+        {
+          "slug": "cooking-letters",
+          "title": "Cooking Letters",
+          "description": "Every letter is a tiny CSS cube that rolls over in a sine-staggered wave.",
+          "categories": ["animation", "effects"]
+        },
+        {
+          "slug": "destination-slider",
+          "title": "Destination Slider",
+          "description": "An SVG-skinned range input: the track bumps under the marker and a balloon pops up.",
+          "categories": ["inputs", "animation"]
+        },
+        {
+          "slug": "morphing-disclosure",
+          "title": "Exclusive Morphing Disclosure",
+          "description": "An exclusive <details> group whose open row detaches into a card as it springs open.",
+          "categories": ["navigation", "animation"]
+        },
+        {
+          "slug": "floating-squares-3d",
+          "title": "Floating Squares 3D",
+          "description": "Colourful squares drift across a tilted 3D plane with feathered edges.",
+          "categories": ["effects", "animation"]
+        },
+        {
+          "slug": "gooey-popover",
+          "title": "Gooey Popover",
+          "description": "A native [popover] that oozes out of its round trigger through an SVG goo filter.",
+          "categories": ["effects", "navigation"]
+        },
+        {
+          "slug": "infinite-cover-flow",
+          "title": "Infinite Cover Flow",
+          "description": "An endless 3D cover carousel you can scroll, drag, click, or drive with arrow keys — with a crisp or blurred floor mirror.",
+          "categories": ["media", "navigation"]
+        },
+        {
+          "slug": "input-dissolution",
+          "title": "Input Dissolution",
+          "description": "Submitted text dissolves into grain via a clip-path sweep and an SVG turbulence filter.",
+          "categories": ["inputs", "effects"]
+        },
+        {
+          "slug": "intelligent-text-reveals",
+          "title": "Intelligent Text Reveals",
+          "description": "Copy washes in behind a sweeping radial mask, then a signature draws itself in.",
+          "categories": ["animation", "effects"]
+        },
+        {
+          "slug": "barrel-time-input",
+          "title": "iOS Alarm Barrel Time Input",
+          "description": "iOS-style 3D barrel time picker you can drag, scroll, tap, or drive from the keyboard.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "lil-loader",
+          "title": "Lil Loader",
+          "description": "A tiny framed loader of glowing rings that rise, swell, and drift from pink to amber.",
+          "categories": ["animation"]
+        },
+        {
+          "slug": "liquid-slider",
+          "title": "Liquid Glass Slider",
+          "description": "A native range input whose thumb swells into a gooey glass lens on press.",
+          "categories": ["inputs", "effects"]
+        },
+        {
+          "slug": "quantity-picker",
+          "title": "Quantity Picker",
+          "description": "Number stepper with rolling digits, an input on focus, and a shake when out of range.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "wq-dashboard",
+          "title": "Role Dashboards",
+          "description": "Admin, teacher, and student LMS dashboards behind a segmented role tab list.",
+          "categories": ["data", "layout"]
+        },
+        {
+          "slug": "scroll-image-comparison",
+          "title": "Scroll Image Comparison",
+          "description": "Before/after slider driven by a view timeline on the range thumb, with a 3D layer view.",
+          "categories": ["inputs", "media"]
+        },
+        {
+          "slug": "scroll-driven-lens",
+          "title": "Scroll-Driven Lens",
+          "description": "Swipeable lens gallery where the centred frame scales up, brightens, and flashes its caption.",
+          "categories": ["scroll", "media"]
+        },
+        {
+          "slug": "scroll-driven-video-masking",
+          "title": "Scroll-Driven Video Masking",
+          "description": "A sticky video shows through scribbles and text that scrolling draws over it.",
+          "categories": ["scroll", "media"]
+        },
+        {
+          "slug": "shimmer-accordion",
+          "title": "Shimmer Accordion",
+          "description": "FAQ accordion that reveals each answer with a coloured gradient band sweeping the text.",
+          "categories": ["navigation", "effects"]
+        },
+        {
+          "slug": "sticky-progressive-blur",
+          "title": "Sticky Progressive Blur",
+          "description": "Stacked backdrop-filter layers pinned to the bottom blur images more as they scroll past.",
+          "categories": ["scroll", "effects"]
+        },
+        {
+          "slug": "3d-theme-switch",
+          "title": "Switchin' Themes in 3D",
+          "description": "A theme switch whose surface turns like a cube face via a chained View Transition.",
+          "categories": ["inputs", "effects"]
+        },
+        {
+          "slug": "task-activity-timeline",
+          "title": "Task Activity Timeline",
+          "description": "Group work on one task as a day-by-hour heatmap or per-group 24-hour tracks.",
+          "categories": ["charts", "data"]
+        },
+        {
+          "slug": "task-editing-heatmap",
+          "title": "Task Editing Heatmap",
+          "description": "A day-by-hour grid of edits on one assignment, so late-night cramming stands out.",
+          "categories": ["charts", "data"]
+        },
+        {
+          "slug": "task-submission-scatter",
+          "title": "Task Submission Scatter",
+          "description": "When each group handed in against a due-date line: early, on time, late, or missing.",
+          "categories": ["charts", "data"]
+        }
+      ]
+    },
+    {
+      "date": "2026-11-09",
+      "commit": "9a5337f",
+      "summary": "Add eight canvas/scroll demos and move primitives to ui/",
+      "components": [
+        {
+          "slug": "agent-computer-icon",
+          "title": "Agent Computer Icon",
+          "description": "A 24px monitor face with GSAP-driven states — loading, success, failure, waiting — animated through eyes, screen, and base.",
+          "categories": ["animation"]
+        },
+        {
+          "slug": "canvas-snow-banner",
+          "title": "Canvas Snow Banner",
+          "description": "A canvas snow fall banner with wind sway, amount, and framerate controls.",
+          "categories": ["effects", "animation"]
+        },
+        {
+          "slug": "canvas-pointer-lines",
+          "title": "Configurable Canvas Pointer Lines",
+          "description": "A grid of strokes that lean toward the pointer, with optional spotlight masking.",
+          "categories": ["effects", "inputs"]
+        },
+        {
+          "slug": "css-sprite-scrubbing",
+          "title": "CSS Sprite Scrubbing",
+          "description": "A product frame sequence scrubbed by scroll timeline, with optional autoplay.",
+          "categories": ["scroll", "media"]
+        },
+        {
+          "slug": "cuisine-selector",
+          "title": "Cuisine Selector with :has()",
+          "description": "Multi-select cuisine chips styled with CSS :has() for checked and focus states.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "gsap-infinite-loop",
+          "title": "GSAP Infinite Loops Without DOM Shuffle",
+          "description": "Vertical word carousel that loops forever without cloning or shuffling the DOM.",
+          "categories": ["animation"]
+        },
+        {
+          "slug": "pixel-transition",
+          "title": "Pixel Transitions with Generated SVG Masks",
+          "description": "Image crossfade driven by generated SVG pixel-mask sprites.",
+          "categories": ["effects", "media"]
+        },
+        {
+          "slug": "scroll-driven-gooey-island",
+          "title": "Scroll-Driven Gooey Island",
+          "description": "A sticky Dynamic Island avatar that goo-morphs into the status bar as you scroll.",
+          "categories": ["scroll", "effects"]
+        },
+        {
+          "slug": "svg-filter-scroller",
+          "title": "SVG Filter Scroller",
+          "description": "Scroll velocity feeds an SVG displacement filter for chromatic, wavy type.",
+          "categories": ["scroll", "effects"]
+        }
+      ]
+    },
+    {
+      "date": "2026-10-17",
+      "commit": "91dbc6a",
+      "summary": "Add 26 portable components and a filterable gallery",
+      "components": [
+        {
+          "slug": "accordion",
+          "title": "Accordion",
+          "description": "Stacked disclosure rows with a smooth height spring and a rotating chevron.",
+          "categories": ["layout"]
+        },
+        {
+          "slug": "animated-counter",
+          "title": "Animated Counter",
+          "description": "A number that springs to each new value and counts up on view.",
+          "categories": ["data", "animation"]
+        },
+        {
+          "slug": "brush-chart",
+          "title": "Brush Chart",
+          "description": "A detail chart driven by a draggable range window on an overview strip.",
+          "categories": ["charts", "inputs"]
+        },
+        {
+          "slug": "comet-dial",
+          "title": "Comet Dial",
+          "description": "A rotary dial with a comet tail that coasts on momentum and springs into place.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "countdown",
+          "title": "Countdown",
+          "description": "Rolling digits that count down to a moment in a given time zone.",
+          "categories": ["data"]
+        },
+        {
+          "slug": "css-number-animation",
+          "title": "CSS Number Animation",
+          "description": "A registered integer custom property feeds a CSS counter, making the number itself interpolable without a JavaScript tick.",
+          "categories": ["data", "animation"]
+        },
+        {
+          "slug": "donut-chart",
+          "title": "Donut Chart",
+          "description": "Ring segments with a live total and a legend that toggles slices.",
+          "categories": ["charts"]
+        },
+        {
+          "slug": "expandable-card",
+          "title": "Expandable Card",
+          "description": "A card that grows in width and height to reveal its details.",
+          "categories": ["layout"]
+        },
+        {
+          "slug": "expandable-text",
+          "title": "Expandable Text",
+          "description": "Clamps long copy to a few lines, then reveals the rest in place.",
+          "categories": ["layout"]
+        },
+        {
+          "slug": "folder-float",
+          "title": "Folder Float",
+          "description": "Notes float out of a folder on a soft physics sim; drag them, then pick one.",
+          "categories": ["inputs", "animation"]
+        },
+        {
+          "slug": "gauge",
+          "title": "Gauge",
+          "description": "A radial meter with named threshold bands that set its tone.",
+          "categories": ["charts", "data"]
+        },
+        {
+          "slug": "gradual-blur",
+          "title": "Gradual Blur",
+          "description": "Stacked backdrop-filter layers that ramp along an edge so content fades into soft focus.",
+          "categories": ["effects"]
+        },
+        {
+          "slug": "laser-flow",
+          "title": "Laser Flow",
+          "description": "A volumetric beam that pours onto a surface, spilling light, fog, and dust.",
+          "categories": ["effects"]
+        },
+        {
+          "slug": "line-chart",
+          "title": "Line Chart",
+          "description": "Trends over time with a scrubbing crosshair and a dashed comparison series.",
+          "categories": ["charts"]
+        },
+        {
+          "slug": "line-sidebar",
+          "title": "Line Sidebar",
+          "description": "Nav items lean toward the pointer with proximity falloff and stretching ticks.",
+          "categories": ["navigation"]
+        },
+        {
+          "slug": "metric-card",
+          "title": "Metric Card",
+          "description": "A KPI tile with an animated figure, context, and period change.",
+          "categories": ["data", "layout"]
+        },
+        {
+          "slug": "multiplayer-masking-with-grid-mask",
+          "title": "Multiplayer Masking",
+          "description": "An overlapping presence stack where narrow grid columns and radial-gradient masks let each avatar lift cleanly out of its neighbour.",
+          "categories": ["effects"]
+        },
+        {
+          "slug": "product-spotlight-cards",
+          "title": "Product Spotlight Cards",
+          "description": "A depth map relights a flat product photo in real time — normals, contact shadows and a tracked spotlight, all sharing one WebGL context.",
+          "categories": ["layout", "effects"]
+        },
+        {
+          "slug": "progress",
+          "title": "Progress",
+          "description": "A determinate bar with a label, live value readout, and a finish check.",
+          "categories": ["data"]
+        },
+        {
+          "slug": "scroll-driven-progressive-blur-w-contrast",
+          "title": "Progressive Blur",
+          "description": "Stacked backdrop-filter layers with staggered masks composited using intersect, sliding in on the scroller’s own timeline.",
+          "categories": ["scroll", "effects"]
+        },
+        {
+          "slug": "pure-css-3d-animated-carousel",
+          "title": "Pure CSS 3D Carousel",
+          "description": "Cards stacked in one grid cell, rotated around the Y axis and pushed back along Z to form a ring that spins with no JavaScript.",
+          "categories": ["layout", "animation"]
+        },
+        {
+          "slug": "refine-frame",
+          "title": "Refine Frame",
+          "description": "Generated media resolves from a coarse mosaic to the final image, with stage chips.",
+          "categories": ["media", "data"]
+        },
+        {
+          "slug": "ridgeline",
+          "title": "Ridgeline",
+          "description": "Overlapping density curves that compare distributions on one axis.",
+          "categories": ["charts"]
+        },
+        {
+          "slug": "css-scroll-to-type",
+          "title": "Scroll to Type",
+          "description": "A stepped view-timeline animation turns scroll distance into a character index, typing a line out with a blinking caret.",
+          "categories": ["scroll", "animation"]
+        },
+        {
+          "slug": "css-responsive-scroll-driven-text-reveals",
+          "title": "Scroll-Driven Text Reveals",
+          "description": "Three text-clipped gradients swept by a view timeline, so the fill re-flows at any size without measuring anything.",
+          "categories": ["scroll", "animation"]
+        },
+        {
+          "slug": "signature-pad",
+          "title": "Signature Pad",
+          "description": "Smooth ink that thins with speed, with undo, replay, and PNG or SVG export.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "slope-chart",
+          "title": "Slope Chart",
+          "description": "Before and after values joined by lines to show rises, falls, and rank.",
+          "categories": ["charts"]
+        },
+        {
+          "slug": "sparkline",
+          "title": "Sparkline",
+          "description": "A compact trend line with a headline value, change, and scrubbing.",
+          "categories": ["charts", "data"]
+        },
+        {
+          "slug": "strands",
+          "title": "Strands",
+          "description": "Glowing ribbons weaving through a glass lens, with a click pulse.",
+          "categories": ["effects"]
+        },
+        {
+          "slug": "streamgraph",
+          "title": "Streamgraph",
+          "description": "Stacked series flowing around a center line to show volume and share.",
+          "categories": ["charts"]
+        },
+        {
+          "slug": "you-can-select-things-styleable-select",
+          "title": "Styleable Select",
+          "description": "A stylable select demo inspired by the base-select interaction pattern.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "tree-search",
+          "title": "Tree Search",
+          "description": "A search field that opens into drill-down results with staggered list motion, back crumbs, and arbitrary leaf content.",
+          "categories": ["inputs", "navigation"]
+        },
+        {
+          "slug": "treemap",
+          "title": "Treemap",
+          "description": "Nested rectangles sized by value and shaded by growth, with click to zoom.",
+          "categories": ["charts"]
+        },
+        {
+          "slug": "voice-pill",
+          "title": "Voice Pill",
+          "description": "Tap or hold to record; the mic grows into a live waveform pill with slide to cancel.",
+          "categories": ["media", "inputs"]
+        },
+        {
+          "slug": "waffle-chart",
+          "title": "Waffle Chart",
+          "description": "A 10 by 10 grid where every cell is one percent of the whole.",
+          "categories": ["charts"]
+        }
+      ]
+    },
+    {
+      "date": "2026-09-26",
+      "commit": "c52c44a",
+      "summary": "Add heart, pulse-heart, fuse-button, and hyperspeed demos",
+      "components": [
+        {
+          "slug": "fuse-button",
+          "title": "Fuse Button",
+          "description": "A commit button that arms a burning fuse instead of a confirm dialog — tap again, or wait it out, before it locks in.",
+          "categories": ["inputs", "animation"]
+        },
+        {
+          "slug": "hyperspeed",
+          "title": "Hyperspeed",
+          "description": "A Three.js road tunnel with distortable geometry, streaking traffic lights, and bloom, steered by a plain options object.",
+          "categories": ["effects"]
+        },
+        {
+          "slug": "pulse-heart",
+          "title": "Pulse Heart",
+          "description": "A like pill that swells through a bezier overshoot on toggle, its count rolling like an odometer digit.",
+          "categories": ["animation", "inputs"]
+        }
+      ]
+    },
+    {
+      "date": "2026-08-20",
+      "commit": "33d6296",
+      "summary": "Build, wire and route nine components",
+      "components": [
+        {
+          "slug": "calendar-widget",
+          "title": "Calendar Widget",
+          "description": "A draggable date strip over an agenda pane, with the selection pill travelling between days as a shared layout element.",
+          "categories": ["data", "inputs"]
+        },
+        {
+          "slug": "card-swipe",
+          "title": "Card Swipe",
+          "description": "A draggable deck whose cards derive their Y rotation from the track position, swinging away in perspective as the active card squares up.",
+          "categories": ["layout", "inputs"]
+        },
+        {
+          "slug": "emoji-spree-chips",
+          "title": "Emoji Spree Chips",
+          "description": "Draggable choice chips that throw the picked emoji up over the deck and drop it back down behind them.",
+          "categories": ["inputs", "animation"]
+        },
+        {
+          "slug": "fund-widget",
+          "title": "Fund Widget",
+          "description": "A vertical balance deck where each card\\\\u2019s rotation and blur come from the track position, tipping pages as they roll past.",
+          "categories": ["data", "layout"]
+        },
+        {
+          "slug": "macos-sidebar",
+          "title": "macOS Sidebar",
+          "description": "A collapsible rail that springs between widths, with the hover highlight sliding between rows as a shared layout element.",
+          "categories": ["navigation"]
+        },
+        {
+          "slug": "pin-item",
+          "title": "Pin Item",
+          "description": "Pinning a place moves its card between two lists, travelling to its new section on a shared layout id instead of cutting.",
+          "categories": ["layout", "inputs"]
+        },
+        {
+          "slug": "switch-mode",
+          "title": "Switch Mode",
+          "description": "A day/night toggle whose knob moves as a layout animation, so every size variant lands correctly.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "tree-menu",
+          "title": "Tree Menu",
+          "description": "A drill-down menu where the picked row becomes the breadcrumb, and the remaining rows part around your choice.",
+          "categories": ["navigation"]
+        },
+        {
+          "slug": "voice-note",
+          "title": "Voice Note",
+          "description": "A recorder pill that grows out of a mic button, counting the take down on an SVG stroke with a digit-rolling timer.",
+          "categories": ["media", "inputs"]
+        }
+      ]
+    },
+    {
+      "date": "2026-08-18",
+      "commit": "9d58ead",
+      "summary": "Route seven components and add home page search",
+      "components": [
+        {
+          "slug": "animated-beam",
+          "title": "Animated Beam",
+          "description": "An SVG path measured between two element refs with a gradient travelling along it, re-measuring on resize.",
+          "categories": ["animation"]
+        },
+        {
+          "slug": "bounce-sidebar",
+          "title": "Bounce Sidebar",
+          "description": "A nav marker that squashes and stretches as it travels between items, easing along an arc rather than a straight line.",
+          "categories": ["navigation"]
+        },
+        {
+          "slug": "code-block",
+          "title": "Code Block",
+          "description": "Prism highlighting with an entire theme derived from a single accent colour, plus an animated copy button.",
+          "categories": ["data"]
+        },
+        {
+          "slug": "flickering-grid",
+          "title": "Flickering Grid",
+          "description": "A canvas grid of squares randomly changing opacity, throttled to a target frame rate and paused when hidden.",
+          "categories": ["effects"]
+        },
+        {
+          "slug": "github-calendar",
+          "title": "GitHub Activity Card",
+          "description": "A contribution heatmap from the public contributions API, with month labels and recently pushed repos.",
+          "categories": ["data", "charts"]
+        },
+        {
+          "slug": "proximity-sidebar",
+          "title": "Proximity Sidebar",
+          "description": "A table-of-contents rail whose dashes lengthen based on their distance from the cursor.",
+          "categories": ["navigation"]
+        },
+        {
+          "slug": "scroll-progress",
+          "title": "Scroll Progress",
+          "description": "A floating progress pill reporting the active section, spring animating between label widths.",
+          "categories": ["scroll", "navigation"]
+        }
+      ]
+    },
+    {
+      "date": "2026-08-18",
+      "commit": "fe0196d",
+      "summary": "Port six CSS/WebGL demos and route four components",
+      "components": [
+        {
+          "slug": "carousel-slider",
+          "title": "Carousel Slider",
+          "description": "A draggable card stack with spring transitions and directional enter/exit variants.",
+          "categories": ["layout"]
+        },
+        {
+          "slug": "option-wheel",
+          "title": "Option Wheel",
+          "description": "A curved, draggable picker that bends its options along an arc and blurs them as they fall from the centre.",
+          "categories": ["inputs"]
+        },
+        {
+          "slug": "year-in-dots",
+          "title": "Year in Dots",
+          "description": "One dot per day of the year, filled in proportion to that year’s share of activity.",
+          "categories": ["data"]
+        },
+        {
+          "slug": "youtube-embed",
+          "title": "YouTube Embed",
+          "description": "A YouTube iframe wrapper that builds its own player URL and can mask the chrome so the video reads as background art.",
+          "categories": ["media"]
+        }
+      ]
+    },
+    {
+      "date": "2026-06-20",
+      "commit": "a8da965",
+      "summary": "Add sparkle button and agent icon demos",
+      "components": [
+        {
+          "slug": "sparkle-button",
+          "title": "Sparkle Button",
+          "description": "A hover-activated pill button with conic spark, orbiting particles, and gradient label text.",
+          "categories": ["inputs", "animation"]
+        }
+      ]
+    },
+    {
+      "date": "2026-06-10",
+      "commit": "84f7954",
+      "summary": "Add composable curved scroll panel demo",
+      "components": [
+        {
+          "slug": "curved-scrollbar",
+          "title": "Curved Scrollbar",
+          "description": "A reusable scroll panel with an SVG thumb that bends around rounded content corners.",
+          "categories": ["scroll"]
+        }
+      ]
+    },
+    {
+      "date": "2026-05-21",
+      "commit": "8daa7fb",
+      "summary": "Add remaining scroll demos",
+      "components": [
+        {
+          "slug": "line-path-animation",
+          "title": "Line Path Animation",
+          "description": "A scroll-driven SVG path fill animation with sticky headline and progressive section reveals.",
+          "categories": ["animation"]
+        }
+      ]
+    },
+    {
+      "date": "2026-05-21",
+      "commit": "ad90522",
+      "summary": "Add you can scroll demo",
+      "components": [
+        {
+          "slug": "you-can-scroll",
+          "title": "You Can Scroll",
+          "description": "A sticky phrase and chroma-scroll list driven by CSS view timelines and scroll-linked animation.",
+          "categories": ["scroll"]
+        }
+      ]
+    },
+    {
+      "date": "2026-05-20",
+      "commit": "20df88b",
+      "summary": "Add playbook scroll animation demo",
+      "components": [
+        {
+          "slug": "faux-pip-video",
+          "title": "Faux PiP Video",
+          "description": "Sticky video morphs into a picture-in-picture control using CSS container scroll-state.",
+          "categories": ["scroll", "media"]
+        },
+        {
+          "slug": "the-craft-of-ui-playbook-css-scroll-animation-w-subgrid",
+          "title": "Playbook Scroll Animation",
+          "description": "A layered scroll demo that uses subgrid and scroll-linked animation to build a cinematic composition.",
+          "categories": ["scroll", "layout"]
+        }
+      ]
+    },
+    {
+      "date": "2026-05-20",
+      "commit": "e4f6085",
+      "summary": "Add ScrollDrivenIndex shared component and UI kit",
+      "components": [
+        {
+          "slug": "scroll-driven-index",
+          "title": "Scroll-Driven Index",
+          "description": "Fixed bottom index popover with scroll-driven progress and in-page section anchors.",
+          "categories": ["scroll", "navigation"]
+        }
+      ]
+    }
+  ]
+}

@@ -87,7 +87,6 @@ export type {
   LinePathAnimationTheme,
 } from './line-path-animation'
 export { AgentComputerIconPage } from './ai-agent'
-export { HeartPage } from './heart'
 export { PulseHeartPage } from './pulse-heart'
 export { FuseButtonPage } from './fuse-button'
 export { SparkleButtonPage } from './sparkle-button'
