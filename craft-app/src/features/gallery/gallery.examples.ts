@@ -9,6 +9,8 @@ import {
   AnimatedHoverDisclosuresPage,
   HookSidebarPage,
   RollingCounterPage,
+  AvatarOrbitPage,
+  AvatarBubblesPage,
   LightboxPage,
   WebSearchPage,
   TaskListPage,
@@ -114,8 +116,11 @@ import {
   GridRevealPage,
   EmojiReactionPage,
   FluidOrbPage,
+  AvatarConstellationPage,
   PullQuotePage,
   LineNavPage,
+  AvatarRingsPage,
+  CloudOrbitPage,
 } from '@/components/shared'
 import { TreeSearchPage } from '@/pages/TreeSearchPage'
 
@@ -1304,5 +1309,55 @@ export const GALLERY_EXAMPLES: GalleryExample[] = sortNewestFirst([
     tech: 'React · WebGL',
     categories: ['effects', 'animation'],
     page: FluidOrbPage,
+  },
+  {
+    slug: 'avatar-rings',
+    addedAt: '2026-11-11',
+    title: 'Avatar Rings',
+    description:
+      'A row of memoji avatars in thick coloured rings that pop in, nudge their neighbours on hover, and double as a keyboard-friendly picker.',
+    tech: 'React · Motion',
+    categories: ['media', 'inputs', 'animation'],
+    page: AvatarRingsPage,
+  },
+  {
+    slug: 'avatar-bubbles',
+    addedAt: '2026-11-11',
+    title: 'Avatar Bubbles',
+    description:
+      'A card clipping a loose cluster of pastel avatar circles that spring in, float, and lift on hover as they bleed off the edge.',
+    tech: 'React · Motion',
+    categories: ['media', 'layout', 'animation'],
+    page: AvatarBubblesPage,
+  },
+  {
+    slug: 'avatar-orbit',
+    addedAt: '2026-11-11',
+    title: 'Avatar Orbit',
+    description:
+      'Avatars spring out around a glowing centre, drift and lift on hover, with speech bubbles popping in beside them.',
+    tech: 'React · Motion',
+    categories: ['media', 'animation'],
+    page: AvatarOrbitPage,
+  },
+  {
+    slug: 'avatar-constellation',
+    addedAt: '2026-11-11',
+    title: 'Avatar Constellation',
+    description:
+      'A large avatar disc ringed by app tiles that spring out from behind it, drift, follow the pointer by depth and pulse on click.',
+    tech: 'React · Motion',
+    categories: ['media', 'animation'],
+    page: AvatarConstellationPage,
+  },
+  {
+    slug: 'cloud-orbit',
+    addedAt: '2026-11-11',
+    title: 'Cloud Orbit',
+    description:
+      'A cloud turns into an avatar with app chips orbiting in depth, swaps person, and folds back into the cloud.',
+    tech: 'React · Motion',
+    categories: ['animation', 'media'],
+    page: CloudOrbitPage,
   },
 ])

@@ -1,0 +1,1 @@
+export { AvatarRingsPage } from './page'

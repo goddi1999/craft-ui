@@ -1,0 +1,1 @@
+export { AvatarBubblesPage } from './page'

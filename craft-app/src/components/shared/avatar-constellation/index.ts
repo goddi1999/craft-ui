@@ -1,0 +1,1 @@
+export { AvatarConstellationPage } from './page'

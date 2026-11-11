@@ -1,0 +1,1 @@
+export { AvatarOrbitPage } from './page'
