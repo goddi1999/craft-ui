@@ -1,0 +1,1 @@
+export { ThemeSelectorPage } from './page'

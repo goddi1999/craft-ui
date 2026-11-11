@@ -98,6 +98,15 @@ export function GsapInfiniteLoop({
       })
     }
 
+    // Reduced motion: hold on the first word instead of stepping forever.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return () => {
+        scrubber.kill()
+        master.kill()
+        gsap.set(lines, { clearProps: 'transform' })
+      }
+    }
+
     const stepper = gsap.to(scrubber, {
       delay: 1,
       totalTime: '+=1',

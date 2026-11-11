@@ -4,7 +4,7 @@ import './pulse-heart.css'
 
 export type PulseHeartIcon = 'heart' | 'star' | 'thumb'
 
-export interface PulseHeartProps {
+export type PulseHeartProps = {
   /** Controlled liked state. Changes from outside bind without a run. */
   liked?: boolean
   /** Initial state when uncontrolled. @default false */
@@ -112,6 +112,12 @@ export function PulseHeart({
   const controlled = likedProp !== undefined
   const [inner, setInner] = useState(defaultLiked)
   const [total, setTotal] = useState(count)
+  // A new `count` from outside resets the running total, adjusted during render.
+  const [prevCount, setPrevCount] = useState(count)
+  if (count !== prevCount) {
+    setPrevCount(count)
+    setTotal(count)
+  }
   const liked = controlled ? likedProp : inner
   const [shown, setShown] = useState({ liked, count })
   const [roll, setRoll] = useState<Roll | null>(null)
@@ -126,13 +132,13 @@ export function PulseHeart({
   const viaPointer = useRef(false)
   const shownRef = useRef(shown)
   const logical = useRef({ liked, count: total })
-  logical.current = { liked, count: total }
   const cfg = useRef({ duration, dotSize, overshoot, beat, rollDuration })
-  cfg.current = { duration, dotSize, overshoot, beat, rollDuration }
 
-  useEffect(() => {
-    setTotal(count)
-  }, [count])
+  // The rAF loop reads the latest values through refs, synced after render.
+  useLayoutEffect(() => {
+    logical.current = { liked, count: total }
+    cfg.current = { duration, dotSize, overshoot, beat, rollDuration }
+  })
 
   useEffect(() => {
     if (raf.current) return

@@ -1,12 +1,11 @@
 @layer cuisine-selector {
   [data-slot='cuisine-selector'] {
-    --selected: oklch(var(--oklch-orange));
+    /* Follows a shadcn theme (including a .dark class) when one is present. */
+    --canvas: var(--background, canvas);
+    --ink: var(--foreground, canvasText);
+    --selected: oklch(var(--oklch-orange, 0.82 0.17 55));
     --transition: 0.875s;
-    --bg: light-dark(white, black);
-    --intentful: light-dark(
-      color-mix(in lch, canvas, canvasText 15%),
-      black
-    );
+    --intentful: color-mix(in lch, var(--canvas), var(--ink) 15%);
     --ease: linear(
       0 0%,
       0.6832 7.89%,
@@ -30,7 +29,7 @@
       1 100%
     );
     position: relative;
-    color-scheme: light dark;
+    max-width: 100%;
   }
 
   [data-slot='cuisine-selector'] fieldset {
@@ -38,7 +37,7 @@
     margin: 0;
     padding: 0;
     width: 62ch;
-    max-width: calc(100vw - 2rem);
+    max-width: 100%;
   }
 
   [data-slot='cuisine-selector'] legend {
@@ -55,19 +54,17 @@
     display: flex;
     gap: 1ch;
     flex-wrap: wrap;
-    transition: all var(--transition);
   }
 
   [data-slot='cuisine-selector'] label {
     --active: 0;
     --intent: 0;
-    --accent: color-mix(in lch, canvasText, canvas 25%);
-    --backdrop: light-dark(white, black);
+    --accent: color-mix(in lch, var(--ink), var(--canvas) 25%);
     padding: 1ch 2ch;
     background: color-mix(
       in lch,
-      canvas,
-      canvasText calc(var(--intent) * 10%)
+      var(--canvas),
+      var(--ink) calc(var(--intent) * 10%)
     );
     color: var(--accent);
     border-radius: 100px;
@@ -83,7 +80,7 @@
     transition-duration: calc(var(--transition) * 0.5), var(--transition);
     transition-timing-function: var(--ease);
     position: relative;
-    outline: 0px solid color-mix(in lch, canvas, canvasText 85%);
+    outline: 0px solid color-mix(in lch, var(--canvas), var(--ink) 85%);
     outline-offset: 2px;
   }
 
@@ -104,8 +101,7 @@
     background: transparent;
   }
 
-  [data-slot='cuisine-selector'] label:has(:focus-visible):not(:has(:checked)),
-  [data-slot='cuisine-selector'] label:hover:not(:has(:checked)) {
+  [data-slot='cuisine-selector'] label:has(:focus-visible):not(:has(:checked)) {
     --intent: 1;
   }
 
@@ -145,10 +141,8 @@
 
   [data-slot='cuisine-selector'] [type='reset'] {
     --intent: 0;
-    position: absolute;
-    top: calc(100% + 1rem);
-    left: 50%;
-    translate: -50% 0;
+    display: block;
+    margin: 1rem auto 0;
     padding: 0.75rem 1.5rem;
     border-radius: 100px;
     align-self: center;
@@ -163,13 +157,28 @@
     color: color-mix(
       in lch,
       #0000,
-      canvasText calc((25 + (var(--intent) * 50)) * 1%)
+      var(--ink) calc((25 + (var(--intent) * 50)) * 1%)
     );
     transition-property: color, background;
     transition-duration: 0.2s;
   }
 
-  [data-slot='cuisine-selector'] [type='reset']:hover {
+  [data-slot='cuisine-selector'] [type='reset']:focus-visible {
     --intent: 1;
+    outline: 2px solid var(--ring, currentColor);
+    outline-offset: 2px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    [data-slot='cuisine-selector'] label:hover:not(:has(:checked)),
+    [data-slot='cuisine-selector'] [type='reset']:hover {
+      --intent: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='cuisine-selector'] {
+      --transition: 0s;
+    }
   }
 }

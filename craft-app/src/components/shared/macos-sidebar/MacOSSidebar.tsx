@@ -149,7 +149,7 @@ export function MacOSSidebar({
         </AnimatePresence>
       </motion.div>
 
-      <div className="z-0 h-full min-h-full w-full flex-1 overflow-y-auto pl-4 lg:pl-8">
+      <div className="z-0 h-full min-h-full w-full min-w-0 flex-1 overflow-y-auto pl-4 lg:pl-8">
         {children}
       </div>
     </div>

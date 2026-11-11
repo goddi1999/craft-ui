@@ -1,6 +1,16 @@
 import { CATEGORY_ORDER, GALLERY_CATEGORIES } from './gallery.constants'
 import type { GalleryCategory, GalleryExample } from './gallery.types'
 
+/**
+ * Newest `addedAt` first. Examples added on the same day keep the later
+ * registry entry on top, since entries are appended as they are built.
+ */
+export function sortNewestFirst(examples: GalleryExample[]) {
+  return [...examples]
+    .reverse()
+    .sort((a, b) => b.addedAt.localeCompare(a.addedAt))
+}
+
 /** Text a query is matched against: title, description, technique, and category names. */
 function searchText(example: GalleryExample) {
   const categoryLabels = example.categories.map(

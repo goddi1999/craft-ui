@@ -1,0 +1,1 @@
+export { PullQuotePage } from './page'

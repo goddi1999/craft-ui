@@ -1,0 +1,1 @@
+export { LightboxPage } from './page'

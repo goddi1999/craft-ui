@@ -35,6 +35,15 @@
     color-scheme: dark only;
   }
 
+  /* 'system' follows a class-based site theme (.light / .dark on <html>) when there is one */
+  :where(.light) [data-slot='multiplayer-mask'][data-theme='system'] {
+    color-scheme: light;
+  }
+
+  :where(.dark) [data-slot='multiplayer-mask'][data-theme='system'] {
+    color-scheme: dark;
+  }
+
   /* size variants own the avatar diameter and how tightly the grid packs */
   [data-slot='multiplayer-mask'].multiplayer-mask--sm {
     --multiplayer-mask-size: 56;
@@ -451,10 +460,28 @@
   [data-slot='multiplayer-mask-stage'] {
     color-scheme: light dark;
     position: relative;
-    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    /* safe: a stack wider than a phone scrolls instead of losing its left edge */
+    justify-items: safe center;
+    min-height: 26rem;
+    padding: 9rem 1rem 3rem;
     background: light-dark(#fff, #000);
     color: canvastext;
-    overflow: hidden;
+    overflow: auto hidden;
+  }
+
+  :where(.light) [data-slot='multiplayer-mask-stage'][data-theme='system'] {
+    color-scheme: light;
+  }
+
+  :where(.dark) [data-slot='multiplayer-mask-stage'][data-theme='system'] {
+    color-scheme: dark;
+  }
+
+  [data-slot='multiplayer-mask-stage'] > * {
+    position: relative;
+    z-index: 1;
   }
 
   [data-slot='multiplayer-mask-stage'][data-theme='light'] {

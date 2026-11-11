@@ -1,60 +1,166 @@
 import { useState } from 'react'
 
-import { DemoControlGroup, DemoPanel } from '@/components/shared/demo-controls'
+import {
+  DemoSettings,
+  DemoSlider,
+  DemoSwitch,
+  useDemoSettings,
+} from '@/components/shared/demo-controls'
+import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
+import { DemoPage } from '@/components/shared/demo-page'
 import { QuantityPicker } from '@/components/ui/quantity-picker'
 
-import { DemoPage } from '../demo-page'
+const DEFAULTS = {
+  min: 0,
+  max: 100,
+  step: 1,
+  disabled: false,
+  readOnly: false,
+}
 
-const STEPS = [1, 2, 5, 10] as const
-const MINS = [0, 10, 50] as const
-const MAXES = [20, 100, 1000] as const
+const PROPS: DemoPropDoc[] = [
+  {
+    name: 'value',
+    type: 'number',
+    description: 'Controlled value.',
+  },
+  {
+    name: 'defaultValue',
+    type: 'number',
+    default: 'min',
+    description: 'Starting value when uncontrolled.',
+  },
+  {
+    name: 'onValueChange',
+    type: '(value: number) => void',
+    description: 'Called with every valid number, from typing or the buttons.',
+  },
+  {
+    name: 'min',
+    type: 'number',
+    default: '0',
+    description: 'Lowest accepted value.',
+  },
+  {
+    name: 'max',
+    type: 'number',
+    default: '100',
+    description: 'Highest accepted value.',
+  },
+  {
+    name: 'step',
+    type: 'number',
+    default: '1',
+    description: 'Amount the buttons add or remove; also used for validity.',
+  },
+  {
+    name: 'disabled',
+    type: 'boolean',
+    default: 'false',
+    description: 'Dim the picker and ignore input.',
+  },
+  {
+    name: 'readOnly',
+    type: 'boolean',
+    default: 'false',
+    description: 'Show the value but lock the buttons and the input.',
+  },
+  {
+    name: 'name',
+    type: 'string',
+    default: "'quantity'",
+    description: 'Form field name of the inner input.',
+  },
+  {
+    name: 'id',
+    type: 'string',
+    description: 'Id of the inner input, for an external label.',
+  },
+  {
+    name: 'label',
+    type: 'string',
+    default: "'Quantity'",
+    description: 'Accessible name of the group.',
+  },
+  {
+    name: 'className',
+    type: 'string',
+    description: 'Extra classes for the root element.',
+  },
+]
 
 export function QuantityPickerPage() {
+  const settings = useDemoSettings(DEFAULTS)
+  const { min, max, step, disabled, readOnly } = settings.values
   const [value, setValue] = useState(42)
-  const [step, setStep] = useState<number>(1)
-  const [min, setMin] = useState<number>(0)
-  const [max, setMax] = useState<number>(100)
+
+  const usage = toUsageSnippet({
+    component: 'QuantityPicker',
+    from: '@/components/ui/quantity-picker',
+    props: { value, min, max, step, disabled, readOnly },
+    defaults: DEFAULTS,
+  }).replace(`value={${value}}`, 'value={value} onValueChange={setValue}')
 
   return (
     <DemoPage
       eyebrow="ui / quantity-picker"
       title="Quantity Picker"
       description="Just an <input type=number> with extras: digits roll on a track as you step, the real input surfaces on focus, and an out-of-range value turns red and shakes when you leave it."
-    >
-      <div className="flex w-full flex-col items-center gap-16 pb-24">
-        <div className="flex flex-col items-center gap-4">
-          <QuantityPicker
-            value={value}
-            onValueChange={setValue}
-            min={min}
-            max={max}
-            step={step}
-          />
-          <p className="text-xs text-muted-foreground tabular-nums">
-            value: {value} · range {min}–{max} · step {step}
-          </p>
-        </div>
-
-        <DemoPanel>
-          <DemoControlGroup
-            title="step"
-            options={STEPS}
-            value={step}
-            onChange={setStep}
-          />
-          <DemoControlGroup
-            title="min"
-            options={MINS}
+      settings={
+        <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
+          <DemoSlider
+            label="Min"
             value={min}
-            onChange={setMin}
+            onValueChange={(next) => settings.set('min', next)}
+            min={0}
+            max={50}
           />
-          <DemoControlGroup
-            title="max"
-            options={MAXES}
+          <DemoSlider
+            label="Max"
             value={max}
-            onChange={setMax}
+            onValueChange={(next) => settings.set('max', next)}
+            min={60}
+            max={1000}
+            step={10}
           />
-        </DemoPanel>
+          <DemoSlider
+            label="Step"
+            value={step}
+            onValueChange={(next) => settings.set('step', next)}
+            min={1}
+            max={10}
+          />
+          <DemoSwitch
+            label="Disabled"
+            checked={disabled}
+            onCheckedChange={(next) => settings.set('disabled', next)}
+          />
+          <DemoSwitch
+            label="Read only"
+            checked={readOnly}
+            onCheckedChange={(next) => settings.set('readOnly', next)}
+          />
+        </DemoSettings>
+      }
+      docs={{
+        paths: ['src/components/ui/quantity-picker/'],
+        usage,
+        props: PROPS,
+      }}
+    >
+      <div className="flex flex-col items-center gap-4">
+        <QuantityPicker
+          value={value}
+          onValueChange={setValue}
+          min={min}
+          max={max}
+          step={step}
+          disabled={disabled}
+          readOnly={readOnly}
+        />
+        <p className="text-xs text-muted-foreground tabular-nums">
+          value {value} · range {min}–{max} · step {step}
+        </p>
       </div>
     </DemoPage>
   )

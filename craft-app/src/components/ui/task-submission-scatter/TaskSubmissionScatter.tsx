@@ -58,6 +58,11 @@ export function TaskSubmissionScatter({
     day: 'numeric',
     month: 'short',
   })
+  // Narrow plots only have room for day and month on the axis.
+  const shortTickFormat = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'numeric',
+  })
   const stampFormat = new Intl.DateTimeFormat(locale, {
     weekday: 'short',
     day: 'numeric',
@@ -100,7 +105,7 @@ export function TaskSubmissionScatter({
       </dl>
 
       <div className="overflow-x-auto pb-1">
-        <div className="grid min-w-[480px] grid-cols-[auto_1fr] gap-x-3 pt-6 pr-8">
+        <div className="grid min-w-[280px] grid-cols-[auto_1fr] gap-x-3 pt-6 pr-6 sm:pr-8">
           <ul aria-hidden="true">
             {points.map((point) => (
               <li
@@ -166,7 +171,12 @@ export function TaskSubmissionScatter({
                 className="absolute -translate-x-1/2 text-[11px] whitespace-nowrap text-muted-foreground"
                 style={{ left: `${toX(tick, start, end)}%` }}
               >
-                {tickFormat.format(new Date(tick))}
+                <span className="sm:hidden">
+                  {shortTickFormat.format(new Date(tick))}
+                </span>
+                <span className="max-sm:hidden">
+                  {tickFormat.format(new Date(tick))}
+                </span>
               </span>
             ))}
           </div>

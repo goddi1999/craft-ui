@@ -1,0 +1,1 @@
+export { ElasticSliderPage } from './page'

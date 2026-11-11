@@ -213,9 +213,7 @@ export const LineSidebar = ({
             ref={(el) => {
               itemRefs.current[index] = el
             }}
-            aria-current={activeIndex === index ? 'true' : undefined}
-            onClick={() => handleClick(index, label)}
-            className={`relative cursor-pointer before:absolute before:-inset-x-12 before:-inset-y-[6px] before:content-[''] ${tickClass}`}
+            className={`relative ${tickClass}`}
           >
             {showMarker && (
               <span
@@ -223,14 +221,24 @@ export const LineSidebar = ({
                 className="absolute left-[calc(-1*var(--marker-length)-var(--marker-gap))] top-1/2 h-px w-[length:var(--marker-length)] origin-left [background-color:color-mix(in_srgb,var(--accent-color)_calc(var(--effect,0)*100%),var(--marker-color))] [transform:translateY(-50%)_scaleX(calc(0.7+var(--effect,0)*0.5))]"
               />
             )}
-            <span className="relative inline-flex items-baseline leading-[1.2] [color:color-mix(in_srgb,var(--accent-color)_calc(var(--effect,0)*100%),var(--text-color))] [font-size:var(--font-size)] [transform:translateX(calc(var(--effect,0)*var(--max-shift)))]">
+            <button
+              type="button"
+              aria-current={activeIndex === index ? 'true' : undefined}
+              onClick={() => handleClick(index, label)}
+              onFocus={() => {
+                targetsRef.current = items.map((_, i) => (i === index ? 1 : 0))
+                startLoop()
+              }}
+              onBlur={handlePointerLeave}
+              className="relative inline-flex cursor-pointer items-baseline rounded-sm border-0 bg-transparent p-0 text-left leading-[1.2] outline-none before:absolute before:-inset-x-12 before:-inset-y-[6px] before:content-[''] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background [color:color-mix(in_srgb,var(--accent-color)_calc(var(--effect,0)*100%),var(--text-color))] [font-size:var(--font-size)] [transform:translateX(calc(var(--effect,0)*var(--max-shift)))]"
+            >
               {showIndex && (
                 <span className="mr-[0.6rem] font-mono text-[0.85em] [opacity:calc(0.55+var(--effect,0)*0.45)]">
                   {String(index + 1).padStart(2, '0')}
                 </span>
               )}
               <span>{label}</span>
-            </span>
+            </button>
           </li>
         ))}
       </ul>

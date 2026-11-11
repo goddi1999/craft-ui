@@ -1,0 +1,1 @@
+export { DeleteButtonPage } from './page'

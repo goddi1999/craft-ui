@@ -18,7 +18,15 @@ export type DemoDocsProps = {
   className?: string
 }
 
-export type UsagePropValue = string | number | boolean | undefined
+/** A JS expression printed as-is inside braces, e.g. `{ expression: '16 / 9' }`. */
+export type UsageExpression = { expression: string }
+
+export type UsagePropValue =
+  | string
+  | number
+  | boolean
+  | UsageExpression
+  | undefined
 
 export type UsageSnippetOptions = {
   /** Component name as imported, e.g. `SparkleButton`. */

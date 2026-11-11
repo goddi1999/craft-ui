@@ -1,4 +1,14 @@
-import ProximitySidebar, { type ProximitySection } from './ProximitySidebar'
+import {
+  DemoControlGroup,
+  DemoSettings,
+  DemoSlider,
+  useDemoSettings,
+} from '@/components/shared/demo-controls'
+import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
+import { DemoPage } from '@/components/shared/demo-page'
+import { cn } from '@/lib/utils'
+
+import { ProximitySidebar, type ProximitySection } from './ProximitySidebar'
 
 type DocItem = {
   id: string
@@ -274,6 +284,9 @@ const docs: DocGroup[] = [
   },
 ]
 
+/** Placeholder swapped for a JSX expression in the usage snippet. */
+const SECTIONS_TOKEN = '__sections__'
+
 const sections: ProximitySection[] = docs.flatMap((group) => [
   { id: group.id, label: group.label, kind: 'title' },
   ...group.items.map((item) => ({
@@ -283,90 +296,171 @@ const sections: ProximitySection[] = docs.flatMap((group) => [
   })),
 ])
 
+const SIDES = ['left', 'right'] as const
+type Side = (typeof SIDES)[number]
+
+const DEFAULTS = {
+  side: 'left' as Side,
+  /** The prop is a 0–1 fraction; the demo shows it as a percentage. */
+  activeOffsetPercent: 40,
+}
+
+const COMPONENT_DEFAULTS = { side: 'left', activeOffset: 0.4 }
+
+const PROPS: DemoPropDoc[] = [
+  {
+    name: 'sections',
+    type: 'ProximitySection[]',
+    description:
+      'One dash per entry, in order — `{ id, label, kind?, level? }`. Each id must match an element on the page. Required.',
+  },
+  {
+    name: 'side',
+    type: "'left' | 'right'",
+    default: "'left'",
+    description: 'Which edge the dashes grow from.',
+  },
+  {
+    name: 'activeOffset',
+    type: 'number',
+    default: '0.4',
+    description:
+      'Where the reading line sits in the scroller, 0 (top) to 1 (bottom). The section under it pulses.',
+  },
+  {
+    name: 'className',
+    type: 'string',
+    default: "''",
+    description: 'Classes for the nav. Position and size it from the outside.',
+  },
+  {
+    name: "ProximitySection kind",
+    type: "'title' | 'subtitle' | 'section' | 'body'",
+    description: 'Visual weight of the dash. Falls back to `level`, then the first heading inside the target.',
+  },
+  {
+    name: 'ProximitySection level',
+    type: '1 | 2 | 3 | 4 | 5 | 6',
+    description: 'Heading level, mapped to a kind when `kind` is not given.',
+  },
+]
+
 export function ProximitySidebarPage() {
+  const settings = useDemoSettings(DEFAULTS)
+  const { side, activeOffsetPercent } = settings.values
+  const activeOffset = activeOffsetPercent / 100
+
+  const usage = toUsageSnippet({
+    component: 'ProximitySidebar',
+    from: '@/components/shared/proximity-sidebar',
+    props: { sections: SECTIONS_TOKEN, side, activeOffset },
+    defaults: COMPONENT_DEFAULTS,
+  }).replace(`sections="${SECTIONS_TOKEN}"`, 'sections={sections}')
+
   return (
-    <div className="flex min-h-svh flex-col bg-background px-4 pb-10 pt-16 text-foreground">
-      <header className="mx-auto mb-8 w-full max-w-5xl text-center">
-        <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-          shared / proximity-sidebar
-        </p>
-        <h1 className="mt-3 text-4xl font-medium tracking-tight">
-          Proximity sidebar
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
-          A document minimap whose dashes lengthen near the pointer and pulse
-          with the active section as you scroll.
-        </p>
-      </header>
+    <DemoPage
+      eyebrow="shared / proximity-sidebar"
+      title="Proximity sidebar"
+      description="A document minimap whose dashes lengthen near the pointer and pulse with the active section as you scroll. Scroll the document, hover the dashes, click one to jump."
+      align="stretch"
+      bleed
+      settings={
+        <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
+          <DemoControlGroup
+            title="Side"
+            options={SIDES}
+            value={side}
+            onChange={(value) => settings.set('side', value)}
+          />
+          <DemoSlider
+            label="Active offset"
+            value={activeOffsetPercent}
+            onValueChange={(value) => settings.set('activeOffsetPercent', value)}
+            min={0}
+            max={100}
+            step={5}
+            unit="%"
+          />
+        </DemoSettings>
+      }
+      docs={{
+        paths: ['src/components/shared/proximity-sidebar/'],
+        usage,
+        props: PROPS,
+      }}
+    >
+      <div
+        className={cn(
+          'flex h-[32rem] min-h-0 overflow-hidden',
+          side === 'right' && 'flex-row-reverse',
+        )}
+      >
+        {/* Wide enough for the fully grown 110px dash plus its margin. */}
+        <aside className="h-full w-[8.5rem] shrink-0 sm:w-[10rem]">
+          <ProximitySidebar
+            side={side}
+            sections={sections}
+            activeOffset={activeOffset}
+          />
+        </aside>
 
-      <div className="mx-auto h-[min(44rem,calc(100svh-11rem))] w-full max-w-5xl overflow-hidden rounded-2xl border border-border bg-background">
-        <div className="flex h-full min-h-0 overflow-hidden">
-          <aside className="h-full w-24 shrink-0">
-            <ProximitySidebar side="left" sections={sections} />
-          </aside>
+        <main className="min-h-0 min-w-0 flex-1 overflow-auto px-4 py-16 [-ms-overflow-style:none] [scrollbar-width:none] sm:px-8 md:px-14 [&::-webkit-scrollbar]:hidden">
+          <article className="max-w-2xl">
+            {docs.map((group, groupIndex) => (
+              <section
+                key={group.id}
+                id={group.id}
+                className="mt-10 scroll-mt-12 first:mt-0"
+              >
+                <p className="mb-2 text-sm text-foreground/65 dark:text-foreground/40">
+                  {group.eyebrow}
+                </p>
+                {groupIndex === 0 ? (
+                  <h2 className="text-3xl font-medium tracking-wide text-foreground sm:text-5xl">
+                    {group.title}
+                  </h2>
+                ) : (
+                  <h3 className="border-b pb-2 text-2xl font-medium tracking-wide text-foreground/90 sm:text-3xl">
+                    {group.title}
+                  </h3>
+                )}
+                <p className="mt-2 text-base text-foreground/80 sm:text-lg dark:text-foreground/60">
+                  {group.description}
+                </p>
 
-          <main className="ml-20 min-h-0 flex-1 overflow-auto px-8 py-20 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:px-14">
-            <article className="max-w-2xl">
-              {docs.map((group, groupIndex) => (
-                <section
-                  key={group.id}
-                  id={group.id}
-                  className="mt-10 scroll-mt-12 first:mt-0"
-                >
-                  <p className="mb-2 text-sm text-foreground/65 dark:text-foreground/40">
-                    {group.eyebrow}
-                  </p>
-                  {groupIndex === 0 ? (
-                    <h2 className="text-5xl font-medium tracking-wider text-foreground">
-                      {group.title}
-                    </h2>
-                  ) : (
-                    <h3 className="border-b pb-2 text-3xl font-medium tracking-wide text-foreground/90">
-                      {group.title}
-                    </h3>
-                  )}
-                  <p className="mt-2 text-lg text-foreground/80 dark:text-foreground/60">
-                    {group.description}
-                  </p>
-
-                  {group.id === 'reference' ? (
-                    <div className="mt-6 grid gap-6">
-                      <div id="reference-props" className="scroll-mt-12">
-                        <p className="text-sm leading-6 text-foreground/75 dark:text-foreground/50">
-                          Pass <code>sections</code>, <code>side</code>,{' '}
-                          <code>className</code>, and <code>activeOffset</code>.
-                          The section ids should match elements in the document.
-                        </p>
-                      </div>
-                      <div id="reference-output" className="scroll-mt-12">
-                        <p className="text-sm leading-6 text-foreground/75 dark:text-foreground/50">
-                          The component renders an accessible navigation rail
-                          where each dash is a button tied to its matching
-                          content block.
-                        </p>
-                      </div>
+                {group.id === 'reference' ? (
+                  <div className="mt-6 grid gap-6">
+                    <div id="reference-props" className="scroll-mt-12">
+                      <p className="text-sm leading-6 text-foreground/75 dark:text-foreground/50">
+                        Pass <code>sections</code>, <code>side</code>,{' '}
+                        <code>className</code>, and <code>activeOffset</code>.
+                        The section ids should match elements in the document.
+                      </p>
                     </div>
-                  ) : (
-                    <div className="mt-6 space-y-6">
-                      {group.items.map((item) => (
-                        <section
-                          key={item.id}
-                          id={item.id}
-                          className="scroll-mt-12"
-                        >
-                          <p className="text-sm leading-6 text-foreground/75 dark:text-foreground/50">
-                            {item.description}
-                          </p>
-                        </section>
-                      ))}
+                    <div id="reference-output" className="scroll-mt-12">
+                      <p className="text-sm leading-6 text-foreground/75 dark:text-foreground/50">
+                        The component renders an accessible navigation rail
+                        where each dash is a button tied to its matching content
+                        block.
+                      </p>
                     </div>
-                  )}
-                </section>
-              ))}
-            </article>
-          </main>
-        </div>
+                  </div>
+                ) : (
+                  <div className="mt-6 space-y-6">
+                    {group.items.map((item) => (
+                      <section key={item.id} id={item.id} className="scroll-mt-12">
+                        <p className="text-sm leading-6 text-foreground/75 dark:text-foreground/50">
+                          {item.description}
+                        </p>
+                      </section>
+                    ))}
+                  </div>
+                )}
+              </section>
+            ))}
+          </article>
+        </main>
       </div>
-    </div>
+    </DemoPage>
   )
 }

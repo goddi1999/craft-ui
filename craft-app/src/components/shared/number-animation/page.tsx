@@ -1,9 +1,13 @@
-import { useState } from 'react'
-
 import {
+  DemoAction,
   DemoControlGroup,
-  DemoPanel,
+  DemoSettings,
+  DemoSlider,
+  DemoTextField,
+  useDemoSettings,
 } from '@/components/shared/demo-controls'
+import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
+import { DemoPage } from '@/components/shared/demo-page'
 
 import { NumberAnimation } from './NumberAnimation'
 import type {
@@ -13,121 +17,151 @@ import type {
 
 const SIZES: NumberAnimationSize[] = ['sm', 'default', 'lg', 'xl']
 const MODES: NumberAnimationMode[] = ['transition', 'animation']
-const DURATIONS = [0.4, 1, 2]
-const PRESET_VALUES = [0, 25, 55, 80, 100]
+
+const DEFAULTS = {
+  value: 55,
+  size: 'lg' as NumberAnimationSize,
+  mode: 'transition' as NumberAnimationMode,
+  duration: 1,
+  suffix: '%',
+}
+
+/** The component's own defaults, so the snippet only prints real changes. */
+const COMPONENT_DEFAULTS = {
+  size: 'default',
+  mode: 'transition',
+  duration: 1,
+  suffix: '%',
+}
+
+const PROPS: DemoPropDoc[] = [
+  {
+    name: 'value',
+    type: 'number',
+    description: 'The integer to show; changing it animates the counter. Required.',
+  },
+  {
+    name: 'size',
+    type: "'sm' | 'default' | 'lg' | 'xl'",
+    default: "'default'",
+    description: 'Font size of the number.',
+  },
+  {
+    name: 'mode',
+    type: "'transition' | 'animation'",
+    default: "'transition'",
+    description:
+      'Tween the registered property directly, or replay an additive keyframe from the last value.',
+  },
+  {
+    name: 'duration',
+    type: 'number',
+    default: '1',
+    description: 'Seconds the number takes to arrive.',
+  },
+  {
+    name: 'suffix',
+    type: 'string',
+    default: "'%'",
+    description: 'Text after the number. Pass an empty string for none.',
+  },
+  {
+    name: 'label',
+    type: 'string',
+    description: 'What the number measures, read out by screen readers.',
+  },
+  {
+    name: '...props',
+    type: 'HTMLAttributes<HTMLDivElement>',
+    description: 'Any native div attribute, applied to the root.',
+  },
+]
 
 export function NumberAnimationPage() {
-  const [value, setValue] = useState(55)
-  const [size, setSize] = useState<NumberAnimationSize>('lg')
-  const [mode, setMode] = useState<NumberAnimationMode>('transition')
-  const [duration, setDuration] = useState(1)
+  const settings = useDemoSettings(DEFAULTS)
+  const { value, size, mode, duration, suffix } = settings.values
+
+  const handleRandomValue = () => {
+    let next = value
+    while (Math.abs(next - value) < 20) next = Math.round(Math.random() * 100)
+    settings.set('value', next)
+  }
+
+  const usage = toUsageSnippet({
+    component: 'NumberAnimation',
+    from: '@/components/shared/number-animation',
+    props: { value, size, mode, duration, suffix, label: 'Progress' },
+    defaults: COMPONENT_DEFAULTS,
+  })
 
   return (
-    <div data-slot="number-animation-stage">
-      <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col gap-12 px-4 py-16">
-        <header className="text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] opacity-50">
-            shared / number-animation
-          </p>
-          <h1 className="mt-3 text-4xl font-medium tracking-tight">
-            CSS number animation
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm opacity-70">
-            A registered <code>&lt;integer&gt;</code> custom property feeds a
-            CSS counter, so the number itself is interpolable — no JavaScript
-            ticks a value. Ported from{' '}
-            <a
-              href="https://codepen.io/jh3y/pen/gbbYZEz"
-              className="underline underline-offset-2"
-              target="_blank"
-              rel="noreferrer"
-            >
-              jh3y&apos;s CodePen
-            </a>
-            .
-          </p>
-        </header>
-
-        <section className="flex flex-col items-center gap-10">
-          <div className="flex min-h-40 items-center justify-center">
-            <NumberAnimation
-              value={value}
-              size={size}
-              mode={mode}
-              duration={duration}
-              label="Progress"
-            />
-          </div>
-
-          <DemoPanel>
-            <div>
-              <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] opacity-60">
-                value
-              </p>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                step={1}
-                value={value}
-                aria-label="Value"
-                className="w-full accent-current"
-                onChange={(event) => setValue(Number(event.target.value))}
-              />
-            </div>
-            <DemoControlGroup
-              title="presets"
-              options={PRESET_VALUES}
-              value={value}
-              onChange={setValue}
-            />
-            <DemoControlGroup
-              title="mode"
-              options={MODES}
-              value={mode}
-              onChange={setMode}
-            />
-            <DemoControlGroup
-              title="size"
-              options={SIZES}
-              value={size}
-              onChange={setSize}
-            />
-            <DemoControlGroup
-              title="duration"
-              options={DURATIONS}
-              value={duration}
-              onChange={setDuration}
-              format={(seconds) => `${seconds}s`}
-            />
-          </DemoPanel>
-        </section>
-
-        <section>
-          <h2 className="mb-4 text-sm font-medium uppercase tracking-[0.16em] opacity-50">
-            Sizes
-          </h2>
-          <ul className="grid gap-4 sm:grid-cols-2">
-            {SIZES.map((variantSize) => (
-              <li
-                key={variantSize}
-                className="flex flex-col items-center gap-2 rounded-xl border border-current/10 p-6"
-              >
-                <NumberAnimation
-                  value={value}
-                  size={variantSize}
-                  mode={mode}
-                  duration={duration}
-                  label={variantSize}
-                />
-                <p className="text-xs uppercase tracking-[0.16em] opacity-50">
-                  {variantSize}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
-    </div>
+    <DemoPage
+      eyebrow="shared / number-animation"
+      title="CSS number animation"
+      description={
+        <>
+          A registered <code>&lt;integer&gt;</code> custom property feeds a CSS
+          counter, so the number itself is interpolable — no JavaScript ticks a
+          value. Ported from{' '}
+          <a href="https://codepen.io/jh3y/pen/gbbYZEz" target="_blank" rel="noreferrer">
+            jh3y&apos;s CodePen
+          </a>
+          .
+        </>
+      }
+      settings={
+        <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
+          <DemoSlider
+            label="Value"
+            value={value}
+            onValueChange={(next) => settings.set('value', next)}
+            min={0}
+            max={100}
+          />
+          <DemoControlGroup
+            title="Mode"
+            options={MODES}
+            value={mode}
+            onChange={(next) => settings.set('mode', next)}
+          />
+          <DemoControlGroup
+            title="Size"
+            options={SIZES}
+            value={size}
+            onChange={(next) => settings.set('size', next)}
+          />
+          <DemoSlider
+            label="Duration"
+            value={duration}
+            onValueChange={(next) => settings.set('duration', next)}
+            min={0.25}
+            max={3}
+            step={0.25}
+            unit="s"
+          />
+          <DemoTextField
+            label="Suffix"
+            value={suffix}
+            onValueChange={(next) => settings.set('suffix', next)}
+            maxLength={6}
+          />
+          <DemoAction onClick={handleRandomValue}>Random value</DemoAction>
+        </DemoSettings>
+      }
+      docs={{
+        paths: ['src/components/shared/number-animation/'],
+        usage,
+        props: PROPS,
+      }}
+    >
+      <NumberAnimation
+        value={value}
+        size={size}
+        mode={mode}
+        duration={duration}
+        suffix={suffix}
+        label="Progress"
+      />
+    </DemoPage>
   )
 }

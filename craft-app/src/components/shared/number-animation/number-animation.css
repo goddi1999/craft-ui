@@ -77,17 +77,4 @@
       animation-duration: 1ms;
     }
   }
-
-  /* ------------------------------------------------------------------ */
-  /* demo stage                                                          */
-  /* ------------------------------------------------------------------ */
-
-  [data-slot='number-animation-stage'] {
-    color-scheme: light dark;
-    position: relative;
-    min-height: 100svh;
-    background: light-dark(#fff, #000);
-    color: canvastext;
-    overflow: hidden;
-  }
 }

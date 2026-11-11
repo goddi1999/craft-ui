@@ -1,12 +1,30 @@
 @layer playbook-scroll-animation-subgrid {
   [data-slot='playbook-scroll-animation-subgrid'] {
+    color-scheme: light;
+    color: canvasText;
     overflow: clip;
     background: light-dark(#fff, #000);
-    z-index: 2;
+    /* Own stacking context so the z-index: -1 footer sits behind the content
+       but above the page, revealing itself as the content scrolls away. */
+    position: relative;
+    isolation: isolate;
     display: block;
   }
 
+  /* `system` follows the page's `.dark` class, as shadcn themes do. */
+  :where(.dark) [data-slot='playbook-scroll-animation-subgrid'][data-theme='system'],
+  [data-slot='playbook-scroll-animation-subgrid'][data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  [data-slot='playbook-scroll-animation-subgrid'][data-theme='light'] {
+    color-scheme: light;
+  }
+
+  /* clip-path (unlike overflow) also clips the fixed grid backdrop, so it
+     stays inside the demo instead of covering the whole page. */
   [data-slot='playbook-scroll-animation-subgrid'] .content-wrap {
+    clip-path: inset(0);
     overflow: clip;
     background: light-dark(#fff, #000);
     z-index: 2;
@@ -100,6 +118,10 @@
     position: sticky;
     top: 0;
     overflow: hidden;
+  }
+
+  [data-slot='playbook-scroll-animation-subgrid'][data-stick='false'] .content {
+    position: relative;
   }
 
   [data-slot='playbook-scroll-animation-subgrid'] main section:last-of-type {

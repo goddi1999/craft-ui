@@ -121,6 +121,13 @@
     transform: rotateX(-24deg) rotateY(42deg);
   }
 
+  /* Phones: the tilted ring is wider than the screen, so shrink it to fit. */
+  @media (max-width: 40rem) {
+    [data-slot='barrel-time-input'][data-reveal] [data-barrel-columns] {
+      transform: translateX(1.5rem) rotateX(-24deg) rotateY(42deg) scale(0.8);
+    }
+  }
+
   [data-slot='barrel-time-input'][data-reveal] [data-barrel-column]:not([data-kind='hours']) {
     opacity: 0.2;
   }

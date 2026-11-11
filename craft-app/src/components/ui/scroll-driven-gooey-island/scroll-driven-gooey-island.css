@@ -13,15 +13,20 @@
       var(--sdgi-island-margin) + var(--sdgi-avatar-position) +
         var(--sdgi-avatar-size) + 1lh + var(--sdgi-header-margin)
     );
-    --sdgi-header-font: 3rem;
+    --sdgi-header-font: min(3rem, 10cqi);
 
+    /* The root is a frame with its own scroller. `contain` makes it the
+       containing block of the fixed island, avatar and title, so they stay
+       pinned to the frame while the scroller drives the timeline. */
     position: relative;
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100svh + var(--sdgi-header-height));
+    height: var(--sdgi-frame-height, 100svh);
     width: 100%;
-    background: canvas;
-    color: canvasText;
+    overflow: hidden;
+    contain: layout paint;
+    container-type: inline-size;
+    timeline-scope: --sdgi-scroll;
+    background: var(--background);
+    color: var(--foreground);
     font-family:
       'SF Pro Text', 'SF Pro Icons', 'AOS Icons', 'Helvetica Neue', Helvetica,
       Arial, sans-serif, system-ui;
@@ -31,9 +36,24 @@
     box-sizing: border-box;
   }
 
-  [data-slot='scroll-driven-gooey-island']::before {
+  [data-slot='scroll-driven-gooey-island'] .sdgi__scroller {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-timeline: --sdgi-scroll block;
+  }
+
+  [data-slot='scroll-driven-gooey-island'] .sdgi__page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100% + var(--sdgi-header-height));
+  }
+
+  [data-slot='scroll-driven-gooey-island'] .sdgi__page::before {
     --size: 45px;
-    --line: color-mix(in lch, canvasText, transparent 70%);
+    --line: color-mix(in lch, var(--foreground), transparent 80%);
     content: '';
     height: 100%;
     width: 100%;
@@ -56,7 +76,7 @@
     width: 100%;
     font-size: var(--sdgi-header-font);
     animation: sdgi-block both linear;
-    animation-timeline: scroll(root);
+    animation-timeline: --sdgi-scroll;
     transform-origin: 50% 0;
     animation-range: 0 calc(var(--sdgi-header-height) * 0.65);
     z-index: 2;
@@ -64,7 +84,7 @@
 
   @keyframes sdgi-block {
     to {
-      background: canvas;
+      background: var(--background);
       box-shadow: 0 0 20px 5px hsl(0 0% 0% / 0.25);
     }
   }
@@ -115,7 +135,7 @@
     translate: -50% 0;
     overflow: hidden;
     animation: sdgi-shrink both linear;
-    animation-timeline: scroll(root);
+    animation-timeline: --sdgi-scroll;
     animation-range: 0 calc(var(--sdgi-header-height) * 0.65);
     transform-origin: 50% 0;
     z-index: 3;
@@ -127,19 +147,19 @@
     border-radius: 50%;
     object-fit: cover;
     animation: sdgi-fade both linear;
-    animation-timeline: scroll(root);
+    animation-timeline: --sdgi-scroll;
     animation-range: 0 calc(var(--sdgi-header-height) * 0.425);
   }
 
   [data-slot='scroll-driven-gooey-island'] .sdgi__title {
     margin: 0;
     position: fixed;
-    font-size: 3rem;
+    font-size: var(--sdgi-header-font);
     top: calc(var(--sdgi-header-height) + var(--sdgi-header-margin));
     translate: -50% -100%;
     left: 50%;
     animation: sdgi-scale both linear;
-    animation-timeline: scroll(root);
+    animation-timeline: --sdgi-scroll;
     transform-origin: 50% 0;
     animation-range: 0 calc(var(--sdgi-header-height) * 0.65);
     z-index: 3;
@@ -177,7 +197,7 @@
   [data-slot='scroll-driven-gooey-island'] .sdgi__main {
     position: relative;
     z-index: 1;
-    min-height: 100vh;
+    flex: 1;
     width: 100%;
     display: flex;
     align-items: center;
@@ -207,7 +227,7 @@
     gap: 1rem;
     align-items: flex-start;
     margin-bottom: 0.5rem;
-    color: color-mix(in lch, var(--sdgi-accent), #0000 15%);
+    color: color-mix(in lch, var(--sdgi-accent), var(--foreground) 55%);
   }
 
   [data-slot='scroll-driven-gooey-island'] .sdgi__context p {
@@ -228,16 +248,20 @@
     padding-inline: 1rem;
     font: inherit;
     font-size: 0.9375rem;
-    color: color-mix(in lch, var(--sdgi-accent), #0000 15%);
-    border: 2px solid color-mix(in lch, var(--sdgi-accent), #0000);
-    background: color-mix(in lch, var(--sdgi-accent), #fff 95%);
+    color: color-mix(in lch, var(--sdgi-accent), var(--foreground) 55%);
+    border: 2px solid color-mix(in lch, var(--sdgi-accent), var(--background) 40%);
+    background: color-mix(in lch, var(--sdgi-accent), var(--background) 92%);
     position: relative;
   }
 
-  [data-slot='scroll-driven-gooey-island']
-    .sdgi__list
-    :is(button, a):is(:focus-visible, :hover) {
+  [data-slot='scroll-driven-gooey-island'] .sdgi__list :is(button, a):focus-visible {
     --sdgi-intent: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    [data-slot='scroll-driven-gooey-island'] .sdgi__list :is(button, a):hover {
+      --sdgi-intent: 1;
+    }
   }
 
   [data-slot='scroll-driven-gooey-island'] .sdgi__list :is(button, a)::after {
@@ -246,7 +270,7 @@
     inset: 0;
     background: hsl(0 0% 0% / 0.2);
     opacity: var(--sdgi-intent, 0);
-    transition: opacity 0.2s;
+    transition: opacity 0.2s ease-out;
     pointer-events: none;
     border-radius: inherit;
   }

@@ -1,138 +1,229 @@
 import { useState } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { Heart } from '@/components/ui/heart'
-import { HeartWithPicker } from '@/components/ui/heart-2'
-import type { HeartVariantProps } from '@/components/ui/heart-variant'
+import {
+  DemoAction,
+  DemoControlGroup,
+  DemoSettings,
+  DemoSlider,
+  DemoSwitch,
+  useDemoSettings,
+} from '@/components/shared/demo-controls'
+import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
 import { DemoPage } from '@/components/shared/demo-page'
+import {
+  HEART_COLORS,
+  Heart,
+  HeartButton,
+  type HeartColorKey,
+  type HeartVariantProps,
+} from '@/components/ui/heart'
 
-const VARIANTS: NonNullable<HeartVariantProps['variant']>[] = [
-  'violet',
-  'indigo',
-  'blue',
-  'cyan',
-  'teal',
-  'green',
-  'lime',
-  'orange',
-  'pink',
-  'darkblue',
+type HeartSize = NonNullable<HeartVariantProps['size']>
+
+const STYLES = ['beat', 'fill'] as const
+type HeartStyle = (typeof STYLES)[number]
+
+const STYLE_LABELS: Record<HeartStyle, string> = {
+  beat: 'Heart · CSS beat',
+  fill: 'HeartButton · GSAP fill',
+}
+
+const COLORS = HEART_COLORS.map((color) => color.key)
+const SIZES: HeartSize[] = ['default', 'lg', 'xl', '2xl']
+
+const DEFAULTS = {
+  style: 'beat' as HeartStyle,
+  color: 'violet' as HeartColorKey,
+  size: '2xl' as HeartSize,
+  liked: true,
+  interactive: true,
+  pixelSize: 72,
+  defaultLiked: false,
+}
+
+const HEART_DEFAULTS = {
+  variant: 'violet',
+  size: 'default',
+  liked: true,
+  interactive: false,
+}
+
+const HEART_BUTTON_DEFAULTS = { size: 72, defaultLiked: false }
+
+const HEART_PROPS: DemoPropDoc[] = [
+  {
+    name: 'variant',
+    type: "'violet' | 'indigo' | 'blue' | 'darkblue' | 'cyan' | 'teal' | 'green' | 'lime' | 'orange' | 'pink' | 'default' | 'secondary' | 'destructive' | 'outline'",
+    default: "'violet'",
+    description: 'Color of the heart.',
+  },
+  {
+    name: 'color',
+    type: 'HeartVariantProps[\'variant\']',
+    description: 'Alias of variant; wins when both are set.',
+  },
+  {
+    name: 'size',
+    type: "'default' | 'lg' | 'xl' | '2xl'",
+    default: "'default'",
+    description: 'Icon size: 16, 20, 24 or 32px.',
+  },
+  {
+    name: 'interactive',
+    type: 'boolean',
+    default: 'false',
+    description: 'Render as a like button that toggles itself and beats on click.',
+  },
+  {
+    name: 'liked',
+    type: 'boolean',
+    default: 'true',
+    description: 'Filled state — the starting state when interactive.',
+  },
+  {
+    name: 'triggerAnimation',
+    type: 'string | number | boolean',
+    description: 'Change this value to replay the beat.',
+  },
+  {
+    name: 'className',
+    type: 'string',
+    description: 'Extra classes for the svg.',
+  },
 ]
 
-const SIZES: NonNullable<HeartVariantProps['size']>[] = [
-  'default',
-  'lg',
-  'xl',
-  '2xl',
+const HEART_BUTTON_PROPS: DemoPropDoc[] = [
+  {
+    name: 'oklchVal',
+    type: 'string',
+    description: "OKLCH channels without the function, e.g. '0.76 0.18 305'. HEART_COLORS has ten.",
+  },
+  {
+    name: 'size',
+    type: 'number',
+    default: '72',
+    description: 'Heart width and height in px.',
+  },
+  {
+    name: 'defaultLiked',
+    type: 'boolean',
+    default: 'false',
+    description: 'Start filled.',
+  },
+  {
+    name: 'onChange',
+    type: '(liked: boolean) => void',
+    description: 'Called with the new state after each toggle.',
+  },
 ]
 
 export function HeartPage() {
-  const [variant, setVariant] =
-    useState<NonNullable<HeartVariantProps['variant']>>('violet')
-  const [size, setSize] =
-    useState<NonNullable<HeartVariantProps['size']>>('2xl')
-  const [replayKey, setReplayKey] = useState(0)
+  const settings = useDemoSettings(DEFAULTS)
+  const { style, color, size, liked, interactive, pixelSize, defaultLiked } =
+    settings.values
+  const [beatCount, setBeatCount] = useState(0)
+  const oklch = HEART_COLORS.find((entry) => entry.key === color)?.oklch ?? ''
+  const isBeat = style === 'beat'
+
+  const usage = isBeat
+    ? toUsageSnippet({
+        component: 'Heart',
+        from: '@/components/ui/heart',
+        props: { variant: color, size, interactive, liked },
+        defaults: HEART_DEFAULTS,
+      })
+    : toUsageSnippet({
+        component: 'HeartButton',
+        from: '@/components/ui/heart',
+        props: { oklchVal: oklch, size: pixelSize, defaultLiked },
+        defaults: HEART_BUTTON_DEFAULTS,
+      })
+
+  const handleReplay = () => setBeatCount((count) => count + 1)
 
   return (
     <DemoPage
       eyebrow="ui / heart"
       title="Heart"
-      description="Two like hearts: a CSS beat primitive with typed color variants, and a GSAP fill that expands from the center with particle burst."
-      align="start"
-    >
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-12 px-4 pb-20">
-        <section className="overflow-hidden rounded-2xl border bg-card">
-          <div className="grid gap-0 md:grid-cols-[1.1fr_1fr]">
-            <div className="flex flex-col items-center justify-center gap-6 border-b p-10 md:border-r md:border-b-0">
-              <Heart
-                key={replayKey}
-                size={size}
-                variant={variant}
-                interactive
-                liked
-                triggerAnimation={replayKey}
-                className="!size-20"
+      description="Two like hearts that share one palette: a CSS beat primitive with typed color variants, and a GSAP button that fills from the center with a particle burst. Click the heart."
+      settings={
+        <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
+          <DemoControlGroup
+            title="Component"
+            options={STYLES}
+            value={style}
+            onChange={(value) => settings.set('style', value)}
+            format={(value) => STYLE_LABELS[value]}
+          />
+          <DemoControlGroup
+            title="Color"
+            options={COLORS}
+            value={color}
+            onChange={(value) => settings.set('color', value)}
+          />
+          {isBeat ? (
+            <>
+              <DemoControlGroup
+                title="Size"
+                options={SIZES}
+                value={size}
+                onChange={(value) => settings.set('size', value)}
               />
-              <p className="text-center text-sm text-muted-foreground">
-                Click to like / unlike — CSS <code className="rounded bg-muted px-1">heart-beat</code>
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-6 p-6">
-              <div>
-                <p className="mb-2 text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
-                  variant
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {VARIANTS.map((v) => (
-                    <Button
-                      key={v}
-                      size="sm"
-                      variant={variant === v ? 'default' : 'outline'}
-                      onClick={() => setVariant(v)}
-                    >
-                      {v}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
-                  size
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {SIZES.map((s) => (
-                    <Button
-                      key={s}
-                      size="sm"
-                      variant={size === s ? 'default' : 'outline'}
-                      onClick={() => setSize(s)}
-                    >
-                      {s}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setReplayKey((n) => n + 1)}
-              >
-                Replay beat
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        <section className="flex flex-col items-center gap-4 rounded-2xl border bg-card p-10">
-          <p className="text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
-            heart-2 · GSAP fill + particles
-          </p>
-          <HeartWithPicker />
-          <p className="max-w-md text-center text-sm text-muted-foreground">
-            Tap the heart to fill from the center. Pick a swatch to remount with
-            a new color.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="mb-4 text-sm font-medium tracking-[0.16em] text-muted-foreground uppercase">
-            Variants
-          </h2>
-          <ul className="flex flex-wrap items-center gap-4 rounded-xl border bg-card p-6">
-            {VARIANTS.map((v) => (
-              <li key={v} className="flex flex-col items-center gap-2" title={v}>
-                <Heart size="xl" variant={v} liked interactive />
-                <span className="text-[10px] tracking-wide text-muted-foreground uppercase">
-                  {v}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
+              <DemoSwitch
+                label="Interactive"
+                checked={interactive}
+                onCheckedChange={(value) => settings.set('interactive', value)}
+              />
+              <DemoSwitch
+                label="Liked"
+                checked={liked}
+                onCheckedChange={(value) => settings.set('liked', value)}
+              />
+              <DemoAction onClick={handleReplay}>Replay beat</DemoAction>
+            </>
+          ) : (
+            <>
+              <DemoSlider
+                label="Size"
+                value={pixelSize}
+                onValueChange={(value) => settings.set('pixelSize', value)}
+                min={24}
+                max={120}
+                step={4}
+                unit="px"
+              />
+              <DemoSwitch
+                label="Start liked"
+                checked={defaultLiked}
+                onCheckedChange={(value) => settings.set('defaultLiked', value)}
+              />
+            </>
+          )}
+        </DemoSettings>
+      }
+      docs={{
+        paths: ['src/components/ui/heart/'],
+        usage,
+        props: isBeat ? HEART_PROPS : HEART_BUTTON_PROPS,
+      }}
+    >
+      {isBeat ? (
+        <Heart
+          key={`${interactive}-${liked}`}
+          variant={color}
+          size={size}
+          interactive={interactive}
+          liked={liked}
+          triggerAnimation={beatCount}
+        />
+      ) : (
+        <HeartButton
+          key={String(defaultLiked)}
+          oklchVal={oklch}
+          size={pixelSize}
+          defaultLiked={defaultLiked}
+        />
+      )}
     </DemoPage>
   )
 }

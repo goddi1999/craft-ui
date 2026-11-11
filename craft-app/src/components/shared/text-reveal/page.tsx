@@ -1,11 +1,12 @@
-import { useState } from 'react'
-
 import {
   DemoControlGroup,
-  DemoPanel,
-  DemoToggle,
-  DemoToggleRow,
+  DemoSettings,
+  DemoSwitch,
+  DemoTextField,
+  useDemoSettings,
 } from '@/components/shared/demo-controls'
+import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
+import { DemoPage } from '@/components/shared/demo-page'
 
 import { TextReveal } from './TextReveal'
 import type {
@@ -18,91 +19,147 @@ const SIZES: TextRevealSize[] = ['sm', 'default', 'lg']
 const LENGTHS: TextRevealLength[] = ['compact', 'default', 'long']
 const ACCENTS: TextRevealAccent[] = ['cyan', 'amber', 'magenta', 'plain']
 
-const LINES = [
-  'Responsive Animated Text Reveals with CSS Scroll-Driven Animations.',
+const FOLLOW_UP_LINES = [
   'No JavaScript ran to fill this in.',
   'Three text-clipped gradients and a view timeline.',
 ]
 
+const DEFAULTS = {
+  text: 'Responsive Animated Text Reveals with CSS Scroll-Driven Animations.',
+  size: 'default' as TextRevealSize,
+  length: 'default' as TextRevealLength,
+  accent: 'cyan' as TextRevealAccent,
+  debug: false,
+}
+
+/** The component's own defaults, so the snippet only prints real changes. */
+const COMPONENT_DEFAULTS = {
+  size: 'default',
+  length: 'default',
+  accent: 'cyan',
+  debug: false,
+}
+
+const PROPS: DemoPropDoc[] = [
+  {
+    name: 'text',
+    type: 'string',
+    description: 'The line that fills in as the reader scrolls. Required.',
+  },
+  {
+    name: 'size',
+    type: "'sm' | 'default' | 'lg'",
+    default: "'default'",
+    description: 'Fluid font size of the line.',
+  },
+  {
+    name: 'length',
+    type: "'compact' | 'default' | 'long'",
+    default: "'default'",
+    description: 'Scroll distance the reveal is spread across — 150, 200 or 320vh.',
+  },
+  {
+    name: 'accent',
+    type: "'cyan' | 'amber' | 'magenta' | 'plain'",
+    default: "'cyan'",
+    description: 'Colour of the highlight edge that leads the sweep.',
+  },
+  {
+    name: 'debug',
+    type: 'boolean',
+    default: 'false',
+    description: 'Outline the section that drives the view timeline.',
+  },
+  {
+    name: '...props',
+    type: 'HTMLAttributes<HTMLElement>',
+    description: 'Any native section attribute — className, style, id…',
+  },
+]
+
 export function TextRevealPage() {
-  const [size, setSize] = useState<TextRevealSize>('default')
-  const [length, setLength] = useState<TextRevealLength>('default')
-  const [accent, setAccent] = useState<TextRevealAccent>('cyan')
-  const [debug, setDebug] = useState(false)
+  const settings = useDemoSettings(DEFAULTS)
+  const { text, size, length, accent, debug } = settings.values
+  const lines = [text || DEFAULTS.text, ...FOLLOW_UP_LINES]
+
+  const usage = toUsageSnippet({
+    component: 'TextReveal',
+    from: '@/components/shared/text-reveal',
+    props: { text: lines[0], size, length, accent, debug },
+    defaults: COMPONENT_DEFAULTS,
+  })
 
   return (
-    <div data-slot="text-reveal-stage">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 pb-8 pt-16">
-        <header className="text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] opacity-50">
-            shared / text-reveal
-          </p>
-          <h1 className="mt-3 text-4xl font-medium tracking-tight text-white">
-            Scroll-driven text reveals
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm opacity-70">
-            A sticky line whose fill is three gradients clipped to the text,
-            swept left to right by a view timeline — so it re-flows at any size
-            without measuring a thing. Ported from{' '}
-            <a
-              href="https://codepen.io/jh3y/pen/abQyPOK"
-              className="underline underline-offset-2"
-              target="_blank"
-              rel="noreferrer"
-            >
-              jh3y&apos;s CodePen
-            </a>
-            .
-          </p>
-        </header>
+    <DemoPage
+      eyebrow="shared / text-reveal"
+      title="Scroll-driven text reveals"
+      description={
+        <>
+          Scroll the page: a sticky line whose fill is three gradients clipped
+          to the text, swept left to right by a view timeline — so it re-flows
+          at any size without measuring a thing. Ported from{' '}
+          <a href="https://codepen.io/jh3y/pen/abQyPOK" target="_blank" rel="noreferrer">
+            jh3y&apos;s CodePen
+          </a>
+          .
+        </>
+      }
+      layout="fullscreen"
+      settings={
+        <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
+          <DemoTextField
+            label="First line"
+            value={text}
+            onValueChange={(value) => settings.set('text', value)}
+            maxLength={80}
+          />
+          <DemoControlGroup
+            title="Size"
+            options={SIZES}
+            value={size}
+            onChange={(value) => settings.set('size', value)}
+          />
+          <DemoControlGroup
+            title="Length"
+            options={LENGTHS}
+            value={length}
+            onChange={(value) => settings.set('length', value)}
+          />
+          <DemoControlGroup
+            title="Accent"
+            options={ACCENTS}
+            value={accent}
+            onChange={(value) => settings.set('accent', value)}
+          />
+          <DemoSwitch
+            label="Show driver"
+            checked={debug}
+            onCheckedChange={(value) => settings.set('debug', value)}
+          />
+        </DemoSettings>
+      }
+      docs={{
+        paths: ['src/components/shared/text-reveal/'],
+        usage,
+        props: PROPS,
+      }}
+    >
+      <div data-slot="text-reveal-stage">
+        <p data-slot="text-reveal-stage-hint">Scroll</p>
 
-        <div className="flex justify-center">
-          <DemoPanel>
-            <DemoControlGroup
-              title="size"
-              options={SIZES}
-              value={size}
-              onChange={setSize}
-            />
-            <DemoControlGroup
-              title="length"
-              options={LENGTHS}
-              value={length}
-              onChange={setLength}
-            />
-            <DemoControlGroup
-              title="accent"
-              options={ACCENTS}
-              value={accent}
-              onChange={setAccent}
-            />
-            <DemoToggleRow>
-              <DemoToggle
-                label="show driver"
-                pressed={debug}
-                onPressedChange={setDebug}
-              />
-            </DemoToggleRow>
-          </DemoPanel>
-        </div>
+        {lines.map((line, index) => (
+          <TextReveal
+            key={`${index}-${length}`}
+            text={line}
+            size={size}
+            length={length}
+            accent={accent}
+            debug={debug}
+          />
+        ))}
 
-        <p className="text-center text-sm opacity-60">Scroll 👇</p>
+        <p data-slot="text-reveal-stage-end">fin.</p>
       </div>
-
-      {LINES.map((line) => (
-        <TextReveal
-          key={`${line}-${length}`}
-          text={line}
-          size={size}
-          length={length}
-          accent={accent}
-          debug={debug}
-        />
-      ))}
-
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-5xl font-semibold text-white/80">fin.</p>
-      </div>
-    </div>
+    </DemoPage>
   )
 }

@@ -39,14 +39,6 @@ export type PixelTransitionProps = {
   className?: string
 } & Omit<ComponentPropsWithoutRef<'div'>, 'children'>
 
-type SpritePair = {
-  inUrl: string
-  outUrl: string
-  frameCount: number
-  inSvg: SVGSVGElement
-  outSvg: SVGSVGElement
-}
-
 /**
  * Two images that crossfade through a generated SVG pixel-mask sprite sheet.
  * Click (or activate the overlay button) to flip between them.
@@ -68,30 +60,25 @@ export function PixelTransition({
   const controlled = flippedProp !== undefined
   const [innerFlipped, setInnerFlipped] = useState(defaultFlipped)
   const flipped = controlled ? flippedProp : innerFlipped
-  const [sprites, setSprites] = useState<SpritePair | null>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
   const inContainerRef = useRef<HTMLDivElement>(null)
   const outContainerRef = useRef<HTMLDivElement>(null)
 
+  // The sprites are random DOM, so they are built after mount and written
+  // straight onto the element rather than through React state.
   useEffect(() => {
-    const out = generateSprite(`o-${reactId}`, cells, frames)
-    const inn = generateSprite(`i-${reactId}`, cells, frames)
-    setSprites({
-      inUrl: inn.dataURL,
-      outUrl: out.dataURL,
-      frameCount: inn.frameCount,
-      inSvg: inn.svg,
-      outSvg: out.svg,
-    })
-  }, [cells, frames, reactId])
-
-  useEffect(() => {
-    if (!sprites) return
+    const root = rootRef.current
     const inEl = inContainerRef.current
     const outEl = outContainerRef.current
-    if (!inEl || !outEl) return
-    inEl.replaceChildren(sprites.inSvg)
-    outEl.replaceChildren(sprites.outSvg)
-  }, [sprites])
+    if (!root || !inEl || !outEl) return
+    const out = generateSprite(`o-${reactId}`, cells, frames)
+    const inn = generateSprite(`i-${reactId}`, cells, frames)
+    root.style.setProperty('--mask-frames', String(inn.frameCount))
+    root.style.setProperty('--mask-in', `url(${inn.dataURL})`)
+    root.style.setProperty('--mask-out', `url(${out.dataURL})`)
+    inEl.replaceChildren(inn.svg)
+    outEl.replaceChildren(out.svg)
+  }, [cells, frames, reactId])
 
   const handleFlip = () => {
     const next = !flipped
@@ -101,6 +88,7 @@ export function PixelTransition({
 
   return (
     <div
+      ref={rootRef}
       data-slot="pixel-transition"
       data-flip={flipped ? 'true' : 'false'}
       className={cn(className)}
@@ -108,9 +96,6 @@ export function PixelTransition({
         {
           '--mask-speed': speed,
           '--mask-delay': delay,
-          '--mask-frames': sprites?.frameCount ?? frames,
-          '--mask-in': sprites ? `url(${sprites.inUrl})` : undefined,
-          '--mask-out': sprites ? `url(${sprites.outUrl})` : undefined,
           ...style,
         } as CSSProperties
       }

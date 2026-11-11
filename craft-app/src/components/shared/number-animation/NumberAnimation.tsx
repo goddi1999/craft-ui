@@ -35,7 +35,8 @@ export function NumberAnimation({
 
   const counterVars = {
     '--number-animation-duration': `${duration}s`,
-    '--number-animation-suffix': `"${suffix}"`,
+    // a CSS string — escape quotes and backslashes so any suffix stays valid
+    '--number-animation-suffix': `"${suffix.replace(/["\\]/g, '\\$&')}"`,
     // transition mode interpolates the property itself; animation mode holds
     // the origin and adds the delta on top of it
     '--number-animation-value': isAnimation ? origin : value,

@@ -1,6 +1,13 @@
-import { useState } from 'react'
-
-import { Button } from '@/components/ui/button'
+import {
+  DemoControlGroup,
+  DemoSettings,
+  DemoSlider,
+  DemoSwitch,
+  useDemoSettings,
+} from '@/components/shared/demo-controls'
+import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
+import { DEMO_IMAGES } from '@/components/shared/demo-media'
+import { DemoPage } from '@/components/shared/demo-page'
 
 import { MultiplayerMask } from './MultiplayerMask'
 import { MultiplayerMaskItem } from './MultiplayerMaskItem'
@@ -14,203 +21,234 @@ import type {
   MultiplayerMaskTheme,
 } from './multiplayer-mask.types'
 
-const PORTRAIT = 'https://cdn.jsdelivr.net/gh/faker-js/assets-person-portrait'
-
-const MEMBERS: MultiplayerMaskMember[] = [
-  {
-    name: 'Jhey',
-    avatar:
-      'https://assets.codepen.io/605876/cropped-headshot--saturated-low-res.jpg',
-  },
-  { name: 'Kelly', avatar: `${PORTRAIT}/female/512/22.jpg` },
-  { name: 'Elias', avatar: `${PORTRAIT}/male/512/32.jpg` },
-  { name: 'Drew', avatar: `${PORTRAIT}/male/512/76.jpg` },
-  { name: 'Maxine', avatar: `${PORTRAIT}/female/512/36.jpg` },
-  { name: 'Matt', avatar: `${PORTRAIT}/male/512/14.jpg` },
-  { name: 'Vicky', avatar: `${PORTRAIT}/female/512/40.jpg` },
-  { name: 'Marcos', avatar: `${PORTRAIT}/male/512/93.jpg` },
-  { name: 'Constance', avatar: `${PORTRAIT}/female/512/64.jpg` },
-  { name: 'Jill', avatar: `${PORTRAIT}/female/512/49.jpg` },
+const NAMES = [
+  'Jhey',
+  'Kelly',
+  'Elias',
+  'Drew',
+  'Maxine',
+  'Matt',
+  'Vicky',
+  'Marcos',
+  'Constance',
+  'Jill',
 ]
+
+const MEMBERS: MultiplayerMaskMember[] = NAMES.map((name, index) => ({
+  name,
+  avatar: DEMO_IMAGES[index].src,
+}))
 
 const SIZES: MultiplayerMaskSize[] = ['sm', 'default', 'lg']
 const DIRECTIONS: MultiplayerMaskDirection[] = ['ltr', 'rtl']
 const LABELS: MultiplayerMaskLabel[] = ['ring', 'above', 'none']
 const THEMES: MultiplayerMaskTheme[] = ['system', 'light', 'dark']
-const COUNTS = [2, 4, 6, 8, 10]
 
-type ControlGroupProps<T extends string | number> = {
-  title: string
-  options: readonly T[]
-  value: T
-  onChange: (value: NoInfer<T>) => void
+const DEFAULTS = {
+  count: 4,
+  size: 'default' as MultiplayerMaskSize,
+  direction: 'ltr' as MultiplayerMaskDirection,
+  label: 'ring' as MultiplayerMaskLabel,
+  theme: 'system' as MultiplayerMaskTheme,
+  glow: false,
+  debug: false,
 }
 
-function ControlGroup<T extends string | number>({
-  title,
-  options,
-  value,
-  onChange,
-}: ControlGroupProps<T>) {
-  return (
-    <div>
-      <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] opacity-60">
-        {title}
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {options.map((option) => (
-          <Button
-            key={option}
-            size="sm"
-            variant={option === value ? 'default' : 'outline'}
-            onClick={() => onChange(option)}
-          >
-            {option}
-          </Button>
-        ))}
-      </div>
-    </div>
-  )
-}
+const PROPS: DemoPropDoc[] = [
+  {
+    name: 'size',
+    type: "'sm' | 'default' | 'lg'",
+    default: "'default'",
+    description: 'Avatar diameter and how tightly the stack packs.',
+  },
+  {
+    name: 'direction',
+    type: "'ltr' | 'rtl'",
+    default: "'ltr'",
+    description: 'Which neighbour overlaps — decides the side the mask hole is cut on.',
+  },
+  {
+    name: 'label',
+    type: "'ring' | 'above' | 'none'",
+    default: "'ring'",
+    description: 'How a member name appears on hover: around the avatar, over it, or not at all.',
+  },
+  {
+    name: 'theme',
+    type: "'system' | 'light' | 'dark'",
+    default: "'system'",
+    description: 'Color scheme of the stack; system follows the page.',
+  },
+  {
+    name: 'glow',
+    type: 'boolean',
+    default: 'false',
+    description: 'Animated hue-cycling glow behind the stack.',
+  },
+  {
+    name: 'debug',
+    type: 'boolean',
+    default: 'false',
+    description: 'Overlay the grid column and masked item guides.',
+  },
+  {
+    name: 'movement',
+    type: 'number',
+    default: '0.72',
+    description: 'Portion of the avatar height that lifts out of the mask, 0–1.',
+  },
+  {
+    name: 'transition',
+    type: 'number',
+    default: '0.18',
+    description: 'Hover transition duration in seconds.',
+  },
+  {
+    name: 'ringOffset',
+    type: 'number',
+    default: '-3',
+    description: 'Where the ring text starts along the circle, in ch.',
+  },
+  {
+    name: 'border',
+    type: 'number',
+    description: 'Gap in px cut between an avatar and its neighbour. Set by size.',
+  },
+  {
+    name: 'column',
+    type: 'number',
+    description: 'Grid column width in px — smaller packs tighter. Set by size.',
+  },
+  {
+    name: 'MultiplayerMaskItem name',
+    type: 'string',
+    description: 'Member name, shown on hover and used for the initials. Required.',
+  },
+  {
+    name: 'MultiplayerMaskItem avatar',
+    type: 'string',
+    description: 'Image URL. Without it the item shows `fallback` or initials.',
+  },
+  {
+    name: 'MultiplayerMaskOverflow label',
+    type: 'string',
+    default: "'View more'",
+    description: 'Accessible name of the trailing "more" button.',
+  },
+]
 
 export function MultiplayerMaskPage() {
-  const [size, setSize] = useState<MultiplayerMaskSize>('lg')
-  const [direction, setDirection] = useState<MultiplayerMaskDirection>('ltr')
-  const [label, setLabel] = useState<MultiplayerMaskLabel>('ring')
-  const [theme, setTheme] = useState<MultiplayerMaskTheme>('system')
-  const [count, setCount] = useState(4)
-  const [glow, setGlow] = useState(false)
-  const [debug, setDebug] = useState(false)
-
+  const settings = useDemoSettings(DEFAULTS)
+  const { count, size, direction, label, theme, glow, debug } = settings.values
   const members = MEMBERS.slice(0, count)
 
+  const usage = toUsageSnippet({
+    component: 'MultiplayerMask',
+    from: '@/components/shared/multiplayer-mask',
+    imports: [
+      'MultiplayerMaskList',
+      'MultiplayerMaskItem',
+      'MultiplayerMaskOverflow',
+    ],
+    props: { size, direction, label, theme, glow, debug },
+    defaults: DEFAULTS,
+    children: `<MultiplayerMaskList>
+  {members.map((member) => (
+    <MultiplayerMaskItem key={member.name} name={member.name} avatar={member.avatar} />
+  ))}
+</MultiplayerMaskList>
+<MultiplayerMaskOverflow label="View all members" />`,
+  })
+
   return (
-    <div data-slot="multiplayer-mask-stage" data-theme={theme}>
-      <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col gap-12 px-4 py-16">
-        <header className="text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] opacity-50">
-            shared / multiplayer-mask
-          </p>
-          <h1 className="mt-3 text-4xl font-medium tracking-tight">
-            Multiplayer masking
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm opacity-70">
-            An overlapping presence stack built from narrow grid columns, where
-            each avatar carves a radial-gradient hole out of its neighbour so
-            hovering lifts it cleanly out of the stack. Ported from{' '}
-            <a
-              href="https://codepen.io/jh3y/pen/yyLmmMW"
-              className="underline underline-offset-2"
-              target="_blank"
-              rel="noreferrer"
-            >
-              jh3y&apos;s CodePen
-            </a>
-            .
-          </p>
-        </header>
-
-        <section className="flex flex-col items-center gap-12 pt-32">
-          <MultiplayerMask
-            size={size}
-            direction={direction}
-            label={label}
-            theme={theme}
-            glow={glow}
-            debug={debug}
-          >
-            <MultiplayerMaskList>
-              {members.map((member) => (
-                <MultiplayerMaskItem
-                  key={member.name}
-                  name={member.name}
-                  avatar={member.avatar}
-                />
-              ))}
-            </MultiplayerMaskList>
-            <MultiplayerMaskOverflow
-              label={`View all ${MEMBERS.length} members`}
-            />
-          </MultiplayerMask>
-
-          <div className="w-full max-w-lg rounded-2xl border border-current/10 p-6 backdrop-blur-sm">
-            <div className="flex flex-col gap-6">
-              <ControlGroup
-                title="members"
-                options={COUNTS}
-                value={count}
-                onChange={setCount}
+    <DemoPage
+      eyebrow="shared / multiplayer-mask"
+      title="Multiplayer masking"
+      description={
+        <>
+          An overlapping presence stack built from narrow grid columns, where
+          each avatar carves a radial-gradient hole out of its neighbour so
+          hovering lifts it cleanly out of the stack. Ported from{' '}
+          <a href="https://codepen.io/jh3y/pen/yyLmmMW" target="_blank" rel="noreferrer">
+            jh3y&apos;s CodePen
+          </a>
+          .
+        </>
+      }
+      align="stretch"
+      bleed
+      settings={
+        <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
+          <DemoSlider
+            label="Members"
+            value={count}
+            onValueChange={(value) => settings.set('count', value)}
+            min={2}
+            max={MEMBERS.length}
+          />
+          <DemoControlGroup
+            title="Size"
+            options={SIZES}
+            value={size}
+            onChange={(value) => settings.set('size', value)}
+          />
+          <DemoControlGroup
+            title="Direction"
+            options={DIRECTIONS}
+            value={direction}
+            onChange={(value) => settings.set('direction', value)}
+          />
+          <DemoControlGroup
+            title="Label"
+            options={LABELS}
+            value={label}
+            onChange={(value) => settings.set('label', value)}
+          />
+          <DemoControlGroup
+            title="Theme"
+            options={THEMES}
+            value={theme}
+            onChange={(value) => settings.set('theme', value)}
+          />
+          <DemoSwitch
+            label="Glow"
+            checked={glow}
+            onCheckedChange={(value) => settings.set('glow', value)}
+          />
+          <DemoSwitch
+            label="Debug guides"
+            checked={debug}
+            onCheckedChange={(value) => settings.set('debug', value)}
+          />
+        </DemoSettings>
+      }
+      docs={{
+        paths: ['src/components/shared/multiplayer-mask/'],
+        usage,
+        props: PROPS,
+      }}
+    >
+      <div data-slot="multiplayer-mask-stage" data-theme={theme}>
+        <MultiplayerMask
+          size={size}
+          direction={direction}
+          label={label}
+          theme={theme}
+          glow={glow}
+          debug={debug}
+        >
+          <MultiplayerMaskList>
+            {members.map((member) => (
+              <MultiplayerMaskItem
+                key={member.name}
+                name={member.name}
+                avatar={member.avatar}
               />
-              <ControlGroup
-                title="size"
-                options={SIZES}
-                value={size}
-                onChange={setSize}
-              />
-              <ControlGroup
-                title="direction"
-                options={DIRECTIONS}
-                value={direction}
-                onChange={setDirection}
-              />
-              <ControlGroup
-                title="label"
-                options={LABELS}
-                value={label}
-                onChange={setLabel}
-              />
-              <ControlGroup
-                title="theme"
-                options={THEMES}
-                value={theme}
-                onChange={setTheme}
-              />
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  size="sm"
-                  variant={glow ? 'default' : 'outline'}
-                  onClick={() => setGlow((current) => !current)}
-                >
-                  glow
-                </Button>
-                <Button
-                  size="sm"
-                  variant={debug ? 'default' : 'outline'}
-                  onClick={() => setDebug((current) => !current)}
-                >
-                  debug
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="mb-4 text-sm font-medium uppercase tracking-[0.16em] opacity-50">
-            Sizes
-          </h2>
-          <ul className="grid gap-4">
-            {SIZES.map((variantSize) => (
-              <li
-                key={variantSize}
-                className="flex items-center justify-center rounded-xl border border-current/10 p-8"
-              >
-                <MultiplayerMask size={variantSize} theme={theme} label="above">
-                  <MultiplayerMaskList>
-                    {MEMBERS.slice(0, 4).map((member) => (
-                      <MultiplayerMaskItem
-                        key={member.name}
-                        name={member.name}
-                        avatar={member.avatar}
-                      />
-                    ))}
-                  </MultiplayerMaskList>
-                </MultiplayerMask>
-              </li>
             ))}
-          </ul>
-        </section>
+          </MultiplayerMaskList>
+          <MultiplayerMaskOverflow label={`View all ${MEMBERS.length} members`} />
+        </MultiplayerMask>
       </div>
-    </div>
+    </DemoPage>
   )
 }

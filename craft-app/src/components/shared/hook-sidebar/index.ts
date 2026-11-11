@@ -1,0 +1,1 @@
+export { HookSidebarPage } from './page'

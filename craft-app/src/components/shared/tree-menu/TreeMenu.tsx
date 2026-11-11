@@ -79,7 +79,7 @@ export function TreeMenu({ items, onSelect, className }: TreeMenuProps) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -5, transition: { duration: 0.4 } }}
                 onClick={() => handleNavigateBack(depth)}
-                className="flex items-center gap-2 rounded-lg px-2 py-1 text-xl font-semibold text-neutral-400 transition-colors hover:bg-neutral-100 sm:text-2xl dark:text-neutral-500 dark:hover:bg-neutral-800"
+                className="flex items-center gap-2 rounded-lg px-2 py-1 text-xl font-semibold text-neutral-400 transition-colors duration-200 ease-out hover:bg-neutral-100 sm:text-2xl dark:text-neutral-500 dark:hover:bg-neutral-800"
                 style={{ marginLeft: `${depth * 12}px` }}
               >
                 <CornerUpLeft className="size-5" />
@@ -121,7 +121,7 @@ export function TreeMenu({ items, onSelect, className }: TreeMenuProps) {
                       onClick={() => handleSelectItem(item, index)}
                       aria-current={isActive}
                       className={cn(
-                        'w-full rounded-xl px-4 py-3 text-left text-xl font-semibold transition-all duration-200 sm:text-2xl',
+                        'w-full rounded-xl px-4 py-3 text-left text-xl font-semibold transition-[background-color,color,scale] duration-200 ease-out active:scale-[0.98] sm:text-2xl',
                         hasChildren
                           ? 'text-neutral-900 hover:bg-neutral-100 hover:text-neutral-600 dark:text-neutral-100 dark:hover:bg-neutral-800 dark:hover:text-neutral-300'
                           : isActive

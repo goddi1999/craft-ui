@@ -26,7 +26,10 @@ export type ScrollDrivenGooeyIslandProps = {
   children?: ReactNode
   /** Extra classes for the root. */
   className?: string
-  /** Inline styles for the root. */
+  /**
+   * Inline styles for the root. Set `--sdgi-frame-height` to size the frame
+   * (default `100svh`); the content scrolls inside it.
+   */
   style?: CSSProperties
 }
 
@@ -89,22 +92,28 @@ export function ScrollDrivenGooeyIsland({
       className={cn(className)}
       style={style}
     >
-      <header className="sdgi__header">
-        <div className="sdgi__island-container">
-          <div
-            className="sdgi__island"
-            style={{ filter: `url(#${fancyGooId})` }}
-          >
-            <div className="sdgi__island-bar" />
-            <div className="sdgi__avatar">
-              <img src={avatarSrc} alt={avatarAlt} />
+      <div className="sdgi__scroller">
+        <div className="sdgi__page">
+          <header className="sdgi__header">
+            <div className="sdgi__island-container">
+              <div
+                className="sdgi__island"
+                style={{ filter: `url(#${fancyGooId})` }}
+              >
+                <div className="sdgi__island-bar" />
+                <div className="sdgi__avatar">
+                  <img src={avatarSrc} alt={avatarAlt} />
+                </div>
+              </div>
             </div>
+            <h2 className="sdgi__title">{name}</h2>
+          </header>
+
+          <div className="sdgi__main">
+            {children ?? <DefaultSettingsList />}
           </div>
         </div>
-        <h1 className="sdgi__title">{name}</h1>
-      </header>
-
-      <main className="sdgi__main">{children ?? <DefaultSettingsList />}</main>
+      </div>
 
       <svg
         width="0"

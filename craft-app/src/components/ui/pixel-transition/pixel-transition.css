@@ -228,4 +228,10 @@
       calc((100% / (var(--mask-frames) + 1)) * (var(--second) * 1))
     );
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='pixel-transition'] {
+      --speed: 0s;
+    }
+  }
 }

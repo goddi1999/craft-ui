@@ -17,11 +17,11 @@ export type RepoContribution = {
   href?: string;
 };
 
-type ColorScheme = "green" | "blue" | "purple" | "orange" | "pink" | "dracula" | "halloween";
+export type GithubColorScheme = "green" | "blue" | "purple" | "orange" | "pink" | "dracula" | "halloween";
 
 // Same palette set as the standalone github-calendar component, so both
 // live comfortably side by side in the same product without clashing.
-const COLOR_SCHEMES: Record<ColorScheme, [string, string, string, string, string]> = {
+const COLOR_SCHEMES: Record<GithubColorScheme, [string, string, string, string, string]> = {
   green: ["#151b23", "#033a16", "#196c2e", "#2ea043", "#56d364"],
   blue: ["#151b23", "#0a3069", "#0969da", "#218bff", "#79c0ff"],
   purple: ["#151b23", "#3c1361", "#6639ba", "#8957e5", "#d2a8ff"],
@@ -72,35 +72,40 @@ async function fetchRepos(login: string): Promise<RepoContribution[]> {
     }));
 }
 
-function useGithubData(login?: string) {
-  const [state, setState] = React.useState<{
-    contributions: Contribution[];
-    repos: RepoContribution[];
-    status: "loading" | "ready" | "error";
-  }>({ contributions: [], repos: [], status: "loading" });
+type GithubData = {
+  contributions: Contribution[];
+  repos: RepoContribution[];
+  status: "loading" | "ready" | "error";
+};
+
+const LOADING: GithubData = { contributions: [], repos: [], status: "loading" };
+
+function useGithubData(login?: string): GithubData {
+  // Results are tagged with the login they belong to, so a new login reads as
+  // loading straight away without resetting state inside the effect.
+  const [state, setState] = React.useState<GithubData & { login?: string }>(LOADING);
 
   React.useEffect(() => {
     if (!login) return;
     let active = true;
-    setState((s) => ({ ...s, status: "loading" }));
 
     Promise.all([fetchCalendar(login), fetchRepos(login)])
       .then(([contributions, repos]) => {
         if (!active) return;
         if (!contributions) {
-          setState({ contributions: [], repos: [], status: "error" });
+          setState({ login, contributions: [], repos: [], status: "error" });
           return;
         }
-        setState({ contributions, repos, status: "ready" });
+        setState({ login, contributions, repos, status: "ready" });
       })
-      .catch(() => active && setState({ contributions: [], repos: [], status: "error" }));
+      .catch(() => active && setState({ login, contributions: [], repos: [], status: "error" }));
 
     return () => {
       active = false;
     };
   }, [login]);
 
-  return state;
+  return state.login === login ? state : LOADING;
 }
 
 function toWeeks(days: Contribution[]) {
@@ -127,7 +132,7 @@ function monthLabels(weeks: Contribution[][]) {
 
 export type GithubActivityCardProps = React.ComponentProps<"div"> & {
   username: string;
-  colorScheme?: ColorScheme;
+  colorScheme?: GithubColorScheme;
   cellSize?: number;
   months?: number;
   showMonthLabels?: boolean;
@@ -135,7 +140,7 @@ export type GithubActivityCardProps = React.ComponentProps<"div"> & {
   defaultReposOpen?: boolean;
 };
 
-export default function GithubActivityCard({
+export function GithubActivityCard({
   username,
   colorScheme = "green",
   cellSize = 11,
@@ -228,8 +233,11 @@ export default function GithubActivityCard({
 
       {status === "loading" ? (
         <div
-          className="animate-pulse rounded-lg bg-white/5"
-          style={{ width: weeks.length * (cellSize + gap), height: 7 * (cellSize + gap) }}
+          className="max-w-full animate-pulse rounded-lg bg-white/5"
+          style={{
+            width: Math.ceil(months * WEEKS_PER_MONTH) * (responsiveCellSize + gap),
+            height: 7 * (responsiveCellSize + gap),
+          }}
         />
       ) : (
         <div className="overflow-x-auto">

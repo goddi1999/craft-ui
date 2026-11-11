@@ -94,7 +94,7 @@ export function TaskEditingHeatmap({
         <div
           role="img"
           aria-label={summary}
-          className="grid min-w-[400px] grid-cols-[52px_repeat(var(--cols),minmax(0,1fr))] gap-[3px]"
+          className="grid min-w-[260px] grid-cols-[40px_repeat(var(--cols),minmax(0,1fr))] sm:grid-cols-[52px_repeat(var(--cols),minmax(0,1fr))] gap-[3px]"
           style={{ '--cols': data.length } as CSSProperties}
           onPointerLeave={() => setHovered(null)}
         >

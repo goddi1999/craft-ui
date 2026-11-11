@@ -45,10 +45,11 @@ export function PlaceCard({ place, onTogglePin }: PlaceCardProps) {
         aria-label={place.pinned ? `Unpin ${place.name}` : `Pin ${place.name}`}
         onClick={() => onTogglePin(place.id)}
         className={cn(
-          'relative z-10 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300',
+          'relative z-10 flex h-8 w-8 items-center justify-center rounded-full transition-[opacity,background-color,color,scale] duration-300 ease-out active:scale-[0.97]',
           place.pinned
             ? 'bg-yellow-400 text-white opacity-100'
-            : 'bg-[#CDCCD5] text-[#fefefe] opacity-0 group-hover:opacity-100 focus-visible:opacity-100 dark:bg-neutral-700 dark:text-neutral-400',
+            : // Hidden until hover only where hover exists — touch always sees it.
+              'bg-[#CDCCD5] text-[#fefefe] group-hover:opacity-100 focus-visible:opacity-100 dark:bg-neutral-700 dark:text-neutral-400 [@media(hover:hover)_and_(pointer:fine)]:opacity-0',
         )}
       >
         <Pin className="size-4 fill-current" />

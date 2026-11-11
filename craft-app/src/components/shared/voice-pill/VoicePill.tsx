@@ -188,6 +188,8 @@ const drawWave = (
   }
   ctx.globalAlpha = 1
 }
+/** Event-time clock; kept out of the component so it is never read during render. */
+const nowMs = () => performance.now()
 const clock = (ms: number) => {
   const s = Math.floor(ms / 1000)
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
@@ -331,7 +333,7 @@ export const VoicePill: React.FC<VoicePillProps> = ({
     s.tick = 0
     s.acc = 0
     s.env = 0
-    s.startedAt = performance.now()
+    s.startedAt = nowMs()
     s.t0 = s.startedAt
     s.last = s.startedAt
     if (timeRef.current) timeRef.current.textContent = '0:00'
@@ -351,7 +353,7 @@ export const VoicePill: React.FC<VoicePillProps> = ({
     setInput(reason === 'key' || reason === 'escape' ? 'key' : 'pointer')
     c.onStop?.({
       reason,
-      duration: Math.round(performance.now() - s.startedAt),
+      duration: Math.round(nowMs() - s.startedAt),
     })
   }
 
@@ -395,7 +397,7 @@ export const VoicePill: React.FC<VoicePillProps> = ({
       return
     s.pointerId = e.pointerId
     s.downX = e.clientX
-    s.downAt = performance.now()
+    s.downAt = nowMs()
     try {
       e.currentTarget.setPointerCapture(e.pointerId)
     } catch {
@@ -419,7 +421,7 @@ export const VoicePill: React.FC<VoicePillProps> = ({
       // The pointer capture may already be gone; there is nothing to undo.
     }
     if (!s.listening) return
-    const held = performance.now() - s.downAt
+    const held = nowMs() - s.downAt
     const isHold =
       c.mode === 'hold' || (c.mode === 'auto' && held >= c.holdAfter)
     if (s.ownPress) {

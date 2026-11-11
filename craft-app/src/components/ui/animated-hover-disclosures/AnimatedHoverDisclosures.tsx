@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type SyntheticEvent } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type SyntheticEvent,
+} from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -23,19 +29,23 @@ export function AnimatedHoverDisclosures({
   const [uncontrolledIndex, setUncontrolledIndex] = useState(defaultActiveIndex)
   const current = activeIndex ?? uncontrolledIndex
 
-  // Articles are sized to the widest column so copy never reflows mid-transition.
+  // Articles are sized to the widest (or, stacked, tallest) column so copy
+  // never reflows mid-transition.
   useEffect(() => {
     const list = listRef.current
     if (!list) return
 
-    const syncArticleWidth = () => {
-      const widths = Array.from(list.children, (child) =>
-        child instanceof HTMLElement ? child.offsetWidth : 0,
+    const syncArticleSize = () => {
+      const columns = Array.from(list.children).filter(
+        (child) => child instanceof HTMLElement,
       )
-      list.style.setProperty('--article-width', String(Math.max(...widths)))
+      const width = Math.max(...columns.map((column) => column.offsetWidth))
+      const height = Math.max(...columns.map((column) => column.offsetHeight))
+      list.style.setProperty('--article-width', String(width))
+      list.style.setProperty('--article-height', String(height))
     }
 
-    const observer = new ResizeObserver(syncArticleWidth)
+    const observer = new ResizeObserver(syncArticleSize)
     observer.observe(list)
     return () => observer.disconnect()
   }, [items.length])
@@ -51,7 +61,8 @@ export function AnimatedHoverDisclosures({
     onActiveIndexChange?.(index)
   }
 
-  const columns = items
+  // Columns side by side, or rows when stacked on narrow screens.
+  const tracks = items
     .map((_, index) => (index === current ? '10fr' : '1fr'))
     .join(' ')
 
@@ -60,7 +71,7 @@ export function AnimatedHoverDisclosures({
       ref={listRef}
       data-slot="animated-hover-disclosures"
       className={cn(className)}
-      style={{ gridTemplateColumns: columns }}
+      style={{ '--tracks': tracks } as CSSProperties}
       onPointerMove={handleActivate}
       onClick={handleActivate}
       onFocus={handleActivate}

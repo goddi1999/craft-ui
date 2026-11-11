@@ -6,7 +6,7 @@
   }
 
   [data-slot='scroll-image-comparison'] {
-    --sic-step: 150px;
+    --sic-step: min(150px, 18vw);
     --sic-ease: cubic-bezier(0.77, 0, 0.175, 1);
     --sic-outline: color-mix(in oklch, var(--background), var(--foreground) 75%);
     --sic-shadow: hsl(0 0% 0% / 0.6);
@@ -161,10 +161,16 @@
 
   [data-slot='scroll-image-comparison'][data-reveal='true'] .sic__stage {
     rotate: var(--sic-yp, 0) calc(var(--sic-xp, 0) * -1) 0 8deg;
-    transform: rotateX(-24deg) rotateY(50deg);
+    transform: rotateX(-24deg) rotateY(50deg) scale(0.75);
     transition:
       transform 1s var(--sic-ease),
       rotate 0.3s ease-out;
+  }
+
+  @media (max-width: 640px) {
+    [data-slot='scroll-image-comparison'][data-reveal='true'] .sic__stage {
+      transform: rotateX(-24deg) rotateY(50deg) scale(0.6);
+    }
   }
 
   [data-slot='scroll-image-comparison'][data-reveal='true']

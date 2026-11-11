@@ -1,3 +1,4 @@
+export { DemoAction } from './DemoAction'
 export { DemoControlGroup } from './DemoControlGroup'
 export { DemoControlLabel } from './DemoControlLabel'
 export { DemoPanel } from './DemoPanel'

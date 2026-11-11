@@ -1,0 +1,1 @@
+export { VoiceMessagePage } from './page'

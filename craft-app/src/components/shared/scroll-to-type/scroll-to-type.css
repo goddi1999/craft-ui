@@ -28,12 +28,16 @@
   [data-slot='scroll-to-type'] {
     --scroll-to-type-cursor-hue: 320;
     --scroll-to-type-font-size: clamp(1.5rem, 1rem + 2.2vw, 2.75rem);
-    --scroll-to-type-track: 200vh;
+    /* Height of the scroller the line types in — the window by default. Set
+       it to the scroller's height when the component lives in its own one. */
+    --scroll-to-type-viewport: 100vh;
+    /* Scroll distance, in viewports, the typing is spread across. */
+    --scroll-to-type-track: 2;
 
     color-scheme: light dark;
     display: block;
     position: relative;
-    height: var(--scroll-to-type-track);
+    height: calc(var(--scroll-to-type-viewport) * var(--scroll-to-type-track));
     /* the sticky line reads its progress from this element's view timeline */
     view-timeline: --scroll-to-type-track;
   }
@@ -59,21 +63,21 @@
   }
 
   [data-slot='scroll-to-type'].scroll-to-type--compact {
-    --scroll-to-type-track: 150vh;
+    --scroll-to-type-track: 1.5;
   }
 
   [data-slot='scroll-to-type'].scroll-to-type--length-default {
-    --scroll-to-type-track: 200vh;
+    --scroll-to-type-track: 2;
   }
 
   [data-slot='scroll-to-type'].scroll-to-type--long {
-    --scroll-to-type-track: 320vh;
+    --scroll-to-type-track: 3.2;
   }
 
   [data-slot='scroll-to-type-viewport'] {
     position: sticky;
     top: 0;
-    min-height: 100vh;
+    min-height: var(--scroll-to-type-viewport);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -174,29 +178,32 @@
   /* ------------------------------------------------------------------ */
 
   [data-slot='scroll-to-type-stage'] {
-    color-scheme: light dark;
     position: relative;
-    background: light-dark(white, black);
-    color: canvastext;
+    background: var(--background);
+    color: var(--foreground);
   }
 
   [data-slot='scroll-to-type-stage'][data-theme='light'] {
     color-scheme: light only;
+    background: white;
+    color: black;
   }
 
   [data-slot='scroll-to-type-stage'][data-theme='dark'] {
     color-scheme: dark only;
+    background: black;
+    color: white;
   }
 
   [data-slot='scroll-to-type-stage']::before {
     --scroll-to-type-grid: 45px;
     --scroll-to-type-line-color: color-mix(
       in lch,
-      canvastext,
-      transparent 70%
+      currentColor,
+      transparent 80%
     );
     content: '';
-    position: fixed;
+    position: absolute;
     inset: 0;
     z-index: 0;
     pointer-events: none;

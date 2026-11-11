@@ -29,7 +29,10 @@ export function TextReveal({
       {...props}
     >
       <div data-slot="text-reveal-viewport">
-        <p data-slot="text-reveal-text">{text}</p>
+        {/* The fill lives on an inline span so every wrapped line gets its own slice of the sweep. */}
+        <p data-slot="text-reveal-line">
+          <span data-slot="text-reveal-text">{text}</span>
+        </p>
       </div>
     </section>
   )

@@ -1,9 +1,23 @@
 import {
   AccordionPage,
+  AppleCarouselPage,
+  ElasticSliderPage,
   AgentComputerIconPage,
   AnimatedBeamPage,
   AnimatedCounterPage,
+  AppleHelloEffectPage,
   AnimatedHoverDisclosuresPage,
+  HookSidebarPage,
+  RollingCounterPage,
+  LightboxPage,
+  WebSearchPage,
+  TaskListPage,
+  ToastPage,
+  RailTocPage,
+  ThemeSelectorPage,
+  DeleteButtonPage,
+  StepPlayerPage,
+  VoiceMessagePage,
   BarrelTimeInputPage,
   BounceSidebarPage,
   BrushChartPage,
@@ -97,15 +111,25 @@ import {
   YearInDotsPage,
   YouCanScrollPage,
   YoutubeEmbedPage,
+  GridRevealPage,
+  EmojiReactionPage,
+  FluidOrbPage,
+  PullQuotePage,
+  LineNavPage,
 } from '@/components/shared'
 import { TreeSearchPage } from '@/pages/TreeSearchPage'
 
 import type { GalleryExample } from './gallery.types'
+import { sortNewestFirst } from './gallery.utils'
 
-/** Every live example: one entry here adds its route and its gallery card. */
-export const GALLERY_EXAMPLES: GalleryExample[] = [
+/**
+ * Every live example: one entry here adds its route and its gallery card.
+ * Order here does not matter — the gallery shows the newest `addedAt` first.
+ */
+export const GALLERY_EXAMPLES: GalleryExample[] = sortNewestFirst([
   {
     slug: 'scroll-driven-index',
+    addedAt: '2026-05-20',
     title: 'Scroll-Driven Index',
     description:
       'Fixed bottom index popover with scroll-driven progress and in-page section anchors.',
@@ -115,6 +139,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'faux-pip-video',
+    addedAt: '2026-05-20',
     title: 'Faux PiP Video',
     description:
       'Sticky video morphs into a picture-in-picture control using CSS container scroll-state.',
@@ -124,6 +149,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'the-craft-of-ui-playbook-css-scroll-animation-w-subgrid',
+    addedAt: '2026-05-20',
     title: 'Playbook Scroll Animation',
     description:
       'A layered scroll demo that uses subgrid and scroll-linked animation to build a cinematic composition.',
@@ -133,6 +159,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'you-can-select-things-styleable-select',
+    addedAt: '2026-05-21',
     title: 'Styleable Select',
     description:
       'A stylable select demo inspired by the base-select interaction pattern.',
@@ -142,6 +169,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'you-can-scroll',
+    addedAt: '2026-05-21',
     title: 'You Can Scroll',
     description:
       'A sticky phrase and chroma-scroll list driven by CSS view timelines and scroll-linked animation.',
@@ -151,6 +179,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'line-path-animation',
+    addedAt: '2026-05-21',
     title: 'Line Path Animation',
     description:
       'A scroll-driven SVG path fill animation with sticky headline and progressive section reveals.',
@@ -160,6 +189,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'curved-scrollbar',
+    addedAt: '2026-06-10',
     title: 'Curved Scrollbar',
     description:
       'A reusable scroll panel with an SVG thumb that bends around rounded content corners.',
@@ -169,6 +199,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'agent-computer-icon',
+    addedAt: '2026-06-20',
     title: 'Agent Computer Icon',
     description:
       'A 24px monitor face with GSAP-driven states — loading, success, failure, waiting — animated through eyes, screen, and base.',
@@ -178,6 +209,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'heart',
+    addedAt: '2026-09-26',
     title: 'Heart',
     description:
       'Like hearts with typed color variants: a CSS beat primitive, plus a GSAP center-fill with particle burst and swatches.',
@@ -187,6 +219,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'pulse-heart',
+    addedAt: '2026-09-26',
     title: 'Pulse Heart',
     description:
       'A like pill that swells through a bezier overshoot on toggle, its count rolling like an odometer digit.',
@@ -196,6 +229,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'sparkle-button',
+    addedAt: '2026-06-20',
     title: 'Sparkle Button',
     description:
       'A hover-activated pill button with conic spark, orbiting particles, and gradient label text.',
@@ -205,6 +239,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'fuse-button',
+    addedAt: '2026-09-26',
     title: 'Fuse Button',
     description:
       'A commit button that arms a burning fuse instead of a confirm dialog — tap again, or wait it out, before it locks in.',
@@ -214,6 +249,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'multiplayer-masking-with-grid-mask',
+    addedAt: '2026-08-18',
     title: 'Multiplayer Masking',
     description:
       'An overlapping presence stack where narrow grid columns and radial-gradient masks let each avatar lift cleanly out of its neighbour.',
@@ -223,6 +259,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'product-spotlight-cards',
+    addedAt: '2026-08-18',
     title: 'Product Spotlight Cards',
     description:
       'A depth map relights a flat product photo in real time — normals, contact shadows and a tracked spotlight, all sharing one WebGL context.',
@@ -232,6 +269,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'pure-css-3d-animated-carousel',
+    addedAt: '2026-08-18',
     title: 'Pure CSS 3D Carousel',
     description:
       'Cards stacked in one grid cell, rotated around the Y axis and pushed back along Z to form a ring that spins with no JavaScript.',
@@ -241,6 +279,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'scroll-driven-progressive-blur-w-contrast',
+    addedAt: '2026-08-18',
     title: 'Progressive Blur',
     description:
       'Stacked backdrop-filter layers with staggered masks composited using intersect, sliding in on the scroller’s own timeline.',
@@ -250,6 +289,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'css-number-animation',
+    addedAt: '2026-08-18',
     title: 'CSS Number Animation',
     description:
       'A registered integer custom property feeds a CSS counter, making the number itself interpolable without a JavaScript tick.',
@@ -259,6 +299,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'css-responsive-scroll-driven-text-reveals',
+    addedAt: '2026-08-18',
     title: 'Scroll-Driven Text Reveals',
     description:
       'Three text-clipped gradients swept by a view timeline, so the fill re-flows at any size without measuring anything.',
@@ -268,6 +309,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'css-scroll-to-type',
+    addedAt: '2026-08-18',
     title: 'Scroll to Type',
     description:
       'A stepped view-timeline animation turns scroll distance into a character index, typing a line out with a blinking caret.',
@@ -277,6 +319,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'carousel-slider',
+    addedAt: '2026-08-18',
     title: 'Carousel Slider',
     description:
       'A draggable card stack with spring transitions and directional enter/exit variants.',
@@ -286,6 +329,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'option-wheel',
+    addedAt: '2026-08-18',
     title: 'Option Wheel',
     description:
       'A curved, draggable picker that bends its options along an arc and blurs them as they fall from the centre.',
@@ -295,6 +339,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'year-in-dots',
+    addedAt: '2026-08-18',
     title: 'Year in Dots',
     description:
       'One dot per day of the year, filled in proportion to that year’s share of activity.',
@@ -304,6 +349,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'youtube-embed',
+    addedAt: '2026-08-18',
     title: 'YouTube Embed',
     description:
       'A YouTube iframe wrapper that builds its own player URL and can mask the chrome so the video reads as background art.',
@@ -313,6 +359,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'animated-beam',
+    addedAt: '2026-08-18',
     title: 'Animated Beam',
     description:
       'An SVG path measured between two element refs with a gradient travelling along it, re-measuring on resize.',
@@ -322,6 +369,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'bounce-sidebar',
+    addedAt: '2026-08-18',
     title: 'Bounce Sidebar',
     description:
       'A nav marker that squashes and stretches as it travels between items, easing along an arc rather than a straight line.',
@@ -331,6 +379,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'code-block',
+    addedAt: '2026-08-18',
     title: 'Code Block',
     description:
       'Prism highlighting with an entire theme derived from a single accent colour, plus an animated copy button.',
@@ -340,6 +389,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'flickering-grid',
+    addedAt: '2026-08-18',
     title: 'Flickering Grid',
     description:
       'A canvas grid of squares randomly changing opacity, throttled to a target frame rate and paused when hidden.',
@@ -349,6 +399,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'hyperspeed',
+    addedAt: '2026-09-26',
     title: 'Hyperspeed',
     description:
       'A Three.js road tunnel with distortable geometry, streaking traffic lights, and bloom, steered by a plain options object.',
@@ -358,6 +409,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'github-calendar',
+    addedAt: '2026-08-18',
     title: 'GitHub Activity Card',
     description:
       'A contribution heatmap from the public contributions API, with month labels and recently pushed repos.',
@@ -367,6 +419,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'proximity-sidebar',
+    addedAt: '2026-08-18',
     title: 'Proximity Sidebar',
     description:
       'A table-of-contents rail whose dashes lengthen based on their distance from the cursor.',
@@ -376,6 +429,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'scroll-progress',
+    addedAt: '2026-08-18',
     title: 'Scroll Progress',
     description:
       'A floating progress pill reporting the active section, spring animating between label widths.',
@@ -385,6 +439,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'calendar-widget',
+    addedAt: '2026-08-20',
     title: 'Calendar Widget',
     description:
       'A draggable date strip over an agenda pane, with the selection pill travelling between days as a shared layout element.',
@@ -394,6 +449,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'card-swipe',
+    addedAt: '2026-08-20',
     title: 'Card Swipe',
     description:
       'A draggable deck whose cards derive their Y rotation from the track position, swinging away in perspective as the active card squares up.',
@@ -403,6 +459,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'emoji-spree-chips',
+    addedAt: '2026-08-20',
     title: 'Emoji Spree Chips',
     description:
       'Draggable choice chips that throw the picked emoji up over the deck and drop it back down behind them.',
@@ -412,6 +469,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'fund-widget',
+    addedAt: '2026-08-20',
     title: 'Fund Widget',
     description:
       'A vertical balance deck where each card\\u2019s rotation and blur come from the track position, tipping pages as they roll past.',
@@ -421,6 +479,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'macos-sidebar',
+    addedAt: '2026-08-20',
     title: 'macOS Sidebar',
     description:
       'A collapsible rail that springs between widths, with the hover highlight sliding between rows as a shared layout element.',
@@ -430,6 +489,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'pin-item',
+    addedAt: '2026-08-20',
     title: 'Pin Item',
     description:
       'Pinning a place moves its card between two lists, travelling to its new section on a shared layout id instead of cutting.',
@@ -439,6 +499,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'switch-mode',
+    addedAt: '2026-08-20',
     title: 'Switch Mode',
     description:
       'A day/night toggle whose knob moves as a layout animation, so every size variant lands correctly.',
@@ -448,6 +509,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'tree-menu',
+    addedAt: '2026-08-20',
     title: 'Tree Menu',
     description:
       'A drill-down menu where the picked row becomes the breadcrumb, and the remaining rows part around your choice.',
@@ -457,6 +519,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'tree-search',
+    addedAt: '2026-10-17',
     title: 'Tree Search',
     description:
       'A search field that opens into drill-down results with staggered list motion, back crumbs, and arbitrary leaf content.',
@@ -466,6 +529,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'voice-note',
+    addedAt: '2026-08-20',
     title: 'Voice Note',
     description:
       'A recorder pill that grows out of a mic button, counting the take down on an SVG stroke with a digit-rolling timer.',
@@ -474,7 +538,48 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
     page: VoiceNotePage,
   },
   {
+    slug: 'voice-message',
+    addedAt: '2026-11-11',
+    title: 'Voice Message',
+    description:
+      'A chat voice message with a morphing play button, a scrubbable waveform, a speed toggle and a glow that orbits the pill while it plays.',
+    tech: 'Motion · Audio',
+    categories: ['media', 'inputs'],
+    page: VoiceMessagePage,
+  },
+  {
+    slug: 'step-player',
+    addedAt: '2026-11-11',
+    title: 'Step Player',
+    description:
+      'An iOS-style story progress bar whose active dot stretches into a filling bar, with a play / pause / replay morph.',
+    tech: 'Motion · SVG',
+    categories: ['media', 'navigation'],
+    page: StepPlayerPage,
+  },
+  {
+    slug: 'hook-sidebar',
+    addedAt: '2026-11-11',
+    title: 'Hook Sidebar',
+    description:
+      'A table of contents whose active row is marked by a spring rail that hooks into it, with a faint second rail on hover.',
+    tech: 'Motion · Router',
+    categories: ['navigation'],
+    page: HookSidebarPage,
+  },
+  {
+    slug: 'rolling-counter',
+    addedAt: '2026-11-11',
+    title: 'Rolling Counter',
+    description:
+      'An odometer-style number: every digit spins the short way to its face on a spring, with separators and new places that slide and fade in.',
+    tech: 'Motion · Layout',
+    categories: ['data', 'animation'],
+    page: RollingCounterPage,
+  },
+  {
     slug: 'signature-pad',
+    addedAt: '2026-10-17',
     title: 'Signature Pad',
     description:
       'Smooth ink that thins with speed, with undo, replay, and PNG or SVG export.',
@@ -484,6 +589,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'accordion',
+    addedAt: '2026-10-17',
     title: 'Accordion',
     description:
       'Stacked disclosure rows with a smooth height spring and a rotating chevron.',
@@ -493,6 +599,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'expandable-card',
+    addedAt: '2026-10-17',
     title: 'Expandable Card',
     description: 'A card that grows in width and height to reveal its details.',
     tech: 'Motion · Layout',
@@ -501,6 +608,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'expandable-text',
+    addedAt: '2026-10-17',
     title: 'Expandable Text',
     description:
       'Clamps long copy to a few lines, then reveals the rest in place.',
@@ -510,6 +618,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'progress',
+    addedAt: '2026-10-17',
     title: 'Progress',
     description:
       'A determinate bar with a label, live value readout, and a finish check.',
@@ -519,6 +628,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'countdown',
+    addedAt: '2026-10-17',
     title: 'Countdown',
     description:
       'Rolling digits that count down to a moment in a given time zone.',
@@ -528,6 +638,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'metric-card',
+    addedAt: '2026-10-17',
     title: 'Metric Card',
     description:
       'A KPI tile with an animated figure, context, and period change.',
@@ -537,6 +648,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'line-chart',
+    addedAt: '2026-10-17',
     title: 'Line Chart',
     description:
       'Trends over time with a scrubbing crosshair and a dashed comparison series.',
@@ -546,6 +658,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'treemap',
+    addedAt: '2026-10-17',
     title: 'Treemap',
     description:
       'Nested rectangles sized by value and shaded by growth, with click to zoom.',
@@ -555,6 +668,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'donut-chart',
+    addedAt: '2026-10-17',
     title: 'Donut Chart',
     description:
       'Ring segments with a live total and a legend that toggles slices.',
@@ -564,6 +678,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'streamgraph',
+    addedAt: '2026-10-17',
     title: 'Streamgraph',
     description:
       'Stacked series flowing around a center line to show volume and share.',
@@ -573,6 +688,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'brush-chart',
+    addedAt: '2026-10-17',
     title: 'Brush Chart',
     description:
       'A detail chart driven by a draggable range window on an overview strip.',
@@ -582,6 +698,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'waffle-chart',
+    addedAt: '2026-10-17',
     title: 'Waffle Chart',
     description:
       'A 10 by 10 grid where every cell is one percent of the whole.',
@@ -591,6 +708,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'slope-chart',
+    addedAt: '2026-10-17',
     title: 'Slope Chart',
     description:
       'Before and after values joined by lines to show rises, falls, and rank.',
@@ -600,6 +718,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'sparkline',
+    addedAt: '2026-10-17',
     title: 'Sparkline',
     description:
       'A compact trend line with a headline value, change, and scrubbing.',
@@ -609,6 +728,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'gauge',
+    addedAt: '2026-10-17',
     title: 'Gauge',
     description: 'A radial meter with named threshold bands that set its tone.',
     tech: 'SVG · Data',
@@ -617,6 +737,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'animated-counter',
+    addedAt: '2026-10-17',
     title: 'Animated Counter',
     description:
       'A number that springs to each new value and counts up on view.',
@@ -626,6 +747,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'ridgeline',
+    addedAt: '2026-10-17',
     title: 'Ridgeline',
     description:
       'Overlapping density curves that compare distributions on one axis.',
@@ -635,6 +757,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'gradual-blur',
+    addedAt: '2026-10-17',
     title: 'Gradual Blur',
     description:
       'Stacked backdrop-filter layers that ramp along an edge so content fades into soft focus.',
@@ -644,6 +767,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'laser-flow',
+    addedAt: '2026-10-17',
     title: 'Laser Flow',
     description:
       'A volumetric beam that pours onto a surface, spilling light, fog, and dust.',
@@ -653,6 +777,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'strands',
+    addedAt: '2026-10-17',
     title: 'Strands',
     description:
       'Glowing ribbons weaving through a glass lens, with a click pulse.',
@@ -662,6 +787,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'line-sidebar',
+    addedAt: '2026-10-17',
     title: 'Line Sidebar',
     description:
       'Nav items lean toward the pointer with proximity falloff and stretching ticks.',
@@ -671,6 +797,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'voice-pill',
+    addedAt: '2026-10-17',
     title: 'Voice Pill',
     description:
       'Tap or hold to record; the mic grows into a live waveform pill with slide to cancel.',
@@ -680,6 +807,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'refine-frame',
+    addedAt: '2026-10-17',
     title: 'Refine Frame',
     description:
       'Generated media resolves from a coarse mosaic to the final image, with stage chips.',
@@ -689,6 +817,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'folder-float',
+    addedAt: '2026-10-17',
     title: 'Folder Float',
     description:
       'Notes float out of a folder on a soft physics sim; drag them, then pick one.',
@@ -698,6 +827,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'comet-dial',
+    addedAt: '2026-10-17',
     title: 'Comet Dial',
     description:
       'A rotary dial with a comet tail that coasts on momentum and springs into place.',
@@ -707,6 +837,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'scroll-driven-gooey-island',
+    addedAt: '2026-11-09',
     title: 'Scroll-Driven Gooey Island',
     description:
       'A sticky Dynamic Island avatar that goo-morphs into the status bar as you scroll.',
@@ -716,6 +847,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'svg-filter-scroller',
+    addedAt: '2026-11-09',
     title: 'SVG Filter Scroller',
     description:
       'Scroll velocity feeds an SVG displacement filter for chromatic, wavy type.',
@@ -725,6 +857,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'css-sprite-scrubbing',
+    addedAt: '2026-11-09',
     title: 'CSS Sprite Scrubbing',
     description:
       'A product frame sequence scrubbed by scroll timeline, with optional autoplay.',
@@ -734,6 +867,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'gsap-infinite-loop',
+    addedAt: '2026-11-09',
     title: 'GSAP Infinite Loops Without DOM Shuffle',
     description:
       'Vertical word carousel that loops forever without cloning or shuffling the DOM.',
@@ -743,6 +877,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'pixel-transition',
+    addedAt: '2026-11-09',
     title: 'Pixel Transitions with Generated SVG Masks',
     description:
       'Image crossfade driven by generated SVG pixel-mask sprites.',
@@ -752,6 +887,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'canvas-snow-banner',
+    addedAt: '2026-11-09',
     title: 'Canvas Snow Banner',
     description:
       'A canvas snow fall banner with wind sway, amount, and framerate controls.',
@@ -761,6 +897,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'canvas-pointer-lines',
+    addedAt: '2026-11-09',
     title: 'Configurable Canvas Pointer Lines',
     description:
       'A grid of strokes that lean toward the pointer, with optional spotlight masking.',
@@ -770,6 +907,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'cuisine-selector',
+    addedAt: '2026-11-09',
     title: 'Cuisine Selector with :has()',
     description:
       'Multi-select cuisine chips styled with CSS :has() for checked and focus states.',
@@ -779,6 +917,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'cooking-letters',
+    addedAt: '2026-11-09',
     title: 'Cooking Letters',
     description:
       'Every letter is a tiny CSS cube that rolls over in a sine-staggered wave.',
@@ -788,6 +927,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'input-dissolution',
+    addedAt: '2026-11-09',
     title: 'Input Dissolution',
     description:
       'Submitted text dissolves into grain via a clip-path sweep and an SVG turbulence filter.',
@@ -797,6 +937,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'intelligent-text-reveals',
+    addedAt: '2026-11-09',
     title: 'Intelligent Text Reveals',
     description:
       'Copy washes in behind a sweeping radial mask, then a signature draws itself in.',
@@ -806,6 +947,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'lil-loader',
+    addedAt: '2026-11-09',
     title: 'Lil Loader',
     description:
       'A tiny framed loader of glowing rings that rise, swell, and drift from pink to amber.',
@@ -815,6 +957,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'task-editing-heatmap',
+    addedAt: '2026-11-09',
     title: 'Task Editing Heatmap',
     description:
       'A day-by-hour grid of edits on one assignment, so late-night cramming stands out.',
@@ -824,6 +967,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'task-activity-timeline',
+    addedAt: '2026-11-09',
     title: 'Task Activity Timeline',
     description:
       'Group work on one task as a day-by-hour heatmap or per-group 24-hour tracks.',
@@ -833,6 +977,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'task-submission-scatter',
+    addedAt: '2026-11-09',
     title: 'Task Submission Scatter',
     description:
       'When each group handed in against a due-date line: early, on time, late, or missing.',
@@ -842,6 +987,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'wq-dashboard',
+    addedAt: '2026-11-09',
     title: 'Role Dashboards',
     description:
       'Admin, teacher, and student LMS dashboards behind a segmented role tab list.',
@@ -851,6 +997,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'animated-hover-disclosures',
+    addedAt: '2026-11-09',
     title: 'Animated Hover Disclosures',
     description:
       'Cards where the hovered or focused column grows via grid-template-columns to reveal copy.',
@@ -860,6 +1007,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'morphing-disclosure',
+    addedAt: '2026-11-09',
     title: 'Exclusive Morphing Disclosure',
     description:
       'An exclusive <details> group whose open row detaches into a card as it springs open.',
@@ -869,6 +1017,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'shimmer-accordion',
+    addedAt: '2026-11-09',
     title: 'Shimmer Accordion',
     description:
       'FAQ accordion that reveals each answer with a coloured gradient band sweeping the text.',
@@ -878,6 +1027,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'quantity-picker',
+    addedAt: '2026-11-09',
     title: 'Quantity Picker',
     description:
       'Number stepper with rolling digits, an input on focus, and a shake when out of range.',
@@ -887,6 +1037,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: '3d-theme-switch',
+    addedAt: '2026-11-09',
     title: 'Switchin\' Themes in 3D',
     description:
       'A theme switch whose surface turns like a cube face via a chained View Transition.',
@@ -896,6 +1047,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'floating-squares-3d',
+    addedAt: '2026-11-09',
     title: 'Floating Squares 3D',
     description:
       'Colourful squares drift across a tilted 3D plane with feathered edges.',
@@ -905,6 +1057,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'gooey-popover',
+    addedAt: '2026-11-09',
     title: 'Gooey Popover',
     description:
       'A native [popover] that oozes out of its round trigger through an SVG goo filter.',
@@ -914,6 +1067,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'barrel-time-input',
+    addedAt: '2026-11-09',
     title: 'iOS Alarm Barrel Time Input',
     description:
       'iOS-style 3D barrel time picker you can drag, scroll, tap, or drive from the keyboard.',
@@ -923,6 +1077,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'css-carousels',
+    addedAt: '2026-11-09',
     title: 'c(ss)arousel',
     description:
       'Radio-driven carousels where CSS handles fade, slide, thumbnail, and scale transitions.',
@@ -932,6 +1087,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'liquid-slider',
+    addedAt: '2026-11-09',
     title: 'Liquid Glass Slider',
     description:
       'A native range input whose thumb swells into a gooey glass lens on press.',
@@ -941,6 +1097,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'destination-slider',
+    addedAt: '2026-11-09',
     title: 'Destination Slider',
     description:
       'An SVG-skinned range input: the track bumps under the marker and a balloon pops up.',
@@ -950,6 +1107,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'infinite-cover-flow',
+    addedAt: '2026-11-09',
     title: 'Infinite Cover Flow',
     description:
       'An endless 3D cover carousel you can scroll, drag, click, or drive with arrow keys — with a crisp or blurred floor mirror.',
@@ -959,6 +1117,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'scroll-driven-lens',
+    addedAt: '2026-11-09',
     title: 'Scroll-Driven Lens',
     description:
       'Swipeable lens gallery where the centred frame scales up, brightens, and flashes its caption.',
@@ -968,6 +1127,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'scroll-driven-video-masking',
+    addedAt: '2026-11-09',
     title: 'Scroll-Driven Video Masking',
     description:
       'A sticky video shows through scribbles and text that scrolling draws over it.',
@@ -977,6 +1137,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'sticky-progressive-blur',
+    addedAt: '2026-11-09',
     title: 'Sticky Progressive Blur',
     description:
       'Stacked backdrop-filter layers pinned to the bottom blur images more as they scroll past.',
@@ -986,6 +1147,7 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
   },
   {
     slug: 'scroll-image-comparison',
+    addedAt: '2026-11-09',
     title: 'Scroll Image Comparison',
     description:
       'Before/after slider driven by a view timeline on the range thumb, with a 3D layer view.',
@@ -993,4 +1155,154 @@ export const GALLERY_EXAMPLES: GalleryExample[] = [
     categories: ['inputs', 'media'],
     page: ScrollImageComparisonPage,
   },
-]
+  {
+    slug: 'grid-reveal',
+    addedAt: '2026-11-11',
+    title: 'Grid Reveal',
+    description:
+      'A loading grid for generated images that keeps splitting while it waits, then resolves into the picture.',
+    tech: 'React · Canvas',
+    categories: ['media', 'effects'],
+    page: GridRevealPage,
+  },
+  {
+    slug: 'apple-hello-effect',
+    addedAt: '2026-11-11',
+    title: 'Apple Hello Effect',
+    description:
+      'A handwritten greeting that draws itself stroke by stroke, in English, Hindi, Spanish and Vietnamese.',
+    tech: 'React · Motion · SVG',
+    categories: ['animation', 'effects'],
+    page: AppleHelloEffectPage,
+  },
+  {
+    slug: 'pull-quote',
+    addedAt: '2026-11-11',
+    title: 'Pull Quote',
+    description:
+      'A testimonial with hanging quote marks and a hairline to the author, linking to its source.',
+    tech: 'React · Tailwind',
+    categories: ['layout', 'data'],
+    page: PullQuotePage,
+  },
+  {
+    slug: 'rail-toc',
+    addedAt: '2026-11-11',
+    title: 'Rail TOC',
+    description:
+      "A table of contents with a paper plane that flies along a dashed rail to the section you're reading.",
+    tech: 'React · Motion · SVG',
+    categories: ['navigation', 'scroll'],
+    page: RailTocPage,
+  },
+  {
+    slug: 'elastic-slider',
+    addedAt: '2026-11-11',
+    title: 'Elastic Slider',
+    description:
+      'A slider that stretches like rubber past its ends, snaps magnetically to ticks and dodges its own label.',
+    tech: 'React · Motion',
+    categories: ['inputs', 'animation'],
+    page: ElasticSliderPage,
+  },
+  {
+    slug: 'line-nav',
+    addedAt: '2026-11-11',
+    title: 'Line Nav',
+    description:
+      'A table-of-contents rail of short lines where the active and hovered line stretch on a spring.',
+    tech: 'React · Motion',
+    categories: ['navigation', 'animation'],
+    page: LineNavPage,
+  },
+  {
+    slug: 'web-search',
+    addedAt: '2026-11-11',
+    title: 'Web Search',
+    description:
+      'An AI search pill whose ring fills as sources stream in, with source cards, a typed-out answer and hover citations.',
+    tech: 'React · Motion',
+    categories: ['data', 'animation'],
+    page: WebSearchPage,
+  },
+  {
+    slug: 'apple-carousel',
+    addedAt: '2026-11-11',
+    title: 'Apple Carousel',
+    description:
+      'A looping scroll-snap gallery with springy tab and play controls, where the active dot doubles as the autoplay timer.',
+    tech: 'React · Motion',
+    categories: ['media', 'navigation'],
+    page: AppleCarouselPage,
+  },
+  {
+    slug: 'theme-selector',
+    addedAt: '2026-11-11',
+    title: 'Theme Selector',
+    description:
+      'A row of miniature app previews, one per theme, with a ring that marks the one you pick.',
+    tech: 'React · Tailwind',
+    categories: ['inputs'],
+    page: ThemeSelectorPage,
+  },
+  {
+    slug: 'task-list',
+    addedAt: '2026-11-11',
+    title: 'Task List',
+    description:
+      'A checklist whose rows tick, strike through and flick, then spring down to the bottom once done.',
+    tech: 'React · Motion',
+    categories: ['inputs', 'animation'],
+    page: TaskListPage,
+  },
+  {
+    slug: 'emoji-reaction',
+    addedAt: '2026-11-11',
+    title: 'Emoji Reaction',
+    description:
+      'A tapback button whose emoji bar sends copies of your pick floating up, and keeps them coming while held.',
+    tech: 'React · Motion',
+    categories: ['inputs', 'animation'],
+    page: EmojiReactionPage,
+  },
+  {
+    slug: 'delete-button',
+    addedAt: '2026-11-11',
+    title: 'Delete Button',
+    description:
+      'A bin that lifts its lid and slides out a confirm panel, asking for confirmation in place instead of a dialog.',
+    tech: 'React · Motion',
+    categories: ['inputs', 'animation'],
+    page: DeleteButtonPage,
+  },
+  {
+    slug: 'lightbox',
+    addedAt: '2026-11-11',
+    title: 'Lightbox',
+    description:
+      'A full-screen photo viewer that grows out of its thumbnail, with swipe, pinch-to-zoom, pan and pull-to-dismiss.',
+    tech: 'React · Motion',
+    categories: ['media', 'layout'],
+    page: LightboxPage,
+  },
+  {
+    slug: 'toast',
+    addedAt: '2026-11-11',
+    title: 'Toast',
+    description:
+      'Squircle toasts on Sonner whose status icons pop and draw in, with promise toasts that morph from spinner to result.',
+    tech: 'React · Motion · Sonner',
+    categories: ['animation', 'effects'],
+    page: ToastPage,
+  },
+  {
+    slug: 'fluid-orb',
+    addedAt: '2026-11-11',
+    title: 'Fluid Orb',
+    description:
+      'An ambient WebGL orb whose colour patches drift and re-form, in the style of a voice-mode indicator.',
+    tech: 'React · WebGL',
+    categories: ['effects', 'animation'],
+    page: FluidOrbPage,
+  },
+])

@@ -24,6 +24,15 @@
     timeline-scope: --progressive-blur-scroller;
   }
 
+  /* follow a class-based site theme (.light / .dark on <html>) when there is one */
+  :where(.light) [data-slot='progressive-blur'] {
+    color-scheme: light;
+  }
+
+  :where(.dark) [data-slot='progressive-blur'] {
+    color-scheme: dark;
+  }
+
   [data-slot='progressive-blur'][data-resizable='true'] {
     resize: both;
     min-width: 260px;
@@ -211,10 +220,25 @@
   [data-slot='progressive-blur-stage'] {
     color-scheme: light dark;
     position: relative;
-    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    min-height: 28rem;
+    padding: 3rem 1rem;
     background: light-dark(white, black);
     color: canvastext;
     overflow: hidden;
+  }
+
+  :where(.light) [data-slot='progressive-blur-stage'] {
+    color-scheme: light;
+  }
+
+  :where(.dark) [data-slot='progressive-blur-stage'] {
+    color-scheme: dark;
+  }
+
+  [data-slot='progressive-blur-stage'] > * {
+    z-index: 1;
   }
 
   [data-slot='progressive-blur-stage']::before {

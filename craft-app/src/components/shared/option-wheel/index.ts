@@ -1,3 +1,3 @@
-export { default as OptionWheel } from './OptionWheel'
+export { OptionWheel } from './OptionWheel'
 export { OptionWheelPage } from './page'
-export type { OptionWheelProps } from './OptionWheel'
+export type { OptionWheelProps, OptionWheelSide } from './OptionWheel'

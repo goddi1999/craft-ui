@@ -91,12 +91,12 @@ export function InfiniteCoverFlowPage() {
     from: '@/components/ui/infinite-cover-flow',
     props: {
       reflection,
-      aspectRatio: photos ? 16 / 9 : 1,
+      aspectRatio: photos ? { expression: '16 / 9' } : 1,
       showHint,
       className: radius ? `[--infinite-cover-flow-radius:${radius}px]` : undefined,
     },
     defaults: COMPONENT_DEFAULTS,
-  }).replace(`aspectRatio={${16 / 9}}`, 'aspectRatio={16 / 9}')
+  })
 
   return (
     <DemoPage

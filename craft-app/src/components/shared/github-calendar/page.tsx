@@ -1,10 +1,16 @@
-import { useState } from 'react'
+import {
+  DemoControlGroup,
+  DemoSettings,
+  DemoSlider,
+  DemoSwitch,
+  useDemoSettings,
+} from '@/components/shared/demo-controls'
+import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
+import { DemoPage } from '@/components/shared/demo-page'
 
-import { DemoControlGroup, DemoPanel } from '@/components/shared/demo-controls'
+import { GithubActivityCard, type GithubColorScheme } from './GithubCalendar'
 
-import GithubActivityCard from './GithubCalendar'
-
-const SCHEMES = [
+const SCHEMES: GithubColorScheme[] = [
   'green',
   'blue',
   'purple',
@@ -12,57 +18,164 @@ const SCHEMES = [
   'pink',
   'dracula',
   'halloween',
-] as const
+]
 
-const USERS = ['torvalds', 'gaearon', 'sindresorhus']
+const USERS = ['torvalds', 'gaearon', 'sindresorhus'] as const
+type User = (typeof USERS)[number]
+
+const DEFAULTS = {
+  username: 'torvalds' as User,
+  colorScheme: 'green' as GithubColorScheme,
+  cellSize: 11,
+  months: 12,
+  showMonthLabels: true,
+  showRepos: true,
+  defaultReposOpen: false,
+}
+
+const PROPS: DemoPropDoc[] = [
+  {
+    name: 'username',
+    type: 'string',
+    description: 'GitHub login whose public contributions are fetched.',
+  },
+  {
+    name: 'colorScheme',
+    type: "'green' | 'blue' | 'purple' | 'orange' | 'pink' | 'dracula' | 'halloween'",
+    default: "'green'",
+    description: 'Palette for the five contribution levels.',
+  },
+  {
+    name: 'cellSize',
+    type: 'number',
+    default: '11',
+    description: 'Side of each day square in px; capped smaller on narrow screens.',
+  },
+  {
+    name: 'months',
+    type: 'number',
+    default: '12',
+    description: 'How many recent months of weeks to show.',
+  },
+  {
+    name: 'showMonthLabels',
+    type: 'boolean',
+    default: 'true',
+    description: 'Show month names above the grid.',
+  },
+  {
+    name: 'showRepos',
+    type: 'boolean',
+    default: 'true',
+    description: 'Show the collapsible list of most active repositories.',
+  },
+  {
+    name: 'defaultReposOpen',
+    type: 'boolean',
+    default: 'false',
+    description: 'Start with the repository list expanded.',
+  },
+  {
+    name: '...props',
+    type: "ComponentProps<'div'>",
+    description: 'Any native div attribute — className, style, id…',
+  },
+]
 
 export function GithubCalendarPage() {
-  const [scheme, setScheme] = useState<(typeof SCHEMES)[number]>('green')
-  const [username, setUsername] = useState(USERS[0])
+  const settings = useDemoSettings(DEFAULTS)
+  const {
+    username,
+    colorScheme,
+    cellSize,
+    months,
+    showMonthLabels,
+    showRepos,
+    defaultReposOpen,
+  } = settings.values
+
+  const usage = toUsageSnippet({
+    component: 'GithubActivityCard',
+    from: '@/components/shared/github-calendar',
+    props: {
+      username,
+      colorScheme,
+      cellSize,
+      months,
+      showMonthLabels,
+      showRepos,
+      defaultReposOpen,
+    },
+    defaults: { ...DEFAULTS, username: undefined },
+  })
 
   return (
-    <div className="min-h-svh bg-background px-4 py-16 text-foreground">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-12">
-        <header className="text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            shared / github-calendar
-          </p>
-          <h1 className="mt-3 text-4xl font-medium tracking-tight">
-            GitHub activity card
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
-            A contribution heatmap built from the public contributions API,
-            with month labels and a collapsible list of recently pushed repos.
-          </p>
-        </header>
-
-        <section className="flex flex-col items-center gap-8">
-          <GithubActivityCard
-            key={`${username}-${scheme}`}
-            username={username}
-            colorScheme={scheme}
-            className="w-full"
+    <DemoPage
+      eyebrow="shared / github-calendar"
+      title="GitHub activity card"
+      description="A contribution heatmap built from the public contributions API, with month labels and a collapsible list of recently pushed repos. Data is fetched live, so it may rate-limit."
+      settings={
+        <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
+          <DemoControlGroup
+            title="User"
+            options={USERS}
+            value={username}
+            onChange={(value) => settings.set('username', value)}
           />
-
-          <DemoPanel>
-            <DemoControlGroup
-              title="user"
-              options={USERS}
-              value={username}
-              onChange={setUsername}
-            />
-            <DemoControlGroup
-              title="color scheme"
-              options={SCHEMES}
-              value={scheme}
-              onChange={setScheme}
-            />
-            <p className="text-xs text-muted-foreground">
-              Data is fetched live from public APIs, so it may rate-limit.
-            </p>
-          </DemoPanel>
-        </section>
-      </div>
-    </div>
+          <DemoControlGroup
+            title="Color scheme"
+            options={SCHEMES}
+            value={colorScheme}
+            onChange={(value) => settings.set('colorScheme', value)}
+          />
+          <DemoSlider
+            label="Months"
+            value={months}
+            onValueChange={(value) => settings.set('months', value)}
+            min={1}
+            max={12}
+          />
+          <DemoSlider
+            label="Cell size"
+            value={cellSize}
+            onValueChange={(value) => settings.set('cellSize', value)}
+            min={7}
+            max={14}
+            unit="px"
+          />
+          <DemoSwitch
+            label="Month labels"
+            checked={showMonthLabels}
+            onCheckedChange={(value) => settings.set('showMonthLabels', value)}
+          />
+          <DemoSwitch
+            label="Repositories"
+            checked={showRepos}
+            onCheckedChange={(value) => settings.set('showRepos', value)}
+          />
+          <DemoSwitch
+            label="Repositories open"
+            checked={defaultReposOpen}
+            onCheckedChange={(value) => settings.set('defaultReposOpen', value)}
+          />
+        </DemoSettings>
+      }
+      docs={{
+        paths: ['src/components/shared/github-calendar/'],
+        usage,
+        props: PROPS,
+      }}
+    >
+      <GithubActivityCard
+        key={`${username}-${defaultReposOpen}`}
+        username={username}
+        colorScheme={colorScheme}
+        cellSize={cellSize}
+        months={months}
+        showMonthLabels={showMonthLabels}
+        showRepos={showRepos}
+        defaultReposOpen={defaultReposOpen}
+      />
+    </DemoPage>
   )
 }

@@ -1,0 +1,1 @@
+export { AppleHelloEffectPage } from './page'

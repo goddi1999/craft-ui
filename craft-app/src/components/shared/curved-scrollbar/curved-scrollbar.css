@@ -12,6 +12,7 @@
     color-scheme: light dark;
     position: relative;
     width: var(--curved-scrollbar-width);
+    max-width: 100%;
     height: var(--curved-scrollbar-height);
     padding: 1rem;
     overflow: hidden;
@@ -103,6 +104,7 @@
     outline: 1px solid color-mix(in lch, canvas, canvasText 18%);
     outline-offset: 1px;
     scroll-behavior: smooth;
+    overscroll-behavior: contain;
     scroll-snap-type: y mandatory;
     scroll-timeline: --curved-scrollbar-scroller;
   }
@@ -207,16 +209,15 @@
     }
   }
 
-  @keyframes curved-scrollbar-snap {
-    to {
-      scroll-snap-align: var(--curved-scrollbar-snap-align, start);
+  @media (prefers-reduced-motion: reduce) {
+    .curved-scrollbar__viewport {
+      scroll-behavior: auto;
     }
   }
 
-  @media (max-width: 640px) {
-    [data-slot='curved-scrollbar'] {
-      width: var(--curved-scrollbar-width);
-      height: var(--curved-scrollbar-height);
+  @keyframes curved-scrollbar-snap {
+    to {
+      scroll-snap-align: var(--curved-scrollbar-snap-align, start);
     }
   }
 }

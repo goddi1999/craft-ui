@@ -288,6 +288,10 @@
 
     [data-slot='scroll-driven-video-masking'] .sdvm__footer {
       view-timeline: --sdvm-footer;
+      /* The outro is fixed to the viewport; clip it to the footer so it
+         does not float over whatever the host page renders after it.
+         (clip-path clips fixed descendants; overflow does not.) */
+      clip-path: inset(0);
     }
 
     [data-slot='scroll-driven-video-masking'] .sdvm__outro {

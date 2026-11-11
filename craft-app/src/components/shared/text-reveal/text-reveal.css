@@ -1,4 +1,6 @@
 @layer text-reveal {
+  /* Variants key off the data attributes: tailwind-merge would collapse the
+     `text-reveal--*` classes as if they were conflicting text utilities. */
   [data-slot='text-reveal'] {
     --text-reveal-track: 200vh;
     --text-reveal-font-size: clamp(2rem, 4vw + 1rem, 6rem);
@@ -14,43 +16,43 @@
     height: var(--text-reveal-track);
   }
 
-  [data-slot='text-reveal'].text-reveal--sm {
+  [data-slot='text-reveal'][data-size='sm'] {
     --text-reveal-font-size: clamp(1.25rem, 2vw + 0.75rem, 3rem);
   }
 
-  [data-slot='text-reveal'].text-reveal--size-default {
+  [data-slot='text-reveal'][data-size='default'] {
     --text-reveal-font-size: clamp(2rem, 4vw + 1rem, 6rem);
   }
 
-  [data-slot='text-reveal'].text-reveal--lg {
+  [data-slot='text-reveal'][data-size='lg'] {
     --text-reveal-font-size: clamp(3rem, 5vw + 1rem, 9rem);
   }
 
-  [data-slot='text-reveal'].text-reveal--compact {
+  [data-slot='text-reveal'][data-length='compact'] {
     --text-reveal-track: 150vh;
   }
 
-  [data-slot='text-reveal'].text-reveal--length-default {
+  [data-slot='text-reveal'][data-length='default'] {
     --text-reveal-track: 200vh;
   }
 
-  [data-slot='text-reveal'].text-reveal--long {
+  [data-slot='text-reveal'][data-length='long'] {
     --text-reveal-track: 320vh;
   }
 
-  [data-slot='text-reveal'].text-reveal--cyan {
+  [data-slot='text-reveal'][data-accent='cyan'] {
     --text-reveal-accent: hsl(180 100% 50%);
   }
 
-  [data-slot='text-reveal'].text-reveal--amber {
+  [data-slot='text-reveal'][data-accent='amber'] {
     --text-reveal-accent: hsl(38 100% 55%);
   }
 
-  [data-slot='text-reveal'].text-reveal--magenta {
+  [data-slot='text-reveal'][data-accent='magenta'] {
     --text-reveal-accent: hsl(320 100% 62%);
   }
 
-  [data-slot='text-reveal'].text-reveal--plain {
+  [data-slot='text-reveal'][data-accent='plain'] {
     --text-reveal-accent: canvastext;
   }
 
@@ -73,11 +75,15 @@
    * highlight leading the sweep, the grey fill behind it, and a full-width
    * rest state. Sliding all three left to right is the whole reveal.
    */
-  [data-slot='text-reveal-text'] {
+  [data-slot='text-reveal-line'] {
+    margin: 0;
     font-size: var(--text-reveal-font-size);
     font-weight: 600;
     line-height: 1.1;
     text-wrap: balance;
+  }
+
+  [data-slot='text-reveal-text'] {
     color: var(--text-reveal-done);
     background-image: linear-gradient(
         90deg,
@@ -142,5 +148,21 @@
     background: hsl(0 0% 2%);
     color: hsl(0 0% 100% / 0.6);
     overflow-x: clip;
+  }
+
+  [data-slot='text-reveal-stage-hint'] {
+    padding-block: 4rem 2rem;
+    text-align: center;
+    font-size: 0.875rem;
+    opacity: 0.6;
+  }
+
+  [data-slot='text-reveal-stage-end'] {
+    display: grid;
+    place-items: center;
+    min-height: 60vh;
+    font-size: 3rem;
+    font-weight: 600;
+    color: hsl(0 0% 100% / 0.8);
   }
 }

@@ -30,7 +30,7 @@ export function ActivityHeatmap({
       <div className="overflow-x-auto">
         <div
           aria-hidden="true"
-          className="grid min-w-[400px] grid-cols-[52px_repeat(var(--cols),minmax(0,1fr))] gap-[3px]"
+          className="grid min-w-[260px] grid-cols-[40px_repeat(var(--cols),minmax(0,1fr))] sm:grid-cols-[52px_repeat(var(--cols),minmax(0,1fr))] gap-[3px]"
           style={{ '--cols': days.length } as CSSProperties}
         >
           <span />

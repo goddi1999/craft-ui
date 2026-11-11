@@ -1,43 +1,34 @@
 import { useState } from 'react'
 
 import {
+  DemoAction,
+  DemoControlGroup,
+  DemoSettings,
+  DemoSlider,
+  DemoSwitch,
+  useDemoSettings,
+} from '@/components/shared/demo-controls'
+import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
+import { DemoPage } from '@/components/shared/demo-page'
+import {
   AgentComputerIcon,
   type AgentComputerIconAnimation,
   type AgentComputerIconState,
   type AgentComputerIconVariant,
 } from '@/components/ui/agent-computer-icon'
-import { Button } from '@/components/ui/button'
 
-const STATES: { state: AgentComputerIconState; label: string; hint: string }[] =
-  [
-    {
-      state: 'default',
-      label: 'default',
-      hint: 'Idle — soft blink and gentle glance.',
-    },
-    {
-      state: 'loading',
-      label: 'loading',
-      hint: 'Eyes scan while the body floats.',
-    },
-    {
-      state: 'waiting',
-      label: 'waiting',
-      hint: 'Slow look-around, anticipatory.',
-    },
-    {
-      state: 'success',
-      label: 'success',
-      hint: 'Quick lift, eyes perk upward.',
-    },
-    {
-      state: 'failure',
-      label: 'failure',
-      hint: 'Short shake, eyes compress.',
-    },
-  ]
+const STATE_HINTS: Record<AgentComputerIconState, string> = {
+  default: 'Idle — soft blink and gentle glance.',
+  loading: 'Eyes scan while the body floats.',
+  waiting: 'Slow look-around, anticipatory.',
+  success: 'Quick lift, eyes perk upward.',
+  failure: 'Short shake, eyes compress.',
+}
+const STATES = Object.keys(STATE_HINTS) as AgentComputerIconState[]
 
-const ANIMATIONS: AgentComputerIconAnimation[] = [
+/** `auto` leaves `animation` unset so the state picks it. */
+const ANIMATIONS: (AgentComputerIconAnimation | 'auto')[] = [
+  'auto',
   'idle',
   'looking',
   'thinking',
@@ -49,8 +40,10 @@ const ANIMATIONS: AgentComputerIconAnimation[] = [
   'none',
 ]
 
-const VARIANTS: AgentComputerIconVariant[] = [
+const VARIANTS: (AgentComputerIconVariant | 'none')[] = [
+  'none',
   'default',
+  'dark',
   'violet',
   'indigo',
   'blue',
@@ -60,177 +53,176 @@ const VARIANTS: AgentComputerIconVariant[] = [
   'lime',
   'orange',
   'pink',
+  'darkblue',
+]
+
+const DEFAULTS = {
+  state: 'loading' as AgentComputerIconState,
+  animation: 'auto' as (typeof ANIMATIONS)[number],
+  variant: 'none' as (typeof VARIANTS)[number],
+  size: 120,
+  strokeWidth: 1.4,
+  animated: true,
+}
+
+/** The component's own defaults, so the snippet only prints real changes. */
+const COMPONENT_DEFAULTS = {
+  state: 'default',
+  size: 24,
+  strokeWidth: 1.6,
+  animated: true,
+}
+
+const PROPS: DemoPropDoc[] = [
+  {
+    name: 'state',
+    type: "'default' | 'loading' | 'success' | 'failure' | 'waiting'",
+    default: "'default'",
+    description: 'Semantic agent state. Picks the animation unless you override it.',
+  },
+  {
+    name: 'animation',
+    type: "'none' | 'idle' | 'looking' | 'thinking' | 'blink' | 'perk' | 'shake' | 'bouncing' | 'hover-float'",
+    description: 'Override the animation independently of state.',
+  },
+  {
+    name: 'animated',
+    type: 'boolean',
+    default: 'true',
+    description: 'Master switch — false keeps the icon still whatever the state.',
+  },
+  {
+    name: 'variant',
+    type: "'default' | 'dark' | 'violet' | 'indigo' | 'blue' | 'cyan' | 'teal' | 'green' | 'lime' | 'orange' | 'pink' | 'darkblue'",
+    description: 'Color from the app palette. Overrides color when set.',
+  },
+  {
+    name: 'color',
+    type: 'string',
+    default: "'currentColor'",
+    description: 'Stroke and eye color when no variant is set.',
+  },
+  {
+    name: 'size',
+    type: 'number',
+    default: '24',
+    description: 'Width and height in pixels.',
+  },
+  {
+    name: 'strokeWidth',
+    type: 'number',
+    default: '1.6',
+    description: 'Line weight of the screen and base, in 24px viewBox units.',
+  },
+  {
+    name: '...props',
+    type: 'SVGProps<SVGSVGElement>',
+    description: 'Any other SVG attribute — className, style, aria-*…',
+  },
 ]
 
 export function AgentComputerIconPage() {
-  const [state, setState] = useState<AgentComputerIconState>('loading')
-  const [animation, setAnimation] = useState<AgentComputerIconAnimation | ''>(
-    '',
-  )
+  const settings = useDemoSettings(DEFAULTS)
+  const { state, animation, variant, size, strokeWidth, animated } =
+    settings.values
   const [replayKey, setReplayKey] = useState(0)
 
+  const animationProp = animation === 'auto' ? undefined : animation
+  const variantProp = variant === 'none' ? undefined : variant
+
+  const handleStateChange = (value: AgentComputerIconState) => {
+    settings.set('state', value)
+    settings.set('animation', 'auto')
+  }
+
+  const usage = toUsageSnippet({
+    component: 'AgentComputerIcon',
+    from: '@/components/ui/agent-computer-icon',
+    props: {
+      state,
+      animation: animationProp,
+      variant: variantProp,
+      size,
+      strokeWidth,
+      animated,
+    },
+    defaults: COMPONENT_DEFAULTS,
+  })
+
   return (
-    <div className="min-h-svh bg-background px-4 py-16">
-      <div className="mx-auto flex max-w-4xl flex-col gap-12">
-        <header className="text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-            ui / agent-computer-icon
-          </p>
-          <h1 className="mt-3 text-4xl font-medium tracking-tight text-foreground">
-            Agent computer icon
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
-            A 24px monitor face with a GSAP-driven state machine. The eyes hold
-            the personality, the screen breathes, the base grounds. Animation is
-            wired to <code className="rounded bg-muted px-1">data-part</code>{' '}
-            groups so motion stays stable across refactors.
-          </p>
-        </header>
-
-        <section className="relative overflow-hidden rounded-2xl border bg-card">
-          <div className="grid gap-0 md:grid-cols-[1.1fr_1fr]">
-            <div className="flex flex-col items-center justify-center gap-6 border-b p-10 md:border-b-0 md:border-r">
-              <div className="rounded-full bg-muted/40 p-10">
-                <AgentComputerIcon
-                  key={`${state}-${animation}-${replayKey}`}
-                  size={120}
-                  strokeWidth={1.4}
-                  state={state}
-                  animation={animation === '' ? undefined : animation}
-                  variant="default"
-                />
-              </div>
-              <div className="text-center">
-                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                  {STATES.find((s) => s.state === state)?.label}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {STATES.find((s) => s.state === state)?.hint}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-6 p-6">
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                  state
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {STATES.map((s) => (
-                    <Button
-                      key={s.state}
-                      size="sm"
-                      variant={state === s.state ? 'default' : 'outline'}
-                      onClick={() => {
-                        setState(s.state)
-                        setAnimation('')
-                      }}
-                    >
-                      {s.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                  animation override
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    size="sm"
-                    variant={animation === '' ? 'default' : 'outline'}
-                    onClick={() => setAnimation('')}
-                  >
-                    auto
-                  </Button>
-                  {ANIMATIONS.map((a) => (
-                    <Button
-                      key={a}
-                      size="sm"
-                      variant={animation === a ? 'default' : 'outline'}
-                      onClick={() => setAnimation(a)}
-                    >
-                      {a}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setReplayKey((n) => n + 1)}
-                >
-                  Replay animation
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="mb-4 text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground">
-            States
-          </h2>
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {STATES.map((s) => (
-              <li
-                key={s.state}
-                className="flex flex-col items-center gap-3 rounded-xl border bg-card p-5"
-              >
-                <AgentComputerIcon size={56} strokeWidth={1.5} state={s.state} />
-                <div className="text-center">
-                  <p className="text-sm font-medium text-foreground">
-                    {s.label}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">{s.hint}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="mb-4 text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground">
-            Variants
-          </h2>
-          <ul className="flex flex-wrap items-center gap-4 rounded-xl border bg-card p-6">
-            {VARIANTS.map((v) => (
-              <li
-                key={v}
-                className="flex flex-col items-center gap-2"
-                title={v}
-              >
-                <AgentComputerIcon
-                  size={40}
-                  strokeWidth={1.6}
-                  state="loading"
-                  variant={v}
-                />
-                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                  {v}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="mb-4 text-sm font-medium uppercase tracking-[0.16em] text-muted-foreground">
-            Static
-          </h2>
-          <div className="flex items-center gap-6 rounded-xl border bg-card p-6 text-sm text-muted-foreground">
-            <AgentComputerIcon size={40} state="default" animated={false} />
-            <p>
-              Pass <code className="rounded bg-muted px-1">animated={'{false}'}</code>{' '}
-              to lock the icon in place — useful inside dense lists or when
-              motion would be distracting.
-            </p>
-          </div>
-        </section>
+    <DemoPage
+      eyebrow="ui / agent-computer-icon"
+      title="Agent Computer Icon"
+      description="A 24px monitor face with a GSAP-driven state machine. The eyes hold the personality, the screen breathes, the base grounds. Motion targets data-part groups so it stays stable across refactors."
+      settings={
+        <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
+          <DemoControlGroup
+            title="State"
+            options={STATES}
+            value={state}
+            onChange={handleStateChange}
+          />
+          <DemoControlGroup
+            title="Animation"
+            options={ANIMATIONS}
+            value={animation}
+            onChange={(value) => settings.set('animation', value)}
+          />
+          <DemoControlGroup
+            title="Variant"
+            options={VARIANTS}
+            value={variant}
+            onChange={(value) => settings.set('variant', value)}
+          />
+          <DemoSlider
+            label="Size"
+            value={size}
+            onValueChange={(value) => settings.set('size', value)}
+            min={24}
+            max={160}
+            step={4}
+            unit="px"
+          />
+          <DemoSlider
+            label="Stroke width"
+            value={strokeWidth}
+            onValueChange={(value) => settings.set('strokeWidth', value)}
+            min={0.8}
+            max={2.4}
+            step={0.1}
+          />
+          <DemoSwitch
+            label="Animated"
+            checked={animated}
+            onCheckedChange={(value) => settings.set('animated', value)}
+          />
+          <DemoAction onClick={() => setReplayKey((key) => key + 1)}>
+            Replay
+          </DemoAction>
+        </DemoSettings>
+      }
+      docs={{
+        paths: ['src/components/ui/agent-computer-icon/'],
+        usage,
+        props: PROPS,
+      }}
+    >
+      <div className="flex flex-col items-center gap-6 text-foreground">
+        <div className="grid size-56 place-items-center rounded-full bg-muted/50">
+          <AgentComputerIcon
+            key={`${state}-${animation}-${replayKey}`}
+            state={state}
+            animation={animationProp}
+            variant={variantProp}
+            size={size}
+            strokeWidth={strokeWidth}
+            animated={animated}
+          />
+        </div>
+        <p className="text-center text-sm text-muted-foreground">
+          {animated ? STATE_HINTS[state] : 'Still — animated is off.'}
+        </p>
       </div>
-    </div>
+    </DemoPage>
   )
 }

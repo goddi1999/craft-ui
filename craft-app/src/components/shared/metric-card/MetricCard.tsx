@@ -45,9 +45,13 @@ export type MetricCardProps = {
   label: string
   value: number
   suffix?: string
+  /** Fraction digits to show. Defaults to as many as `value` has, so 99.9 never rounds to 100. */
+  decimals?: number
   context: string
   change?: string
 }
+
+const decimalsIn = (value: number) => String(value).split('.')[1]?.length ?? 0
 
 /** Copy that holds a number enters from the side it moved toward: a larger value rises from below, a smaller one drops from above. */
 const rise: Variants = {
@@ -168,6 +172,7 @@ export function MetricCard({
   label,
   value,
   suffix,
+  decimals = decimalsIn(value),
   context,
   change,
 }: MetricCardProps) {
@@ -208,7 +213,12 @@ export function MetricCard({
           )}
         </AnimatePresence>
       </div>
-      <AnimatedCounter value={value} suffix={suffix} animateOnView />
+      <AnimatedCounter
+        value={value}
+        suffix={suffix}
+        decimals={decimals}
+        animateOnView
+      />
       <p>
         <Swap text={context} block />
       </p>

@@ -1,6 +1,7 @@
 import type { UsagePropValue, UsageSnippetOptions } from './demo-docs.types'
 
 const formatProp = (name: string, value: UsagePropValue) => {
+  if (typeof value === 'object') return `${name}={${value.expression}}`
   if (value === true) return name
   if (typeof value === 'string') return `${name}="${value}"`
   return `${name}={${String(value)}}`

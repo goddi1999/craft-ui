@@ -10,12 +10,15 @@ import { curvedScrollbarVariants } from './curved-scrollbar-variants'
 import type { CurvedScrollbarProps } from './curved-scrollbar.types'
 import { useCurvedScrollbar } from './use-curved-scrollbar'
 
+const toLength = (value: number | string | undefined) =>
+  typeof value === 'number' ? `${value}px` : value
+
 export function CurvedScrollbar({
   children,
   theme = 'system',
   enabled = true,
-  width = 420,
-  height = 560,
+  width,
+  height,
   radius = 32,
   scrollPadding = 60,
   stroke = 5,
@@ -52,11 +55,10 @@ export function CurvedScrollbar({
     [inset, radius, scrollPadding, stroke, thumbSize, trail],
   )
 
+  // Width and height only override the size preset when they are passed.
   const cssVars: CSSProperties = {
-    ['--curved-scrollbar-width' as string]:
-      typeof width === 'number' ? `${width}px` : width,
-    ['--curved-scrollbar-height' as string]:
-      typeof height === 'number' ? `${height}px` : height,
+    ['--curved-scrollbar-width' as string]: toLength(width),
+    ['--curved-scrollbar-height' as string]: toLength(height),
     ['--curved-scrollbar-radius' as string]: radius,
     ['--curved-scrollbar-padding' as string]: `${scrollPadding}px`,
     ['--curved-scrollbar-stroke-width' as string]: stroke,

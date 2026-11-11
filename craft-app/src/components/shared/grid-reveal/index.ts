@@ -1,0 +1,1 @@
+export { GridRevealPage } from './page'

@@ -1,6 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
-import { DemoControlGroup, DemoPanel } from '@/components/shared/demo-controls'
+import {
+  DemoControlGroup,
+  DemoSettings,
+  DemoSlider,
+  useDemoSettings,
+} from '@/components/shared/demo-controls'
+import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
 import { DemoPage } from '@/components/shared/demo-page'
 import {
   Hyperspeed,
@@ -9,6 +15,8 @@ import {
 } from '@/components/ui/hyperspeed'
 
 type PresetName = keyof typeof hyperspeedPresets
+
+const PRESET_NAMES = Object.keys(hyperspeedPresets) as PresetName[]
 
 const PRESET_LABELS: Record<PresetName, string> = {
   one: 'Cyberpunk',
@@ -19,115 +27,172 @@ const PRESET_LABELS: Record<PresetName, string> = {
   six: 'Deep',
 }
 
-const PRESET_NAMES = Object.keys(hyperspeedPresets) as PresetName[]
+const DISTORTIONS = [
+  'turbulentDistortion',
+  'mountainDistortion',
+  'xyDistortion',
+  'LongRaceDistortion',
+  'deepDistortion',
+] as const
+type DistortionName = (typeof DISTORTIONS)[number]
+
+const DISTORTION_LABELS: Record<DistortionName, string> = {
+  turbulentDistortion: 'turbulent',
+  mountainDistortion: 'mountain',
+  xyDistortion: 'xy',
+  LongRaceDistortion: 'long race',
+  deepDistortion: 'deep',
+}
+
+const presetValues = (name: PresetName) => {
+  const preset = hyperspeedPresets[name]
+  return {
+    distortion: preset.distortion as DistortionName,
+    lanesPerRoad: preset.lanesPerRoad,
+    lightPairsPerRoadWay: preset.lightPairsPerRoadWay,
+    speedUp: preset.speedUp,
+  }
+}
+
+const DEFAULTS = { preset: 'one' as PresetName, ...presetValues('one') }
+
+const PROPS: DemoPropDoc[] = [
+  {
+    name: 'effectOptions',
+    type: 'Partial<HyperspeedOptions>',
+    default: '{}',
+    description:
+      'Distortion, road size, traffic density, speeds and the colors palette. Merged over the defaults; a new object rebuilds the scene, so memoize it.',
+  },
+  {
+    name: 'effectOptions.distortion',
+    type: 'string | Distortion',
+    description:
+      "'turbulentDistortion', 'mountainDistortion', 'xyDistortion', 'LongRaceDistortion', 'deepDistortion' or a custom shader distortion.",
+  },
+  {
+    name: 'effectOptions.onSpeedUp / onSlowDown',
+    type: '(ev: MouseEvent | TouchEvent) => void',
+    description: 'Called when the pointer is pressed (accelerate) and released.',
+  },
+  {
+    name: 'lightMode',
+    type: 'boolean',
+    default: 'false',
+    description: 'Reserved for light-theme palette overrides; currently has no effect.',
+  },
+  {
+    name: 'className',
+    type: 'string',
+    description: 'Extra classes for the WebGL host. It fills its positioned parent.',
+  },
+]
 
 export function HyperspeedPage() {
-  const [preset, setPreset] = useState<PresetName>('one')
-  const effectOptions = useMemo(
-    () => hyperspeedPresets[preset] as Partial<HyperspeedOptions>,
-    [preset],
+  const settings = useDemoSettings(DEFAULTS)
+  const { preset, distortion, lanesPerRoad, lightPairsPerRoadWay, speedUp } =
+    settings.values
+
+  // A new object rebuilds the WebGL scene, so only build one when a setting changes.
+  const effectOptions = useMemo<Partial<HyperspeedOptions>>(
+    () => ({
+      ...(hyperspeedPresets[preset] as Partial<HyperspeedOptions>),
+      distortion,
+      lanesPerRoad,
+      lightPairsPerRoadWay,
+      speedUp,
+    }),
+    [preset, distortion, lanesPerRoad, lightPairsPerRoadWay, speedUp],
   )
 
-  const colors = effectOptions.colors
+  const handlePresetChange = (name: PresetName) => {
+    settings.set('preset', name)
+    const values = presetValues(name)
+    settings.set('distortion', values.distortion)
+    settings.set('lanesPerRoad', values.lanesPerRoad)
+    settings.set('lightPairsPerRoadWay', values.lightPairsPerRoadWay)
+    settings.set('speedUp', values.speedUp)
+  }
+
+  const presetDefaults = presetValues(preset)
+  const overrides = (
+    [
+      ['distortion', distortion, `'${distortion}'`],
+      ['lanesPerRoad', lanesPerRoad, lanesPerRoad],
+      ['lightPairsPerRoadWay', lightPairsPerRoadWay, lightPairsPerRoadWay],
+      ['speedUp', speedUp, speedUp],
+    ] as const
+  )
+    .filter(([key, value]) => presetDefaults[key] !== value)
+    .map(([key, , source]) => `${key}: ${source}`)
+  const optionsSource = overrides.length
+    ? `{{ ...hyperspeedPresets.${preset}, ${overrides.join(', ')} }}`
+    : `{hyperspeedPresets.${preset}}`
+
+  const usage = toUsageSnippet({
+    component: 'Hyperspeed',
+    from: '@/components/ui/hyperspeed',
+    imports: ['hyperspeedPresets'],
+    props: { effectOptions: 'OPTIONS' },
+  }).replace('effectOptions="OPTIONS"', `effectOptions=${optionsSource}`)
 
   return (
     <DemoPage
       eyebrow="ui / hyperspeed"
       title="Hyperspeed"
-      description="A Three.js road tunnel with distortable geometry, streaking traffic lights, and bloom — steered entirely by the effectOptions object."
-      align="start"
-    >
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-20">
-        <div className="relative h-[480px] w-full overflow-hidden rounded-2xl border bg-black">
-          <Hyperspeed
-            key={preset}
-            effectOptions={effectOptions}
-            className="absolute inset-0"
-          />
-        </div>
-
-        <DemoPanel className="mx-auto max-w-2xl">
+      description="A Three.js road tunnel with distortable geometry, streaking traffic lights, and bloom — steered entirely by the effectOptions object. Click and hold the scene to speed up."
+      align="stretch"
+      bleed
+      settings={
+        <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
           <DemoControlGroup
-            title="Animation preset"
+            title="Preset"
             options={PRESET_NAMES}
             value={preset}
-            onChange={setPreset}
+            onChange={handlePresetChange}
             format={(name) => PRESET_LABELS[name]}
           />
-
-          <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-2">
-            <p>
-              <span className="font-medium text-foreground">distortion</span>
-              {' · '}
-              {String(effectOptions.distortion ?? '—')}
-            </p>
-            <p>
-              <span className="font-medium text-foreground">lanes</span>
-              {' · '}
-              {effectOptions.lanesPerRoad ?? '—'}
-            </p>
-            <p>
-              <span className="font-medium text-foreground">sticks</span>
-              {' · '}
-              {effectOptions.totalSideLightSticks ?? '—'}
-            </p>
-            <p>
-              <span className="font-medium text-foreground">light pairs</span>
-              {' · '}
-              {effectOptions.lightPairsPerRoadWay ?? '—'}
-            </p>
-            <p>
-              <span className="font-medium text-foreground">speed up</span>
-              {' · '}
-              {effectOptions.speedUp ?? '—'}×
-            </p>
-            <p>
-              <span className="font-medium text-foreground">fov</span>
-              {' · '}
-              {effectOptions.fov ?? '—'} → {effectOptions.fovSpeedUp ?? '—'}
-            </p>
-          </div>
-
-          {colors ? (
-            <div>
-              <p className="mb-2 text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
-                effectOptions.colors
-              </p>
-              <ul className="flex flex-wrap gap-3">
-                {[
-                  ['leftCars', colors.leftCars],
-                  ['rightCars', colors.rightCars],
-                  ['sticks', [colors.sticks]],
-                ].map(([key, values]) => (
-                  <li key={String(key)} className="flex flex-col gap-1">
-                    <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                      {String(key)}
-                    </span>
-                    <span className="flex gap-1">
-                      {(values as number[]).map((hex) => (
-                        <span
-                          key={hex}
-                          className="size-5 rounded-full border border-white/20"
-                          style={{
-                            backgroundColor: `#${hex.toString(16).padStart(6, '0')}`,
-                          }}
-                          title={`#${hex.toString(16).padStart(6, '0')}`}
-                        />
-                      ))}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          <p className="text-sm text-muted-foreground">
-            Pass a memoized{' '}
-            <code className="rounded bg-muted px-1">effectOptions</code> object
-            to tune distortion, density, and palette. Click and hold the scene
-            to speed up.
-          </p>
-        </DemoPanel>
+          <DemoControlGroup
+            title="Distortion"
+            options={DISTORTIONS}
+            value={distortion}
+            onChange={(value) => settings.set('distortion', value)}
+            format={(name) => DISTORTION_LABELS[name]}
+          />
+          <DemoSlider
+            label="Lanes per road"
+            value={lanesPerRoad}
+            onValueChange={(value) => settings.set('lanesPerRoad', value)}
+            min={1}
+            max={5}
+          />
+          <DemoSlider
+            label="Light pairs per road"
+            value={lightPairsPerRoadWay}
+            onValueChange={(value) => settings.set('lightPairsPerRoadWay', value)}
+            min={10}
+            max={80}
+            step={5}
+          />
+          <DemoSlider
+            label="Speed-up on hold"
+            value={speedUp}
+            onValueChange={(value) => settings.set('speedUp', value)}
+            min={1}
+            max={4}
+            step={0.5}
+            unit="×"
+          />
+        </DemoSettings>
+      }
+      docs={{
+        paths: ['src/components/ui/hyperspeed/'],
+        usage,
+        props: PROPS,
+      }}
+    >
+      <div className="relative h-[28rem] w-full overflow-hidden bg-black">
+        <Hyperspeed effectOptions={effectOptions} className="absolute inset-0" />
       </div>
     </DemoPage>
   )

@@ -43,10 +43,17 @@
       1 100%
     );
 
+    /* Text colour inside the open panel — inverted for the default pill. */
+    --scroll-driven-index-ink: var(--background);
+
     timeline-scope: --content;
     animation: scroll-driven-index-progress both linear;
     animation-timeline: --content;
     counter-reset: scroll-driven-index-progress var(--progress);
+  }
+
+  [data-slot='scroll-driven-index'][data-tone='muted'] {
+    --scroll-driven-index-ink: var(--foreground);
   }
 
   [data-slot='scroll-driven-index']:has(:popover-open) {
@@ -93,19 +100,34 @@
     anchor-name: --scroll-driven-index-opener;
   }
 
-  [data-alignment='left'] .scroll-driven-index__trigger,
-  [data-alignment='left'] [data-slot='scroll-driven-index-panel'] {
+  [data-alignment='left'] .scroll-driven-index__trigger {
     left: 1rem;
   }
 
-  [data-alignment='right'] .scroll-driven-index__trigger,
-  [data-alignment='right'] [data-slot='scroll-driven-index-panel'] {
+  [data-alignment='right'] .scroll-driven-index__trigger {
     right: 1rem;
   }
 
-  [data-alignment='center'] .scroll-driven-index__trigger,
-  [data-alignment='center'] [data-slot='scroll-driven-index-panel'] {
+  [data-alignment='center'] .scroll-driven-index__trigger {
     left: 50%;
+    translate: -50% 0;
+  }
+
+  /* The panel lives in the top layer, so it anchors to the trigger rather
+     than the viewport — that keeps it on the trigger even when the index
+     sits inside a contained frame instead of owning the page. */
+  [data-alignment='left'] [data-slot='scroll-driven-index-panel'] {
+    left: anchor(left, 1rem);
+    right: 1rem;
+  }
+
+  [data-alignment='right'] [data-slot='scroll-driven-index-panel'] {
+    right: anchor(right, 1rem);
+    left: 1rem;
+  }
+
+  [data-alignment='center'] [data-slot='scroll-driven-index-panel'] {
+    left: anchor(center, 50%);
     translate: -50% 0;
   }
 
@@ -166,12 +188,13 @@
     color: var(--foreground);
     margin: unset;
     inset: unset;
-    bottom: var(--scroll-driven-index-bottom);
+    bottom: anchor(bottom, var(--scroll-driven-index-bottom));
     width: var(--scroll-driven-index-trigger-width);
     height: var(--scroll-driven-index-trigger-height);
     z-index: 99999999;
     padding: 0;
     border: 0;
+    max-width: calc(100vw - 2rem);
     border-radius: 22px;
     background: transparent;
     overflow: visible;
@@ -202,7 +225,7 @@
     transition: padding var(--scroll-driven-index-speed);
     transform: translate3d(0, 0, 0);
     background: color-mix(in oklch, var(--foreground) 92%, transparent);
-    color: var(--background);
+    color: var(--scroll-driven-index-ink);
   }
 
   [data-tone='muted'] .scroll-driven-index__contents {
@@ -228,7 +251,7 @@
     padding-left: 2.5rem;
     list-style: scroll-driven-index-pad;
     display: flex;
-    width: max-content;
+    min-width: 0;
     margin: 0;
     flex-direction: column;
     filter: blur(4px);
@@ -254,24 +277,29 @@
   }
 
   [data-slot='scroll-driven-index-list'] li::marker {
-    color: color-mix(in oklch, var(--background) 40%, transparent);
+    color: color-mix(in oklch, var(--scroll-driven-index-ink) 40%, transparent);
   }
 
-  [data-slot='scroll-driven-index-list'] li:has(a:is(:hover, :focus-visible))::marker {
-    color: var(--background);
+  [data-slot='scroll-driven-index-list'] li:has(a:focus-visible)::marker {
+    color: var(--scroll-driven-index-ink);
   }
 
   [data-slot='scroll-driven-index-link'] {
-    color: color-mix(in oklch, var(--background) 40%, transparent);
-    white-space: nowrap;
+    color: color-mix(in oklch, var(--scroll-driven-index-ink) 40%, transparent);
     padding-block: 0.5rem;
     text-decoration: none;
-    display: inline-block;
-    width: 100%;
+    display: block;
   }
 
-  [data-slot='scroll-driven-index-link']:is(:hover, :focus-visible) {
-    color: var(--background);
+  [data-slot='scroll-driven-index-link']:focus-visible {
+    color: var(--scroll-driven-index-ink);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    [data-slot='scroll-driven-index-list'] li:has(a:hover)::marker,
+    [data-slot='scroll-driven-index-link']:hover {
+      color: var(--scroll-driven-index-ink);
+    }
   }
 
   [data-slot='scroll-driven-index-panel'] button {

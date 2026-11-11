@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { Archive, Check, Undo2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 
@@ -113,7 +113,9 @@ export function FuseButton({
   const lastInput = useRef<'pointer' | 'keyboard'>('pointer')
   const windowRef = useRef(undoWindow)
   const latest = useRef<Latest>({ commitOn, settle })
-  latest.current = { onCommit, onUndo, onFuseEnd, onPhaseChange, commitOn, settle }
+  useLayoutEffect(() => {
+    latest.current = { onCommit, onUndo, onFuseEnd, onPhaseChange, commitOn, settle }
+  })
   const statusId = useId()
   const preset = SIZES[size] || SIZES.md
 
@@ -192,21 +194,19 @@ export function FuseButton({
       document.removeEventListener('visibilitychange', onVisibility)
       anim.current?.cancel()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     const a = anim.current
     if (!a || phase !== 'armed') return
     light(Number(a.currentTime) || 0)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- relight only when the fuse style changes
   }, [fuse])
 
   useEffect(() => {
     if (pauseOnHover) return
     pause.current.hover = false
     syncPlayState()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pauseOnHover])
 
   const handlePointerDown = (e: React.PointerEvent<HTMLSpanElement>) => {

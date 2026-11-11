@@ -14,6 +14,8 @@ export type GalleryCategory =
 export type GalleryExample = {
   /** Route segment under `/examples/` and the preview image name. */
   slug: string
+  /** Day the example joined the gallery (`YYYY-MM-DD`); newest cards show first. */
+  addedAt: string
   title: string
   description: string
   /** Technique label shown on the card, e.g. `CSS · Popover`. */

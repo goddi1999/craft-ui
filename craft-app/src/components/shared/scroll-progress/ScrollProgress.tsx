@@ -370,4 +370,3 @@ const ScrollProgress = ({
 }
 
 export { ScrollProgress }
-export default ScrollProgress

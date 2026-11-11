@@ -8,8 +8,8 @@
 
     position: relative;
     width: 100%;
-    color: canvasText;
-    background: canvas;
+    color: var(--foreground, canvasText);
+    background: var(--background, canvas);
     font-family:
       'SF Pro Text', 'SF Pro Icons', 'AOS Icons', 'Helvetica Neue', Helvetica,
       Arial, sans-serif, system-ui;
@@ -21,7 +21,7 @@
 
   [data-slot='css-sprite-scrubbing']::before {
     --size: 45px;
-    --line: color-mix(in lch, canvasText, transparent 70%);
+    --line: color-mix(in lch, currentColor, transparent 70%);
     content: '';
     height: 100%;
     width: 100%;
@@ -188,6 +188,14 @@
     height: 100svh;
     object-fit: cover;
     object-position: center calc(-17.5vh + 50%);
+  }
+
+  /* Portrait screens: show the whole frame instead of cropping both buds. */
+  @media (orientation: portrait) {
+    [data-slot='css-sprite-scrubbing'] .css-scrub__track img {
+      object-fit: contain;
+      object-position: center;
+    }
   }
 
   [data-slot='css-sprite-scrubbing'] .css-scrub__body {

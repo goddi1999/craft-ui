@@ -34,6 +34,7 @@
     height: clamp(300px, 40dvh, 474px);
     color: var(--foreground);
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    grid-template-columns: var(--tracks);
     transition: grid-template-columns var(--speed) var(--easing);
   }
 
@@ -155,6 +156,42 @@
     filter: grayscale(0) brightness(1);
     scale: 1;
     transition-delay: calc(var(--speed) * 0.25);
+  }
+
+  /* Narrow screens: too little width for side-by-side columns, so stack them
+   * as rows that grow vertically, with the title laid flat. */
+  @media (max-width: 40rem) {
+    [data-slot='animated-hover-disclosures'] {
+      --base: 2.75rem;
+      width: 100%;
+      height: clamp(480px, 75svh, 600px);
+      grid-template-columns: 1fr;
+      grid-template-rows: var(--tracks);
+      transition: grid-template-rows var(--speed) var(--easing);
+    }
+
+    [data-slot='animated-hover-disclosures'] > li {
+      min-width: 0;
+      min-height: var(--base);
+    }
+
+    [data-slot='animated-hover-disclosures'] article {
+      width: 100%;
+      height: calc(var(--article-height, 0) * 1px);
+      padding-inline: 1rem;
+    }
+
+    [data-slot='animated-hover-disclosures'] h3 {
+      top: calc(var(--base) * 0.5);
+      left: 1rem;
+      translate: 0 -50%;
+      rotate: 0deg;
+      font-size: 0.875rem;
+    }
+
+    [data-slot='animated-hover-disclosures'] a span {
+      translate: 1.75rem;
+    }
   }
 
   /* Reduced motion: columns and images jump, copy still fades in. */
