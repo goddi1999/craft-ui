@@ -1,15 +1,46 @@
-import { AVATAR_SIZE, CHIP_SIZE, RADIUS_X, RADIUS_Y } from './cloud-orbit.constants'
+import {
+  AVATAR_SIZE,
+  CHIP_SIZE,
+  FLOAT_AMPLITUDE,
+  FLOAT_PERIOD,
+  JITTER_ANGLE,
+  JITTER_RADIUS,
+  RADIUS_X,
+  RADIUS_Y,
+} from './cloud-orbit.constants'
 
 const TAU = Math.PI * 2
 
-/** Where chip `index` of `count` sits for a given orbit angle, as a transform and stacking. */
-export function placeChip(angle: number, index: number, count: number, spread: number) {
-  const theta = angle + (TAU * index) / count
+/** Same value for the same index on every render and engine, unlike Math.random. */
+function seeded(index: number, salt: number) {
+  const n = Math.sin(index * 127.1 + salt * 311.7) * 43758.5453
+  return n - Math.floor(n)
+}
+
+/**
+ * Where chip `index` of `count` sits for a given orbit angle, as a transform and stacking.
+ * `time` (seconds) drives the idle float; pass 0 to hold every chip still.
+ */
+export function placeChip(
+  angle: number,
+  index: number,
+  count: number,
+  spread: number,
+  time: number,
+) {
+  const theta = angle + (TAU * index) / count + (seeded(index, 1) - 0.5) * 2 * JITTER_ANGLE
+  const reach = 1 + (seeded(index, 2) - 0.5) * 2 * JITTER_RADIUS
   // sin runs -1 (far side) to 1 (near side): near chips are bigger and pass in front of the avatar
   const depth = (1 + Math.sin(theta)) / 2
   const scale = (0.5 + 0.62 * depth) * (0.6 + 0.4 * spread)
-  const x = Math.cos(theta) * RADIUS_X * spread
-  const y = Math.sin(theta) * RADIUS_Y * spread * 0.92
+
+  const period = FLOAT_PERIOD * (0.8 + seeded(index, 3) * 0.5)
+  const phase = seeded(index, 4) * TAU
+  const floatX = Math.cos((time / period) * TAU + phase) * FLOAT_AMPLITUDE * 0.6
+  const floatY = Math.sin((time / period) * TAU + phase) * FLOAT_AMPLITUDE
+
+  const x = Math.cos(theta) * RADIUS_X * reach * spread + floatX * spread
+  const y = Math.sin(theta) * RADIUS_Y * reach * spread * 0.92 + floatY * spread
 
   return {
     transform: `translate3d(${x.toFixed(2)}cqw, ${y.toFixed(2)}cqw, 0) scale(${scale.toFixed(3)})`,

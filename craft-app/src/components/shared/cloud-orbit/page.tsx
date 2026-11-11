@@ -13,6 +13,7 @@ import {
 
 import {
   DemoAction,
+  DemoControlGroup,
   DemoSettings,
   DemoSlider,
   DemoSwitch,
@@ -52,7 +53,16 @@ const ITEMS: CloudOrbitItem[] = [
   { id: 'pages', label: 'Pages', node: <PenLine className={`${icon} text-orange-400`} /> },
 ]
 
-const DEFAULTS = { hold: 2600, itemCount: 8, paused: false, field: true }
+type Mark = 'cloud' | 'tree'
+const MARKS: Mark[] = ['cloud', 'tree']
+const MARK_LABELS: Record<Mark, string> = { cloud: 'Cloud', tree: 'WQ tree' }
+
+// the wq-app favicon, served from public/ so the component itself stays asset-free
+const TREE = (
+  <img src="/cloud-orbit/wq-tree.svg" alt="" draggable={false} className="size-full p-[6%]" />
+)
+
+const DEFAULTS = { mark: 'cloud' as Mark, hold: 2600, itemCount: 8, paused: false, field: true }
 
 const PROPS: DemoPropDoc[] = [
   { name: 'people', type: 'CloudOrbitPerson[]', description: '{ id, src, name, tint } — one is in the middle at a time. Required.' },
@@ -64,7 +74,7 @@ const PROPS: DemoPropDoc[] = [
 
 export function CloudOrbitPage() {
   const settings = useDemoSettings(DEFAULTS)
-  const { hold, itemCount, paused, field } = settings.values
+  const { mark, hold, itemCount, paused, field } = settings.values
   const [run, setRun] = useState(0)
 
   const people = useMemo<CloudOrbitPerson[]>(
@@ -86,6 +96,7 @@ export function CloudOrbitPage() {
     props: {
       people: { expression: 'people' },
       items: { expression: 'items' },
+      cloud: mark === 'tree' ? { expression: '<img src="/wq-tree.svg" alt="" />' } : undefined,
       hold,
     },
     defaults: { hold: 2600 },
@@ -99,6 +110,13 @@ export function CloudOrbitPage() {
       previewClassName="bg-[#1a1a1c] text-white"
       settings={
         <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
+          <DemoControlGroup
+            title="Mark"
+            options={MARKS}
+            value={mark}
+            onChange={(next) => settings.set('mark', next)}
+            format={(option) => MARK_LABELS[option]}
+          />
           <DemoSlider
             label="Time per person"
             value={hold}
@@ -135,6 +153,7 @@ export function CloudOrbitPage() {
           key={run}
           people={people}
           items={ITEMS.slice(0, itemCount)}
+          cloud={mark === 'tree' ? TREE : undefined}
           hold={hold}
           paused={paused}
         />

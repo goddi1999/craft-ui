@@ -5,6 +5,7 @@ import {
   motion,
   useMotionValue,
   useReducedMotion,
+  useTime,
   useTransform,
   type MotionValue,
 } from 'motion/react'
@@ -69,14 +70,18 @@ export function OrbitChip({ index, count, angle, visible, children }: OrbitChipP
     return () => controls.stop()
   }, [visible, reduce, index, spread])
 
-  const transform = useTransform([angle, spread], ([a, s]: number[]) =>
-    placeChip(a, index, count, s).transform,
+  // a shared clock in seconds; reduced motion holds every chip still
+  const clock = useTime()
+  const time = useTransform(clock, (ms) => (reduce ? 0 : ms / 1000))
+
+  const transform = useTransform([angle, spread, time], ([a, s, t]: number[]) =>
+    placeChip(a, index, count, s, t).transform,
   )
   const zIndex = useTransform([angle, spread], ([a, s]: number[]) =>
-    placeChip(a, index, count, s).zIndex,
+    placeChip(a, index, count, s, 0).zIndex,
   )
   const opacity = useTransform([angle, spread], ([a, s]: number[]) =>
-    placeChip(a, index, count, s).opacity,
+    placeChip(a, index, count, s, 0).opacity,
   )
 
   return (
