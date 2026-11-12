@@ -184,6 +184,15 @@ RadarChartPage,
   RocketPartyPopperPage,
   InteractiveAreaChartPage,
   TorqueDialPage,
+  ShortcutRecorderPage,
+  ThemeSwitchPage,
+  UsageMeterPage,
+  DialogCardPage,
+  ImageComparePage,
+  ActivityTimelinePage,
+  CommentThreadPage,
+  RollingAvatarGroupPage,
+  HeadlineRevealPage,
 } from '@/components/shared'
 import { TreeSearchPage } from '@/pages/TreeSearchPage'
 
@@ -2052,5 +2061,95 @@ export const GALLERY_EXAMPLES: GalleryExample[] = sortNewestFirst([
     tech: 'React · Motion · SVG',
     categories: ['inputs', 'animation'],
     page: TorqueDialPage,
+  },
+  {
+    slug: 'shortcut-recorder',
+    addedAt: '2026-11-12',
+    title: 'Shortcut Recorder',
+    description:
+      'A shortcut field that records key combinations as animated key caps, warns before taking one that is already in use, and comes with a searchable cheatsheet.',
+    tech: 'React · Motion',
+    categories: ['inputs', 'animation'],
+    page: ShortcutRecorderPage,
+  },
+  {
+    slug: 'theme-switch',
+    addedAt: '2026-11-12',
+    title: 'Theme Switch',
+    description:
+      'A light and dark toggle that swaps a sun and moon in one turn and hands the change back, so the page can reveal the new theme with a circle, eclipse, split or rise.',
+    tech: 'React · Motion · View Transitions',
+    categories: ['animation', 'effects'],
+    page: ThemeSwitchPage,
+  },
+  {
+    slug: 'usage-meter',
+    addedAt: '2026-11-12',
+    title: 'Usage Meter',
+    description:
+      'A segmented storage meter that grows into view, rolls every number, and hatches the overflow once usage passes the plan limit.',
+    tech: 'React · Motion',
+    categories: ['data', 'charts', 'animation'],
+    page: UsageMeterPage,
+  },
+  {
+    slug: 'dialog-card',
+    addedAt: '2026-11-12',
+    title: 'Dialog Card',
+    description:
+      'A card that grows into a quick look dialog, carrying its photo and copy on one spring and morphing back into place on close.',
+    tech: 'React · Motion · Radix',
+    categories: ['layout', 'animation'],
+    page: DialogCardPage,
+  },
+  {
+    slug: 'image-compare',
+    addedAt: '2026-11-12',
+    title: 'Image Compare',
+    description:
+      'A before and after slider whose divider follows the pointer, rubber-bands past the edges and swings a quarter turn when the orientation changes.',
+    tech: 'React · Motion',
+    categories: ['media', 'inputs'],
+    page: ImageComparePage,
+  },
+  {
+    slug: 'activity-timeline',
+    addedAt: '2026-11-12',
+    title: 'Activity Timeline',
+    description:
+      'An activity feed grouped by day, with pinned day labels, a line that draws in as rows appear and new updates that slide in at the top.',
+    tech: 'React · Motion',
+    categories: ['data', 'animation', 'scroll'],
+    page: ActivityTimelinePage,
+  },
+  {
+    slug: 'comment-thread',
+    addedAt: '2026-11-12',
+    title: 'Comment Thread',
+    description:
+      'A threaded discussion that nests and folds replies, rolls reaction counts, edits in place, autocompletes @mentions and morphs into a single resolved chip.',
+    tech: 'React · Motion',
+    categories: ['data', 'inputs', 'animation'],
+    page: CommentThreadPage,
+  },
+  {
+    slug: 'rolling-avatar-group',
+    addedAt: '2026-11-12',
+    title: 'Rolling Avatar Group',
+    description:
+      'An overlapping avatar stack that slides people in and out as they join or leave and rolls its +N overflow count the way it moved.',
+    tech: 'React · Motion',
+    categories: ['data', 'animation'],
+    page: RollingAvatarGroupPage,
+  },
+  {
+    slug: 'headline-reveal',
+    addedAt: '2026-11-12',
+    title: 'Headline Reveal',
+    description:
+      'A headline that reveals itself word by word, each word rising out of a feathered clip as it sharpens from a blur.',
+    tech: 'React · CSS',
+    categories: ['animation', 'effects'],
+    page: HeadlineRevealPage,
   },
 ])

@@ -1,0 +1,1 @@
+export { CommentThreadPage } from './page'

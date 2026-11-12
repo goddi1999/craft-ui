@@ -1,0 +1,1 @@
+export { ShortcutRecorderPage } from './page'
