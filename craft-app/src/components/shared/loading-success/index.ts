@@ -1,0 +1,1 @@
+export { LoadingSuccessButtonPage } from './page'

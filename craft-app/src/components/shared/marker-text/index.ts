@@ -1,0 +1,1 @@
+export { MarkerTextPage } from './page'

@@ -1,0 +1,17 @@
+/* a soft brightness wave runs through the letters in place of a gradient
+   shimmer; css keeps the endless loop off the main thread */
+@keyframes thinking-text-wave {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+[data-slot='thinking-text-letter'] {
+  animation: thinking-text-wave 1.6s ease-in-out infinite both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot='thinking-text-letter'] {
+    animation: none;
+  }
+}

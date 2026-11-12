@@ -1,0 +1,1 @@
+export { LikeBurstPage } from './page'

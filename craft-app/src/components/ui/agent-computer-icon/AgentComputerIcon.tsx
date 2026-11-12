@@ -1,343 +1,141 @@
-import gsap from 'gsap'
-import { useEffect, useRef, type SVGProps } from 'react'
+import { useId, useRef, type PointerEvent } from 'react'
 
-export type AgentComputerIconVariant =
-  | 'default'
-  | 'dark'
-  | 'violet'
-  | 'indigo'
-  | 'blue'
-  | 'cyan'
-  | 'teal'
-  | 'green'
-  | 'lime'
-  | 'orange'
-  | 'pink'
-  | 'darkblue'
+import { cn } from '@/lib/utils'
 
-export type AgentComputerIconState =
-  | 'default'
-  | 'loading'
-  | 'success'
-  | 'failure'
-  | 'waiting'
+import { ArcGradients, ArcStrokes, Dots } from './agent-computer-icon-parts'
+import { BOT_COLORS, DOT, NOTIFY, SCALE, VIEW } from './agent-computer-icon.constants'
+import type { AgentComputerIconProps, BotColor } from './agent-computer-icon.types'
+import { phaseFrom } from './agent-computer-icon.utils'
+import { useBotMotion } from './use-bot-motion'
 
-export type AgentComputerIconAnimation =
-  | 'none'
-  | 'idle'
-  | 'looking'
-  | 'thinking'
-  | 'blink'
-  | 'perk'
-  | 'shake'
-  | 'bouncing'
-  | 'hover-float'
-
-const variantColor: Record<AgentComputerIconVariant, string> = {
-  default: 'currentColor',
-  dark: '#1C2E35',
-  violet: 'oklch(var(--oklch-violet))',
-  indigo: 'oklch(var(--oklch-indigo))',
-  blue: 'oklch(var(--oklch-blue))',
-  cyan: 'oklch(var(--oklch-cyan))',
-  teal: 'oklch(var(--oklch-teal))',
-  green: 'oklch(var(--oklch-green))',
-  lime: 'oklch(var(--oklch-lime))',
-  orange: 'oklch(var(--oklch-orange))',
-  pink: 'oklch(var(--oklch-pink))',
-  darkblue: 'oklch(var(--oklch-darkblue))',
-}
-
-const STATE_ANIMATION: Record<
-  AgentComputerIconState,
-  AgentComputerIconAnimation
-> = {
-  default: 'idle',
-  loading: 'thinking',
-  waiting: 'looking',
-  success: 'perk',
-  failure: 'shake',
-}
-
-interface AgentComputerIconProps extends SVGProps<SVGSVGElement> {
-  size?: number
-  /** Color variant — mirrors button-variants.ts palette. Overrides `color` when set. */
-  variant?: AgentComputerIconVariant
-  /** Semantic agent state. Drives the default animation. */
-  state?: AgentComputerIconState
-  /** Override the animation independently of state. */
-  animation?: AgentComputerIconAnimation
-  /** Master switch — when false, the icon stays still regardless of state. */
-  animated?: boolean
-}
-
+/**
+ * A bot avatar in the grokbots.ai studio style: one flat colour with two pill eyes cut clean
+ * through it, so whatever sits behind shows in the eyes. Shapes and faces morph into each other,
+ * the gaze drifts and blinks while idle, it can follow the pointer, and it plays the studio's
+ * Move states on cue.
+ */
 export function AgentComputerIcon({
-  size = 24,
-  strokeWidth = 1.6,
-  color = 'currentColor',
-  variant,
-  state = 'default',
-  animation,
+  shape = 'circle',
+  face = 'neutral',
+  color = 'blue',
+  size = 48,
+  online = false,
   animated = true,
+  lookAtCursor = false,
+  motion = 'idle',
+  motionKey,
+  onMotionEnd,
+  paused = false,
+  label,
+  className,
+  onPointerEnter,
   ...props
 }: AgentComputerIconProps) {
-  const resolvedColor = variant ? variantColor[variant] : color
-  const resolvedAnimation: AgentComputerIconAnimation = animated
-    ? (animation ?? STATE_ANIMATION[state])
-    : 'none'
+  const id = useId()
+  const prefix = `bot-${id.replace(/[^a-zA-Z0-9_-]/g, '')}`
+  const svg = useRef<SVGSVGElement>(null)
+  const body = useRef<SVGRectElement>(null)
+  const outline = useRef<SVGPathElement>(null)
+  const leftEye = useRef<SVGPathElement>(null)
+  const rightEye = useRef<SVGPathElement>(null)
+  const notch = useRef<SVGCircleElement>(null)
+  const dot = useRef<SVGCircleElement>(null)
+  const { initial, effects, blink } = useBotMotion({
+    refs: { svg, body, shape: outline, eyes: [leftEye, rightEye], notch, dot },
+    shape,
+    face,
+    animated,
+    lookAtCursor,
+    online,
+    motion,
+    motionKey,
+    onMotionEnd,
+    paused,
+    phase: phaseFrom(id),
+  })
+  const fill = BOT_COLORS[color as BotColor] ?? color
+  const [left, right] = initial.eyes
+  const badgeRadius = DOT.radius * SCALE * initial.badge.scale
 
-  const svgRef = useRef<SVGSVGElement | null>(null)
-
-  useEffect(() => {
-    const svg = svgRef.current
-    if (!svg) return
-    if (resolvedAnimation === 'none') return
-
-    const prefersReducedMotion =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    const ctx = gsap.context(() => {
-      const screen = svg.querySelector<SVGGElement>('[data-part="screen"]')
-      const eyes = svg.querySelector<SVGGElement>('[data-part="eyes"]')
-      const leftEye = svg.querySelector<SVGRectElement>('[data-part="left-eye"]')
-      const rightEye = svg.querySelector<SVGRectElement>(
-        '[data-part="right-eye"]',
-      )
-      const base = svg.querySelector<SVGLineElement>('[data-part="base"]')
-      const root = svg.querySelector<SVGGElement>('[data-part="root"]')
-
-      gsap.set([screen, eyes, leftEye, rightEye, base, root], {
-        transformOrigin: '50% 50%',
-      })
-
-      if (prefersReducedMotion) {
-        if (resolvedAnimation === 'perk') {
-          gsap.fromTo(
-            root,
-            { scale: 1 },
-            { scale: 1.06, duration: 0.18, yoyo: true, repeat: 1 },
-          )
-        } else if (resolvedAnimation === 'shake') {
-          gsap.fromTo(
-            svg,
-            { opacity: 1 },
-            { opacity: 0.55, duration: 0.12, yoyo: true, repeat: 1 },
-          )
-        } else if (
-          resolvedAnimation === 'thinking' ||
-          resolvedAnimation === 'looking'
-        ) {
-          gsap.to(eyes, {
-            opacity: 0.5,
-            duration: 1,
-            yoyo: true,
-            repeat: -1,
-            ease: 'sine.inOut',
-          })
-        }
-        return
-      }
-
-      switch (resolvedAnimation) {
-        case 'idle': {
-          const tl = gsap.timeline({ repeat: -1, repeatDelay: 2.8 })
-          tl.to([leftEye, rightEye], {
-            scaleY: 0.15,
-            duration: 0.1,
-            ease: 'power2.in',
-          })
-          tl.to([leftEye, rightEye], {
-            scaleY: 1,
-            duration: 0.12,
-            ease: 'power2.out',
-          })
-          tl.to(
-            eyes,
-            { x: 0.6, duration: 0.6, ease: 'sine.inOut' },
-            '+=1.1',
-          )
-          tl.to(eyes, { x: 0, duration: 0.6, ease: 'sine.inOut' }, '+=0.4')
-          break
-        }
-        case 'looking': {
-          const tl = gsap.timeline({ repeat: -1, yoyo: true })
-          tl.to(eyes, {
-            x: 1.2,
-            duration: 0.6,
-            ease: 'sine.inOut',
-          })
-          tl.to(eyes, {
-            x: -1.2,
-            duration: 0.8,
-            ease: 'sine.inOut',
-          })
-          break
-        }
-        case 'thinking': {
-          const tl = gsap.timeline({ repeat: -1 })
-          tl.to(eyes, {
-            x: 1.2,
-            duration: 0.45,
-            ease: 'sine.inOut',
-          })
-          tl.to(eyes, {
-            x: -1.2,
-            duration: 0.7,
-            ease: 'sine.inOut',
-          })
-          tl.to(eyes, {
-            x: 0,
-            duration: 0.45,
-            ease: 'sine.inOut',
-          })
-          gsap.to(screen, {
-            y: -0.9,
-            duration: 0.9,
-            ease: 'sine.inOut',
-            yoyo: true,
-            repeat: -1,
-          })
-          break
-        }
-        case 'blink': {
-          const tl = gsap.timeline({ repeat: -1, repeatDelay: 1.4 })
-          tl.to([leftEye, rightEye], {
-            scaleY: 0.15,
-            duration: 0.09,
-            ease: 'power2.in',
-          })
-          tl.to([leftEye, rightEye], {
-            scaleY: 1,
-            duration: 0.12,
-            ease: 'power2.out',
-          })
-          break
-        }
-        case 'perk': {
-          const tl = gsap.timeline()
-          tl.to(root, { y: -2, duration: 0.18, ease: 'power2.out' })
-          tl.to(root, {
-            y: 0,
-            duration: 0.22,
-            ease: 'back.out(2.4)',
-          })
-          tl.to(
-            [leftEye, rightEye],
-            { y: -0.6, duration: 0.18, ease: 'power2.out' },
-            '<',
-          )
-          tl.to([leftEye, rightEye], {
-            y: 0,
-            duration: 0.4,
-            ease: 'elastic.out(1, 0.5)',
-          })
-          break
-        }
-        case 'shake': {
-          const tl = gsap.timeline()
-          tl.to(root, { x: -1.5, duration: 0.06, ease: 'power1.inOut' })
-          tl.to(root, { x: 1.5, duration: 0.07, ease: 'power1.inOut' })
-          tl.to(root, { x: -1.2, duration: 0.07, ease: 'power1.inOut' })
-          tl.to(root, { x: 1.2, duration: 0.07, ease: 'power1.inOut' })
-          tl.to(root, { x: 0, duration: 0.08, ease: 'power1.out' })
-          tl.to(
-            [leftEye, rightEye],
-            { scaleY: 0.6, y: 0.6, duration: 0.18, ease: 'power2.out' },
-            0,
-          )
-          tl.to([leftEye, rightEye], {
-            scaleY: 1,
-            y: 0,
-            duration: 0.3,
-            ease: 'power2.out',
-          })
-          break
-        }
-        case 'bouncing': {
-          gsap.to(root, {
-            y: -2,
-            duration: 0.45,
-            ease: 'sine.inOut',
-            yoyo: true,
-            repeat: -1,
-          })
-          break
-        }
-        case 'hover-float': {
-          gsap.to(root, {
-            y: -1,
-            duration: 1.1,
-            ease: 'sine.inOut',
-            yoyo: true,
-            repeat: -1,
-          })
-          break
-        }
-      }
-    }, svg)
-
-    return () => ctx.revert()
-  }, [resolvedAnimation])
+  const handlePointerEnter = (event: PointerEvent<SVGSVGElement>) => {
+    onPointerEnter?.(event)
+    // it notices you
+    if (event.pointerType !== 'touch') blink()
+  }
 
   return (
     <svg
-      ref={svgRef}
+      {...props}
+      ref={svg}
+      data-slot="agent-computer-icon"
+      viewBox={`${-VIEW} ${-VIEW} ${VIEW * 2} ${VIEW * 2}`}
       width={size}
       height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      data-state={state}
-      data-animation={resolvedAnimation}
-      data-animated={animated ? 'true' : 'false'}
-      {...props}
+      role={label ? 'img' : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+      onPointerEnter={handlePointerEnter}
+      className={cn('inline-block shrink-0 overflow-visible', className)}
     >
-      <g data-part="root">
-        <g data-part="screen">
-          <rect
-            x="3"
-            y="3"
-            width="18"
-            height="14"
-            rx="2.5"
-            stroke={resolvedColor}
-            strokeWidth={strokeWidth}
-            strokeLinejoin="round"
+      <defs>
+        <mask
+          id={`${prefix}-mask`}
+          maskUnits="userSpaceOnUse"
+          x={-VIEW * 2}
+          y={-VIEW * 2}
+          width={VIEW * 4}
+          height={VIEW * 4}
+        >
+          <path ref={outline} d={initial.body} fill="#fff" />
+          <path
+            ref={leftEye}
+            d={left?.d}
+            transform={left?.transform}
+            opacity={left?.opacity ?? 0}
+            fill="#000"
           />
-        </g>
-        <g data-part="eyes">
-          <rect
-            data-part="left-eye"
-            x="8.5"
-            y="8"
-            width="2.5"
-            height="3.5"
-            rx="0.6"
-            fill={resolvedColor}
+          <path
+            ref={rightEye}
+            d={right?.d}
+            transform={right?.transform}
+            opacity={right?.opacity ?? 0}
+            fill="#000"
           />
-          <rect
-            data-part="right-eye"
-            x="13"
-            y="8"
-            width="2.5"
-            height="3.5"
-            rx="0.6"
-            fill={resolvedColor}
-          />
-        </g>
-        <line
-          data-part="base"
-          x1="4"
-          y1="20"
-          x2="20"
-          y2="20"
-          stroke={resolvedColor}
-          strokeWidth={strokeWidth}
-          strokeLinecap="round"
-        />
-      </g>
+          {online ? (
+            <circle
+              ref={notch}
+              cx={initial.badge.x}
+              cy={initial.badge.y}
+              r={(DOT.radius + DOT.gap) * SCALE * initial.badge.scale}
+              fill="#000"
+            />
+          ) : null}
+          {effects.notif ? (
+            <circle cx={effects.notif.x} cy={effects.notif.y} r={effects.notif.notch} fill="#000" />
+          ) : null}
+        </mask>
+        <ArcGradients arcs={effects.arcs} prefix={prefix} />
+      </defs>
+      <ArcStrokes arcs={effects.arcs} side="back" prefix={prefix} />
+      {effects.dotsBehind ? <Dots dots={effects.dots} fill={fill} /> : null}
+      <rect
+        ref={body}
+        x={-VIEW * 2}
+        y={-VIEW * 2}
+        width={VIEW * 4}
+        height={VIEW * 4}
+        fill={fill}
+        opacity={initial.bodyAlpha}
+        mask={`url(#${prefix}-mask)`}
+      />
+      {effects.dotsBehind ? null : <Dots dots={effects.dots} fill={fill} />}
+      {effects.notif ? (
+        <circle cx={effects.notif.x} cy={effects.notif.y} r={effects.notif.r} fill={NOTIFY.color} />
+      ) : null}
+      {online ? (
+        <circle ref={dot} cx={initial.badge.x} cy={initial.badge.y} r={badgeRadius} fill={DOT.color} />
+      ) : null}
+      <ArcStrokes arcs={effects.arcs} side="front" prefix={prefix} />
     </svg>
   )
 }

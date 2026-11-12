@@ -1,0 +1,1 @@
+export { DynamicMenuPage } from './page'

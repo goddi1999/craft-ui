@@ -1,0 +1,1 @@
+export { TagInputPage } from './page'

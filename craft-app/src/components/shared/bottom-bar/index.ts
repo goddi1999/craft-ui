@@ -1,0 +1,1 @@
+export { BottomBarPage } from './page'

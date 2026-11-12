@@ -1,0 +1,1 @@
+export { GhostSuggestionPage } from './page'

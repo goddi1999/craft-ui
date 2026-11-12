@@ -1,0 +1,1 @@
+export { ProfileCardPage } from './page'

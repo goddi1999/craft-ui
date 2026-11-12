@@ -1,0 +1,1 @@
+export { ThinkingTextPage } from './page'

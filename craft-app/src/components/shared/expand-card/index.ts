@@ -1,0 +1,1 @@
+export { ExpandCardPage } from './page'

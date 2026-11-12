@@ -1,0 +1,1 @@
+export { WordRollPage } from './page'

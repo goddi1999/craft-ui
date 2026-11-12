@@ -1,0 +1,18 @@
+/* solid for the first third of the cycle, fades out, then stays hidden;
+   css so the blink runs off the main thread */
+@keyframes typewriter-caret {
+  0%,
+  33.333% {
+    opacity: 1;
+  }
+  66.667%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-slot='typewriter-caret'][data-idle='true'] {
+    animation: typewriter-caret 1s linear infinite;
+  }
+}

@@ -1,0 +1,1 @@
+export { WalletCardPage } from './page'

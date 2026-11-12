@@ -1,0 +1,1 @@
+export { OrbitalLoadingRingPage } from './page'

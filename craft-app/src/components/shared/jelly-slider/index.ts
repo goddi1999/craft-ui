@@ -1,0 +1,1 @@
+export { JellySliderPage } from './page'

@@ -1,0 +1,1 @@
+export { InteractiveAreaChartPage } from './page'

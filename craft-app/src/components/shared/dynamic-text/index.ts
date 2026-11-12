@@ -1,0 +1,1 @@
+export { DynamicTextPage } from './page'
