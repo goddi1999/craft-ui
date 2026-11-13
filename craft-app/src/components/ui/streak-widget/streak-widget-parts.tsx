@@ -1,64 +1,105 @@
-import { Check } from "lucide-react";
+import { motion } from 'motion/react'
+import type { CSSProperties } from 'react'
 
-import { cn } from "@/lib/utils";
+import { TaskCheck } from '@/components/ui/task-list'
+import { cn } from '@/lib/utils'
 
-import { BAR_MS, EASE_OUT } from "./streak-widget.constants";
-import { clamp01, pluralDays } from "./streak-widget.utils";
+import { BAR_MS, EASE_OUT, EMBERS, SIZE } from './streak-widget.constants'
+import type { StreakSize } from './streak-widget.types'
+import { clamp01, pluralDays } from './streak-widget.utils'
 
-const TILE = "rounded-[22px] bg-muted";
+// matt: flat surfaces, no sheen or inner highlights
+const TILE = 'rounded-[22px] bg-muted'
 
-/** A two-tipped flame in the accent with a light core. */
+const FLAME =
+  'M12 1.8c.7 2.4 2.1 3.8 3.6 5 .5-1 .8-2.1.7-3.3 2.7 2 4.7 5.2 4.7 8.9A9 9 0 0 1 3 12.6c0-3.7 2-6.9 4.8-8.8.2 1.5.8 2.7 1.7 3.5C10.6 5.8 11.4 4 12 1.8Z'
+const CORE =
+  'M12.3 10.6c2.2 1.6 3.6 3.4 3.6 5.4a3.9 3.9 0 0 1-7.8 0c0-1.2.5-2.3 1.3-3.2.3.7.9 1.2 1.5 1.5.2-1.4.6-2.6 1.4-3.7Z'
+
+/** A flat two-tone flame: a solid body and a pale core. */
 function FlameGlyph({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden className={className}>
-      <path
-        fill="var(--streak)"
-        d="M12 1.8c.7 2.4 2.1 3.8 3.6 5 .5-1 .8-2.1.7-3.3 2.7 2 4.7 5.2 4.7 8.9A9 9 0 0 1 3 12.6c0-3.7 2-6.9 4.8-8.8.2 1.5.8 2.7 1.7 3.5C10.6 5.8 11.4 4 12 1.8Z"
-      />
-      <path
-        fill="white"
-        d="M12.3 11.4c2 1.5 3.3 3.1 3.3 4.9a3.6 3.6 0 0 1-7.2 0c0-1.1.4-2.1 1.2-2.9.3.7.8 1.1 1.4 1.4.1-1.3.5-2.4 1.3-3.4Z"
-      />
+      <path fill="var(--streak)" d={FLAME} />
+      <path fill="var(--streak-soft)" d={CORE} />
     </svg>
-  );
+  )
+}
+
+/** Small flat teardrops drifting up off the flame. */
+function Embers() {
+  return (
+    <span aria-hidden className="pointer-events-none absolute inset-0 motion-reduce:hidden">
+      {EMBERS.map((ember) => (
+        <motion.svg
+          key={ember.left}
+          viewBox="0 0 10 14"
+          className="absolute overflow-visible"
+          style={{ left: `${ember.left}%`, top: `${ember.top}%`, width: `${ember.size}%` }}
+          animate={{
+            opacity: [0, 0.8, 0],
+            transform: ['translateY(30%)', 'translateY(-10%)', 'translateY(-60%)'],
+          }}
+          transition={{ duration: 2.4, repeat: Infinity, delay: ember.delay, ease: 'easeOut' }}
+        >
+          <path fill="var(--streak)" d="M5 0C7 4 10 6.5 10 9.2A5 5 0 0 1 0 9.2C0 6.5 3 4 5 0Z" />
+        </motion.svg>
+      ))}
+    </span>
+  )
 }
 
 /** The flame, the day count and its label. */
 export function StreakTile({
   days,
   label,
+  size,
   className,
 }: {
-  days: number;
-  label: string;
-  className?: string;
+  days: number
+  label: string
+  size: StreakSize
+  className?: string
 }) {
+  const scale = SIZE[size]
   return (
     <div
       className={cn(
         TILE,
-        "flex flex-col items-center justify-center gap-1 px-6 py-5 text-center",
+        'flex flex-col items-center justify-center text-center',
+        scale.tile,
         className,
       )}
     >
-      <FlameGlyph className="mb-2 size-20 drop-shadow-[0_0_14px_var(--streak-glow)]" />
-      <p className="text-3xl leading-none font-medium tracking-tight tabular-nums">
+      <span className={cn('relative mb-1.5 shrink-0', scale.flame)}>
+        {/* the only glow: a faint pool of the colour behind the flame, as Agent Bot does */}
+        <span
+          aria-hidden
+          className="absolute inset-[-90%] bg-[radial-gradient(circle_at_50%_50%,var(--streak-glow),transparent_58%)]"
+        />
+        <FlameGlyph className="relative size-full" />
+        {scale.embers && <Embers />}
+      </span>
+      <p
+        className={cn(
+          'leading-none font-bold tracking-tight text-(--streak) tabular-nums',
+          scale.count,
+        )}
+      >
         {pluralDays(days)}
       </p>
-      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className={cn('font-medium text-(--streak) opacity-75', scale.label)}>{label}</p>
     </div>
-  );
+  )
 }
 
-/** Today's count over the goal, and a glowing bar that fills toward it. */
+/** Today's count over the goal, and a bar that fills toward it with a soft glow behind. */
 export function GoalBar({ value, goal }: { value: number; goal: number }) {
-  const progress = goal > 0 ? clamp01(value / goal) : 0;
+  const progress = goal > 0 ? clamp01(value / goal) : 0
   return (
     <div className="flex flex-col gap-3">
       <p className="flex items-baseline gap-1.5 tabular-nums">
-        <span className="text-4xl leading-none font-medium tracking-tight">
-          {value}
-        </span>
+        <span className="text-4xl leading-none font-medium tracking-tight">{value}</span>
         <span className="text-xl text-muted-foreground">/ {goal}</span>
       </p>
       <div
@@ -72,10 +113,10 @@ export function GoalBar({ value, goal }: { value: number; goal: number }) {
         {/* the glow sits on a wrapper so the clip that shapes the fill doesn't cut it off */}
         <div
           aria-hidden
-          className="absolute inset-0 drop-shadow-[0_0_10px_rgb(255_255_255/0.45)] dark:drop-shadow-[0_0_14px_rgb(255_255_255/0.55)]"
+          className="absolute inset-0 drop-shadow-[0_0_12px_color-mix(in_srgb,var(--color-foreground)_30%,transparent)]"
         >
           <div
-            className="size-full rounded-full bg-linear-to-b from-foreground/90 to-foreground motion-reduce:transition-none"
+            className="size-full rounded-full bg-foreground motion-reduce:transition-none"
             style={{
               clipPath: `inset(0 ${(1 - progress) * 100}% 0 0 round 999px)`,
               transition: `clip-path ${BAR_MS}ms ${EASE_OUT}`,
@@ -84,34 +125,28 @@ export function GoalBar({ value, goal }: { value: number; goal: number }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-/** The week's days, each a filled check once its goal was met. */
-export function WeekRow({
-  week,
-  weekdays,
-}: {
-  week: boolean[];
-  weekdays: readonly string[];
-}) {
+const noop = () => {}
+
+/** The week's days, ticked with Task List's own check once the goal was met. */
+export function WeekRow({ week, weekdays }: { week: boolean[]; weekdays: readonly string[] }) {
   return (
-    <ol className={cn(TILE, "grid grid-cols-7 gap-1.5 px-3 py-4 sm:px-5")}>
+    <ol
+      className={cn(TILE, 'grid grid-cols-7 gap-1.5 px-3 py-4 sm:px-5')}
+      style={{ '--task-accent': 'var(--streak)' } as CSSProperties}
+    >
       {weekdays.map((day, index) => {
-        const done = week[index] === true;
+        const done = week[index] === true
         return (
           <li key={day} className="flex min-w-0 flex-col items-center gap-2">
-            <span
-              data-done={done || undefined}
-              className="grid aspect-square w-full max-w-9 place-items-center rounded-full bg-foreground/[0.07] text-white transition-colors duration-200 data-done:bg-(--streak)"
-            >
-              {done && <Check aria-hidden className="size-4" strokeWidth={3} />}
-            </span>
+            <TaskCheck filled={done} size="lg" onDrawn={noop} />
             <span className="w-full truncate text-center text-sm">{day}</span>
-            <span className="sr-only">{done ? "goal met" : "not yet"}</span>
+            <span className="sr-only">{done ? 'goal met' : 'not yet'}</span>
           </li>
-        );
+        )
       })}
     </ol>
-  );
+  )
 }

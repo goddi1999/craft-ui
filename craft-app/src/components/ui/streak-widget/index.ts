@@ -1,6 +1,7 @@
-export { StreakWidget } from "./StreakWidget";
+export { StreakWidget } from './StreakWidget'
 export type {
   StreakColor,
+  StreakSize,
   StreakWidgetProps,
   StreakWidgetVariant,
-} from "./streak-widget.types";
+} from './streak-widget.types'

@@ -3,104 +3,101 @@ import {
   DemoSettings,
   DemoSlider,
   useDemoSettings,
-} from "@/components/shared/demo-controls";
-import {
-  toUsageSnippet,
-  type DemoPropDoc,
-} from "@/components/shared/demo-docs";
-import { DemoPage } from "@/components/shared/demo-page";
+} from '@/components/shared/demo-controls'
+import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
+import { DemoPage } from '@/components/shared/demo-page'
 import {
   StreakWidget,
   type StreakColor,
+  type StreakSize,
   type StreakWidgetVariant,
-} from "@/components/ui/streak-widget";
+} from '@/components/ui/streak-widget'
 
-const VARIANTS: readonly StreakWidgetVariant[] = ["week", "compact"];
-const COLORS: readonly StreakColor[] = [
-  "pink",
-  "orange",
-  "violet",
-  "blue",
-  "green",
-  "teal",
-];
+const SIZES: readonly StreakSize[] = ['xs', 'sm', 'md', 'lg', 'xl']
+const VARIANTS: readonly StreakWidgetVariant[] = ['week', 'compact']
+const COLORS: readonly StreakColor[] = ['pink', 'orange', 'violet', 'blue', 'green', 'teal']
 
 const DEFAULTS = {
-  variant: "week" as StreakWidgetVariant,
-  color: "pink" as StreakColor,
+  variant: 'week' as StreakWidgetVariant,
+  size: 'md' as StreakSize,
+  color: 'pink' as StreakColor,
   days: 142,
   value: 5863,
   goal: 8000,
   met: 3,
-};
+}
 
 const PROPS: DemoPropDoc[] = [
   {
-    name: "days",
-    type: "number",
-    description: "Days in a row the goal was met.",
+    name: 'days',
+    type: 'number',
+    description: 'Days in a row the goal was met.',
   },
   {
-    name: "label",
-    type: "string",
+    name: 'label',
+    type: 'string',
     default: "'Steps streak'",
-    description: "Line under the day count.",
+    description: 'Line under the day count.',
   },
   {
-    name: "variant",
+    name: 'variant',
     type: "'compact' | 'week'",
     default: "'week'",
-    description:
-      "The streak tile alone, or beside today’s goal and the seven days.",
+    description: 'The streak tile alone, or beside today’s goal and the seven days.',
   },
   {
-    name: "value",
-    type: "number",
-    description: "Today’s progress, e.g. steps walked (`week`).",
-  },
-  { name: "goal", type: "number", description: "Today’s target (`week`)." },
-  {
-    name: "week",
-    type: "boolean[]",
-    description:
-      "Goal met per day, Monday first; missing days count as not yet (`week`).",
+    name: 'size',
+    type: "'xs' | 'sm' | 'md' | 'lg' | 'xl'",
+    default: "'md'",
+    description: 'Size of the streak tile: flame, day count and label.',
   },
   {
-    name: "weekdays",
-    type: "string[]",
-    default: "Mon–Sun",
-    description: "Day labels, Monday first.",
+    name: 'value',
+    type: 'number',
+    description: 'Today’s progress, e.g. steps walked (`week`).',
+  },
+  { name: 'goal', type: 'number', description: 'Today’s target (`week`).' },
+  {
+    name: 'week',
+    type: 'boolean[]',
+    description: 'Goal met per day, Monday first; missing days count as not yet (`week`).',
   },
   {
-    name: "color",
+    name: 'weekdays',
+    type: 'string[]',
+    default: 'Mon–Sun',
+    description: 'Day labels, Monday first.',
+  },
+  {
+    name: 'color',
     type: "'pink' | 'orange' | 'violet' | 'blue' | 'green' | 'teal'",
     default: "'pink'",
-    description:
-      "Theme accent token (`--oklch-*`) for the flame and the met days.",
+    description: 'Theme accent token (`--oklch-*`) for the flame and the met days.',
   },
-  { name: "className", type: "string", description: "Merged onto the card." },
-];
+  { name: 'className', type: 'string', description: 'Merged onto the card.' },
+]
 
 export function StreakWidgetPage() {
-  const settings = useDemoSettings(DEFAULTS);
-  const { variant, color, days, value, goal, met } = settings.values;
-  const week = Array.from({ length: 7 }, (_, index) => index < met);
+  const settings = useDemoSettings(DEFAULTS)
+  const { variant, size, color, days, value, goal, met } = settings.values
+  const week = Array.from({ length: 7 }, (_, index) => index < met)
 
   const usage = toUsageSnippet({
-    component: "StreakWidget",
-    from: "@/components/ui/streak-widget",
+    component: 'StreakWidget',
+    from: '@/components/ui/streak-widget',
     props:
-      variant === "compact"
-        ? { variant, days, color }
+      variant === 'compact'
+        ? { variant, size, days, color }
         : {
+            size,
             days,
             value,
             goal,
             week: { expression: JSON.stringify(week) },
             color,
           },
-    defaults: { variant: "week", color: "pink" },
-  });
+    defaults: { variant: 'week', size: 'md', color: 'pink' },
+  })
 
   return (
     <DemoPage
@@ -113,18 +110,24 @@ export function StreakWidgetPage() {
             title="Variant"
             options={VARIANTS}
             value={variant}
-            onChange={(next) => settings.set("variant", next)}
+            onChange={(next) => settings.set('variant', next)}
+          />
+          <DemoControlGroup
+            title="Size"
+            options={SIZES}
+            value={size}
+            onChange={(next) => settings.set('size', next)}
           />
           <DemoControlGroup
             title="Colour"
             options={COLORS}
             value={color}
-            onChange={(next) => settings.set("color", next)}
+            onChange={(next) => settings.set('color', next)}
           />
           <DemoSlider
             label="Streak"
             value={days}
-            onValueChange={(next) => settings.set("days", next)}
+            onValueChange={(next) => settings.set('days', next)}
             min={0}
             max={365}
             step={1}
@@ -133,7 +136,7 @@ export function StreakWidgetPage() {
           <DemoSlider
             label="Today"
             value={value}
-            onValueChange={(next) => settings.set("value", next)}
+            onValueChange={(next) => settings.set('value', next)}
             min={0}
             max={12000}
             step={1}
@@ -141,7 +144,7 @@ export function StreakWidgetPage() {
           <DemoSlider
             label="Goal"
             value={goal}
-            onValueChange={(next) => settings.set("goal", next)}
+            onValueChange={(next) => settings.set('goal', next)}
             min={1000}
             max={12000}
             step={500}
@@ -149,7 +152,7 @@ export function StreakWidgetPage() {
           <DemoSlider
             label="Days met"
             value={met}
-            onValueChange={(next) => settings.set("met", next)}
+            onValueChange={(next) => settings.set('met', next)}
             min={0}
             max={7}
             step={1}
@@ -157,16 +160,17 @@ export function StreakWidgetPage() {
         </DemoSettings>
       }
       docs={{
-        paths: ["src/components/ui/streak-widget/"],
+        paths: ['src/components/ui/streak-widget/'],
         usage,
         props: PROPS,
       }}
     >
       <div className="flex w-full justify-center py-6">
-        {variant === "compact" ? (
-          <StreakWidget variant="compact" days={days} color={color} />
+        {variant === 'compact' ? (
+          <StreakWidget variant="compact" size={size} days={days} color={color} />
         ) : (
           <StreakWidget
+            size={size}
             days={days}
             value={value}
             goal={goal}
@@ -176,5 +180,5 @@ export function StreakWidgetPage() {
         )}
       </div>
     </DemoPage>
-  );
+  )
 }
