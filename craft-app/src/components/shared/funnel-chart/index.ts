@@ -1,0 +1,1 @@
+export { FunnelChartPage } from './page'

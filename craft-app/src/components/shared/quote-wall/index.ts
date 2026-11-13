@@ -1,0 +1,1 @@
+export { QuoteWallPage } from './page'

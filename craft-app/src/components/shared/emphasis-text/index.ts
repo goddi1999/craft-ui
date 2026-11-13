@@ -1,0 +1,1 @@
+export { EmphasisTextPage } from './page'

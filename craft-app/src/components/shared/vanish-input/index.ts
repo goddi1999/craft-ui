@@ -1,0 +1,1 @@
+export { VanishInputPage } from './page'

@@ -3,7 +3,8 @@
   "configurations": [
     {
       "name": "craft-app",
-      "url": "http://localhost:5180",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "craft-app", "run", "dev", "--", "--port", "5180", "--strictPort"],
       "port": 5180
     }
   ]

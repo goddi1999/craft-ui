@@ -1,0 +1,1 @@
+export { ChapterPlayerPage } from './page'

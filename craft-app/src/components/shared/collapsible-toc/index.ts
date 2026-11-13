@@ -1,0 +1,1 @@
+export { CollapsibleTocPage } from './page'

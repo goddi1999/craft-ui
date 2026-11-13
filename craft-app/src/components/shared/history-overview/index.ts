@@ -1,0 +1,1 @@
+export { HistoryOverviewPage } from './page'

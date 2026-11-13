@@ -1,0 +1,1 @@
+export { AccordionPageTransitionPage } from './page'

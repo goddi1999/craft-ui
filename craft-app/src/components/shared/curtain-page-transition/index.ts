@@ -1,0 +1,1 @@
+export { CurtainPageTransitionPage } from './page'

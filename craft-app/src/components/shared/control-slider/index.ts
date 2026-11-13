@@ -1,0 +1,1 @@
+export { ControlSliderPage } from './page'
