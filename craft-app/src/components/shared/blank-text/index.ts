@@ -1,0 +1,1 @@
+export { BlankTextPage } from './page'

@@ -38,6 +38,7 @@ RadarChartPage,
   NotificationBellPage,
   HistoryOverviewPage,
   StreakWidgetPage,
+  BlankTextPage,
   FunnelChartPage,
   PackageBoxPage,
   AccordionPageTransitionPage,
@@ -2294,5 +2295,15 @@ export const GALLERY_EXAMPLES: GalleryExample[] = sortNewestFirst([
     tech: 'React · CSS',
     categories: ['data', 'charts'],
     page: StreakWidgetPage,
+  },
+  {
+    slug: 'blank-text',
+    addedAt: '2026-11-13',
+    title: 'Blank Text',
+    description:
+      'Tap any word to turn it into a fill-in-the-blank: the word dissolves into a grey box that grows as you type, then turns blue with an elastic jump when right or red with a shake when not.',
+    tech: 'React · Motion',
+    categories: ['inputs', 'animation'],
+    page: BlankTextPage,
   },
 ])
