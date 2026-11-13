@@ -13,66 +13,21 @@ import { cn } from '@/lib/utils'
 
 import './input-dissolution.css'
 
-export type InputDissolutionNoise = 'fractalNoise' | 'turbulence'
-
-// the same feedback as Blank Text: a quick lift with an elastic settle, or a small shake
-const LIFT = { duration: 0.14, ease: [0.23, 1, 0.32, 1] } as const
-const SETTLE = { type: 'spring', stiffness: 600, damping: 9 } as const
-const SHAKE_X = [0, -6, 6, -4, 4, -2, 0]
-const SHAKE = { duration: 0.4, ease: 'easeInOut' } as const
-
-export type InputDissolutionProps = {
-  /** Placeholder shown in the empty field. @default 'rockstar@ui.dev' */
-  placeholder?: string
-  /** Accessible name for the email field. @default 'Email address' */
-  label?: string
-  /** Submit button text, rendered as `[LABEL]`. @default 'Enlist' */
-  submitLabel?: string
-  /** Called with the email when a valid value is submitted, before it dissolves. */
-  onSubmit?: (value: string) => void
-  /** Dissolve right-to-left instead of left-to-right. @default false */
-  rtl?: boolean
-  /** Seconds the dissolve sweep takes. @default 2 */
-  speed?: number
-  /** Run the text copy through the blur + displacement filter. @default true */
-  filtered?: boolean
-  /** Freeze the sweep and drive it from `progress` instead. @default false */
-  debug?: boolean
-  /** In debug, tilt the stage and pull each pass apart in 3D. @default false */
-  explode?: boolean
-  /** Manual sweep position (0–100) used in debug. @default 0 */
-  progress?: number
-  /** Text colour. Any CSS colour. @default 'var(--primary)' */
-  color?: string
-  /** Caret and selection colour. @default '#ff1e1e' */
-  accent?: string
-  /** A line under the field, darker while focused. @default false */
-  underline?: boolean
-  /** Dissolve the text on submit. Off: the field just clears. @default true */
-  dissolve?: boolean
-  /** Lift with an elastic settle on a valid submit, shake on an invalid one. @default true */
-  feedback?: boolean
-  /** Colour of the underline after an invalid submit. @default 'var(--destructive)' */
-  invalidColor?: string
-  /** Decides what counts as valid. @default the field's own email check */
-  validate?: (value: string) => boolean
-  /** feTurbulence base frequency — higher means finer grains. @default 1.8 */
-  baseFrequency?: number
-  /** feTurbulence octaves. @default 10 */
-  numOctaves?: number
-  /** feTurbulence seed. @default 1 */
-  seed?: number
-  /** feTurbulence noise type. @default 'fractalNoise' */
-  noiseType?: InputDissolutionNoise
-  /** feDisplacementMap scale — how far the grains scatter. @default 20 */
-  displacementScale?: number
-  className?: string
-}
+import {
+  DEFAULT_ACCENT,
+  LIFT,
+  LIFT_Y,
+  SETTLE,
+  SHAKE,
+  SHAKE_X,
+} from './input-dissolution.constants'
+import type { InputDissolutionProps } from './input-dissolution.types'
+import { resolveAccent } from './input-dissolution.utils'
 
 /**
- * An email field whose text dissolves into noise on submit: the input is
- * clipped away while a filtered copy and an SVG-displaced backdrop sweep
- * across it, then the field fades back in empty.
+ * An email field that answers its submit. Wrong shakes it. Correct plays one effect: the text
+ * dissolves into noise (the input is clipped away while a filtered copy and an SVG-displaced
+ * backdrop sweep across it), or the field bounces and clears.
  */
 export function InputDissolution({
   placeholder = 'rockstar@ui.dev',
@@ -90,11 +45,11 @@ export function InputDissolution({
   seed = 1,
   noiseType = 'fractalNoise',
   displacementScale = 20,
-  color = 'var(--primary)',
-  accent = '#ff1e1e',
+  color = 'var(--foreground)',
+  accent = DEFAULT_ACCENT,
   underline = false,
-  dissolve = true,
-  feedback = true,
+  effect = 'dissolve',
+  shake = true,
   invalidColor = 'var(--destructive)',
   validate,
   className,
@@ -165,23 +120,28 @@ export function InputDissolution({
     const valid = validate
       ? validate(value)
       : value.trim() !== '' && inputRef.current?.checkValidity() === true
-    const play = feedback && !reduced && field.current
+    const moves = !reduced && field.current !== null
 
+    // wrong: shake
     if (!valid) {
       setInvalid(true)
-      if (play) animate(field.current, { x: SHAKE_X }, SHAKE)
+      if (shake && moves) animate(field.current, { x: SHAKE_X }, SHAKE)
       return
     }
 
+    // correct: one effect, the dissolve or the bounce
     setInvalid(false)
     onSubmit?.(value)
-    if (dissolve) setSubmitted(true)
-    if (play) {
-      await animate(field.current, { y: -10 }, LIFT)
+    if (effect === 'dissolve') {
+      setSubmitted(true)
+      return
+    }
+    if (moves) {
+      await animate(field.current, { y: LIFT_Y }, LIFT)
       animate(field.current, { y: 0 }, SETTLE)
     }
-    // without the dissolve, the field clears at the top of the lift, as it starts to settle
-    if (!dissolve) setValue('')
+    // the field clears at the top of the lift, as it starts to settle
+    setValue('')
   }
 
   const style = {
@@ -190,7 +150,7 @@ export function InputDissolution({
     '--idis-dissolve': `url("#${dissolveId}")`,
     '--idis-noise': `url("#${noiseId}")`,
     '--idis-ink': color,
-    '--idis-accent': accent,
+    '--idis-accent': resolveAccent(accent),
     '--idis-invalid': invalidColor,
   } as CSSProperties
 
@@ -212,6 +172,7 @@ export function InputDissolution({
       data-filtered={filtered}
       data-submitted={submitted}
       data-underline={underline}
+      data-effect={effect}
       data-invalid={invalid}
       className={cn(className)}
       style={style}

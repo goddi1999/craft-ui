@@ -12,19 +12,29 @@ import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
 import { DemoPage } from '@/components/shared/demo-page'
 import {
   InputDissolution,
+  type InputDissolutionAccent,
+  type InputDissolutionEffect,
   type InputDissolutionNoise,
 } from '@/components/ui/input-dissolution'
 
 const NOISE_TYPES: InputDissolutionNoise[] = ['fractalNoise', 'turbulence']
+const EFFECTS: InputDissolutionEffect[] = ['dissolve', 'bounce']
 
-// primary follows the theme (and any data-accent); the rest are plain colours
-const COLORS = {
-  primary: 'var(--primary)',
-  foreground: 'var(--foreground)',
-  blue: '#2563eb',
-  green: '#128238',
-} as const
-type ColorName = keyof typeof COLORS
+// red is the original caret; the rest are the theme's --oklch-* tokens from index.css
+const CARETS = [
+  'red',
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'teal',
+  'green',
+  'lime',
+  'orange',
+  'pink',
+] as const satisfies readonly ('red' | InputDissolutionAccent)[]
+type Caret = (typeof CARETS)[number]
+const caretValue = (caret: Caret) => (caret === 'red' ? '#ff1e1e' : caret)
 
 const DEFAULTS = {
   placeholder: 'rockstar@ui.dev',
@@ -40,10 +50,10 @@ const DEFAULTS = {
   seed: 1,
   noiseType: 'fractalNoise' as InputDissolutionNoise,
   displacementScale: 20,
-  color: 'primary' as ColorName,
+  caret: 'red' as Caret,
   underline: false,
-  dissolve: true,
-  feedback: true,
+  effect: 'dissolve' as InputDissolutionEffect,
+  shake: true,
 }
 
 const PROPS: DemoPropDoc[] = [
@@ -68,7 +78,7 @@ const PROPS: DemoPropDoc[] = [
   {
     name: 'onSubmit',
     type: '(value: string) => void',
-    description: 'Called with the email when a valid value is submitted, before it dissolves.',
+    description: 'Called with the email when a valid value is submitted, before its effect plays.',
   },
   {
     name: 'rtl',
@@ -137,16 +147,17 @@ const PROPS: DemoPropDoc[] = [
     description: 'feDisplacementMap scale — how far the grains scatter.',
   },
   {
-    name: 'color',
-    type: 'string',
-    default: "'var(--primary)'",
-    description: 'Text colour; any CSS colour. The default follows the theme.',
+    name: 'accent',
+    type: "'violet' | 'indigo' | 'blue' | … | string",
+    default: "'#ff1e1e'",
+    description:
+      'The block caret and the selection. A token name uses that --oklch-* theme colour; anything else is a CSS colour.',
   },
   {
-    name: 'accent',
+    name: 'color',
     type: 'string',
-    default: "'#ff1e1e'",
-    description: 'Caret and selection colour.',
+    default: "'var(--foreground)'",
+    description: 'Text colour; any CSS colour.',
   },
   {
     name: 'underline',
@@ -155,16 +166,17 @@ const PROPS: DemoPropDoc[] = [
     description: 'A line under the field, darker while focused and red after an invalid submit.',
   },
   {
-    name: 'dissolve',
-    type: 'boolean',
-    default: 'true',
-    description: 'Dissolve the text on submit. Off: the field just clears.',
+    name: 'effect',
+    type: "'dissolve' | 'bounce'",
+    default: "'dissolve'",
+    description:
+      'What a correct submit plays: the noise dissolve, or a lift with an elastic settle that clears the field.',
   },
   {
-    name: 'feedback',
+    name: 'shake',
     type: 'boolean',
     default: 'true',
-    description: 'Lift with an elastic settle on a valid submit, a small shake on an invalid one.',
+    description: 'A wrong submit shakes the field.',
   },
   {
     name: 'invalidColor',
@@ -200,10 +212,10 @@ export function InputDissolutionPage() {
     seed,
     noiseType,
     displacementScale,
-    color,
+    caret,
     underline,
-    dissolve,
-    feedback,
+    effect,
+    shake,
   } = settings.values
   const [lastSubmitted, setLastSubmitted] = useState<string | null>(null)
 
@@ -229,12 +241,12 @@ export function InputDissolutionPage() {
       numOctaves,
       seed,
       displacementScale,
-      color: color === 'primary' ? undefined : COLORS[color],
+      accent: caret === 'red' ? undefined : caret,
       underline,
-      dissolve,
-      feedback,
+      effect,
+      shake,
     },
-    defaults: { ...DEFAULTS, underline: false, dissolve: true, feedback: true },
+    defaults: { ...DEFAULTS, underline: false, effect: 'dissolve', shake: true },
   })
 
   return (
@@ -243,9 +255,9 @@ export function InputDissolutionPage() {
       title="Input Dissolution"
       description={
         <>
-          Submit a valid email and it lifts with an elastic settle while the text dissolves
-          into grain — a clip-path sweep plus an SVG turbulence backdrop-filter. An invalid
-          one shakes instead. Ported from{' '}
+          Submit a valid email and the text dissolves into grain — a clip-path sweep plus an
+          SVG turbulence backdrop-filter — or, with the bounce effect, the field lifts with an
+          elastic settle and clears. A wrong one shakes. Ported from{' '}
           <a href="https://codepen.io/jh3y/pen/raNYLXQ" target="_blank" rel="noreferrer">
             jh3y&apos;s CodePen
           </a>
@@ -267,25 +279,26 @@ export function InputDissolutionPage() {
             maxLength={16}
           />
           <DemoControlGroup
-            title="Colour"
-            options={Object.keys(COLORS) as ColorName[]}
-            value={color}
-            onChange={(value) => settings.set('color', value)}
+            title="Caret"
+            options={CARETS}
+            value={caret}
+            onChange={(value) => settings.set('caret', value)}
           />
           <DemoSwitch
             label="Underline"
             checked={underline}
             onCheckedChange={(value) => settings.set('underline', value)}
           />
-          <DemoSwitch
-            label="Dissolve"
-            checked={dissolve}
-            onCheckedChange={(value) => settings.set('dissolve', value)}
+          <DemoControlGroup
+            title="Correct"
+            options={EFFECTS}
+            value={effect}
+            onChange={(value) => settings.set('effect', value)}
           />
           <DemoSwitch
-            label="Bounce and shake"
-            checked={feedback}
-            onCheckedChange={(value) => settings.set('feedback', value)}
+            label="Shake when wrong"
+            checked={shake}
+            onCheckedChange={(value) => settings.set('shake', value)}
           />
           <DemoSlider
             label="Speed"
@@ -386,10 +399,10 @@ export function InputDissolutionPage() {
           seed={seed}
           noiseType={noiseType}
           displacementScale={displacementScale}
-          color={COLORS[color]}
+          accent={caretValue(caret)}
           underline={underline}
-          dissolve={dissolve}
-          feedback={feedback}
+          effect={effect}
+          shake={shake}
           onSubmit={setLastSubmitted}
         />
         <p className="min-h-5 text-xs text-muted-foreground" aria-live="polite">

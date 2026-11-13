@@ -1,5 +1,7 @@
 export { InputDissolution } from './InputDissolution'
 export type {
+  InputDissolutionAccent,
+  InputDissolutionEffect,
   InputDissolutionNoise,
   InputDissolutionProps,
-} from './InputDissolution'
+} from './input-dissolution.types'
