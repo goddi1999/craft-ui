@@ -7,12 +7,19 @@ import {
   type CSSProperties,
   type FormEvent,
 } from 'react'
+import { useAnimate, useReducedMotion } from 'motion/react'
 
 import { cn } from '@/lib/utils'
 
 import './input-dissolution.css'
 
 export type InputDissolutionNoise = 'fractalNoise' | 'turbulence'
+
+// the same feedback as Blank Text: a quick lift with an elastic settle, or a small shake
+const LIFT = { duration: 0.14, ease: [0.23, 1, 0.32, 1] } as const
+const SETTLE = { type: 'spring', stiffness: 600, damping: 9 } as const
+const SHAKE_X = [0, -6, 6, -4, 4, -2, 0]
+const SHAKE = { duration: 0.4, ease: 'easeInOut' } as const
 
 export type InputDissolutionProps = {
   /** Placeholder shown in the empty field. @default 'rockstar@ui.dev' */
@@ -35,6 +42,20 @@ export type InputDissolutionProps = {
   explode?: boolean
   /** Manual sweep position (0–100) used in debug. @default 0 */
   progress?: number
+  /** Text colour. Any CSS colour. @default 'var(--primary)' */
+  color?: string
+  /** Caret and selection colour. @default '#ff1e1e' */
+  accent?: string
+  /** A line under the field, darker while focused. @default false */
+  underline?: boolean
+  /** Dissolve the text on submit. Off: the field just clears. @default true */
+  dissolve?: boolean
+  /** Lift with an elastic settle on a valid submit, shake on an invalid one. @default true */
+  feedback?: boolean
+  /** Colour of the underline after an invalid submit. @default 'var(--destructive)' */
+  invalidColor?: string
+  /** Decides what counts as valid. @default the field's own email check */
+  validate?: (value: string) => boolean
   /** feTurbulence base frequency — higher means finer grains. @default 1.8 */
   baseFrequency?: number
   /** feTurbulence octaves. @default 10 */
@@ -69,8 +90,18 @@ export function InputDissolution({
   seed = 1,
   noiseType = 'fractalNoise',
   displacementScale = 20,
+  color = 'var(--primary)',
+  accent = '#ff1e1e',
+  underline = false,
+  dissolve = true,
+  feedback = true,
+  invalidColor = 'var(--destructive)',
+  validate,
   className,
 }: InputDissolutionProps) {
+  const reduced = useReducedMotion() === true
+  const [field, animate] = useAnimate<HTMLDivElement>()
+  const [invalid, setInvalid] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const previousExplode = useRef(explode)
@@ -128,11 +159,29 @@ export function InputDissolution({
     }
   }, [explode])
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (explode || submitted) return
+    const valid = validate
+      ? validate(value)
+      : value.trim() !== '' && inputRef.current?.checkValidity() === true
+    const play = feedback && !reduced && field.current
+
+    if (!valid) {
+      setInvalid(true)
+      if (play) animate(field.current, { x: SHAKE_X }, SHAKE)
+      return
+    }
+
+    setInvalid(false)
     onSubmit?.(value)
-    setSubmitted(true)
+    if (dissolve) setSubmitted(true)
+    if (play) {
+      await animate(field.current, { y: -10 }, LIFT)
+      animate(field.current, { y: 0 }, SETTLE)
+    }
+    // without the dissolve, the field clears at the top of the lift, as it starts to settle
+    if (!dissolve) setValue('')
   }
 
   const style = {
@@ -140,6 +189,9 @@ export function InputDissolution({
     '--scrub': progress / 100,
     '--idis-dissolve': `url("#${dissolveId}")`,
     '--idis-noise': `url("#${noiseId}")`,
+    '--idis-ink': color,
+    '--idis-accent': accent,
+    '--idis-invalid': invalidColor,
   } as CSSProperties
 
   const turbulence = {
@@ -159,6 +211,8 @@ export function InputDissolution({
       data-explode={explode}
       data-filtered={filtered}
       data-submitted={submitted}
+      data-underline={underline}
+      data-invalid={invalid}
       className={cn(className)}
       style={style}
     >
@@ -187,8 +241,9 @@ export function InputDissolution({
       </svg>
 
       <div className="idis__stage">
-        <form className="idis__form" onSubmit={handleSubmit}>
-          <div className="idis__field">
+        {/* noValidate: invalid input shakes here instead of opening the browser's bubble */}
+        <form className="idis__form" noValidate onSubmit={handleSubmit}>
+          <div ref={field} className="idis__field">
             <div
               className="idis__layer idis__layer--filter"
               aria-hidden="true"
@@ -227,7 +282,11 @@ export function InputDissolution({
                 placeholder={placeholder}
                 value={value}
                 readOnly={submitted}
-                onChange={(event) => setValue(event.target.value)}
+                aria-invalid={invalid || undefined}
+                onChange={(event) => {
+                  setValue(event.target.value)
+                  if (invalid) setInvalid(false)
+                }}
                 onKeyUp={syncScroll}
                 onScroll={syncScroll}
                 onSelect={syncScroll}

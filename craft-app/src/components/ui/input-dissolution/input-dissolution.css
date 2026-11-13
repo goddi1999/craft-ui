@@ -62,6 +62,20 @@
       overflow: hidden;
     }
 
+    /* optional underline: faint at rest, stronger while typing, the invalid colour after a miss */
+    [data-slot='input-dissolution'][data-underline='true'] .idis__wrap {
+      box-shadow: inset 0 -1.5px 0 color-mix(in srgb, var(--idis-ink) 22%, transparent);
+      transition: box-shadow 150ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    [data-slot='input-dissolution'][data-underline='true'] .idis__wrap:focus-within {
+      box-shadow: inset 0 -1.5px 0 color-mix(in srgb, var(--idis-ink) 60%, transparent);
+    }
+
+    [data-slot='input-dissolution'][data-underline='true'][data-invalid='true'] .idis__wrap {
+      box-shadow: inset 0 -1.5px 0 var(--idis-invalid);
+    }
+
     [data-slot='input-dissolution'] .idis__wrap input {
       width: min(360px, 70vw);
       padding: 0;
