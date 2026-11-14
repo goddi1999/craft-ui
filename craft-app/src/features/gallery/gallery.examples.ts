@@ -39,6 +39,7 @@ RadarChartPage,
   HistoryOverviewPage,
   StreakWidgetPage,
   BlankTextPage,
+  GlyphWritePage,
   FunnelChartPage,
   PackageBoxPage,
   AccordionPageTransitionPage,
@@ -2305,5 +2306,15 @@ export const GALLERY_EXAMPLES: GalleryExample[] = sortNewestFirst([
     tech: 'React · Motion',
     categories: ['inputs', 'animation'],
     page: BlankTextPage,
+  },
+  {
+    slug: 'glyph-write',
+    addedAt: '2026-11-14',
+    title: 'Glyph Write',
+    description:
+      'A filled logo glyph written stroke by stroke in the style of Apple\'s Hello screen, revealed through a mask so the final mark matches the traced shape.',
+    tech: 'React · Motion · SVG',
+    categories: ['animation', 'effects'],
+    page: GlyphWritePage,
   },
 ])
