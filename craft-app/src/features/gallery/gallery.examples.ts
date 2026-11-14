@@ -39,6 +39,7 @@ RadarChartPage,
   HistoryOverviewPage,
   StreakWidgetPage,
   BlankTextPage,
+  DnDMathPage,
   FunnelChartPage,
   PackageBoxPage,
   AccordionPageTransitionPage,
@@ -2305,5 +2306,15 @@ export const GALLERY_EXAMPLES: GalleryExample[] = sortNewestFirst([
     tech: 'React · Motion',
     categories: ['inputs', 'animation'],
     page: BlankTextPage,
+  },
+  {
+    slug: 'dnd-math',
+    addedAt: '2026-11-14',
+    title: 'Drag & Drop Math',
+    description:
+      'Work a word problem out step by step: drag in equation blocks, type steps with units, carry results into the next step or a Σ sum, then score every step with partial credit.',
+    tech: 'React · Motion',
+    categories: ['inputs', 'animation'],
+    page: DnDMathPage,
   },
 ])

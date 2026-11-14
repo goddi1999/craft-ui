@@ -1,0 +1,7 @@
+/* While something is being dragged: one cursor everywhere and no accidental text selection. */
+:root[data-dnd-math-dragging],
+:root[data-dnd-math-dragging] * {
+  cursor: grabbing !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
