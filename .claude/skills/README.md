@@ -22,6 +22,12 @@ Pinned upstream skills (hashes): [`../skills-lock.json`](../skills-lock.json).
 | [`github-ci`](./skills/github-ci/SKILL.md)                           | Authors WQ GitHub Actions with stable aggregator required checks                 | Creating/editing `.github/workflows` CI (app/libs/workers/sql)       |
 | [`grilling`](./skills/grilling/SKILL.md)                             | Design-tree interview until assumptions are settled                              | Stress-testing a plan/decision (“grill me”) before coding            |
 | [`hig-card-thumbnail-svg`](./skills/hig-card-thumbnail-svg/SKILL.md) | Builds an Apple-HIG 1024×576 card thumbnail SVG (lucide + WQ color)              | Generating game/card thumbnail SVGs                                  |
+| [`hig-feedback-prompts`](./skills/hig-feedback-prompts/SKILL.md)     | Times rating/feedback/permission prompts after value, never mid-task             | Adding a rate-us, survey, feedback entry, or permission request      |
+| [`hig-first-run`](./skills/hig-first-run/SKILL.md)                   | Launch straight to content: no sign-up wall, tutorials, or blank spinner         | App entry, first-run, onboarding, or loading states                  |
+| [`hig-layout-hierarchy`](./skills/hig-layout-hierarchy/SKILL.md)     | One reading order: rank, group, progressively disclose                           | Laying out or reviewing a flat/crowded screen                        |
+| [`hig-modality`](./skills/hig-modality/SKILL.md)                     | Picks push vs sheet vs alert vs popover vs full-screen; one clear exit           | Adding a dialog, drawer, sheet, confirmation, or new screen          |
+| [`hig-navigation`](./skills/hig-navigation/SKILL.md)                 | Tab bar vs stack vs sidebar/split view from structure; honest back               | Adding sections, routes, tab bar, sidebar, back, or breadcrumbs      |
+| [`hig-search`](./skills/hig-search/SKILL.md)                         | Progressive search: pre-typing state, live filtering, scopes, useful empties     | Adding or reviewing a search field, filter bar, or results list      |
 | [`react-state`](./skills/react-state/SKILL.md)                       | Named-problem hooks; server data via `useQuery`, not hand-rolled fetch; MD first | Adding state, effects, custom hooks, or TanStack Query               |
 | [`implement`](./skills/implement/SKILL.md)                           | Implements work from a spec or tickets (user-invoked)                            | After a spec/tickets exist and you want code                         |
 | [`lexical-technical`](./skills/lexical-technical/SKILL.md)           | Lexical + React/Vite/TS/Supabase editor guidance                                 | Building or changing rich-text editors, plugins, persistence         |
@@ -45,6 +51,12 @@ Pinned upstream skills (hashes): [`../skills-lock.json`](../skills-lock.json).
 | Decisions still open             | `grilling`                             |
 | Publish / slice work             | `to-spec` → `to-tickets` → `implement` |
 | Feature data flow                | `feature-layers`                       |
+| Onboarding / launch / loading    | `hig-first-run`                        |
+| Dialog vs sheet vs push          | `hig-modality`                         |
+| Tabs / sidebar / back button     | `hig-navigation`                       |
+| Search / filter                  | `hig-search`                           |
+| Screen feels flat or crowded     | `hig-layout-hierarchy`                 |
+| Rate-us / feedback / permissions | `hig-feedback-prompts`                 |
 | Where a file goes / naming       | `clean-code`                           |
 | Reusable button/input/etc.       | `shadcn-components`                    |
 | Forms                            | `form-validation`                      |
