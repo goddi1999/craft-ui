@@ -1,0 +1,287 @@
+@layer blur-load {
+  [data-slot='blur-load'] {
+    --blur-load-ease: cubic-bezier(0.23, 1, 0.32, 1);
+    --blur-load-amount: 64px;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /*
+   * Layer 1: tiny placeholder under a heavy CSS blur. It bleeds past the box by
+   * 1.5× the blur radius, so the soft transparent fringe falls outside the clip
+   * and the edges stay solid colour.
+   */
+  [data-slot='blur-load-placeholder'] {
+    position: absolute;
+    inset: calc(var(--blur-load-amount) * -1.5);
+    z-index: 0;
+    display: block;
+    width: calc(100% + var(--blur-load-amount) * 3);
+    height: calc(100% + var(--blur-load-amount) * 3);
+    max-width: none;
+    object-fit: cover;
+    object-position: center;
+    filter: blur(var(--blur-load-amount)) saturate(1.2);
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 200ms var(--blur-load-ease);
+  }
+
+  /* Only fade; un-blurring a 40px image would flash blocky pixels. */
+  [data-slot='blur-load'][data-loaded='true'] [data-slot='blur-load-placeholder'] {
+    opacity: 0;
+  }
+
+  /* Layer 2: pulsing white skeleton while the high-res image is still loading */
+  [data-slot='blur-load'][data-loaded='false']::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    animation: blur-load-pulse 2.5s ease-in-out infinite;
+  }
+
+  /* Layer 3: high-res starts invisible, fades in over 200ms */
+  [data-slot='blur-load-full'] {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0;
+    transition: opacity 200ms var(--blur-load-ease);
+  }
+
+  [data-slot='blur-load'][data-loaded='true'] [data-slot='blur-load-full'] {
+    opacity: 1;
+  }
+
+  @keyframes blur-load-pulse {
+    0%,
+    100% {
+      background-color: rgb(255 255 255 / 0);
+    }
+    50% {
+      background-color: rgb(255 255 255 / 0.22);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-slot='blur-load'][data-loaded='false']::before {
+      animation: none;
+      background-color: rgb(255 255 255 / 0.12);
+    }
+
+    [data-slot='blur-load-placeholder'],
+    [data-slot='blur-load-full'] {
+      transition: none;
+    }
+  }
+
+  /* Standard slow-load clip reveal */
+  [data-slot='blur-load-standard'] {
+    position: relative;
+    overflow: hidden;
+  }
+
+  [data-slot='blur-load-standard-reveal'] {
+    position: absolute;
+    inset: 0;
+    will-change: clip-path;
+  }
+
+  [data-slot='blur-load-standard-reveal'] > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* 3-layer stack: a button, so a click on the stage flips 3D ↔ flat */
+  [data-slot='blur-load-layers'] {
+    --blur-load-ease: cubic-bezier(0.23, 1, 0.32, 1);
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    overflow: hidden;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    background-color: hsl(222 47% 11%);
+  }
+
+  [data-slot='blur-load-layers']::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.55;
+    background-image: radial-gradient(hsl(215 25% 27%) 1px, transparent 1px);
+    background-size: 16px 16px;
+    pointer-events: none;
+  }
+
+  [data-slot='blur-load-layer-stage'] {
+    position: relative;
+    display: block;
+    width: min(100%, 18rem);
+    aspect-ratio: 16 / 10;
+    transform-style: preserve-3d;
+    transition: transform 500ms var(--blur-load-ease);
+  }
+
+  [data-slot='blur-load-layer-stage'][data-view='exploded'] {
+    transform: perspective(900px) rotateX(48deg) rotateZ(-28deg);
+  }
+
+  [data-slot='blur-load-layer-stage'][data-view='flat'] {
+    transform: perspective(900px) rotateX(0deg) rotateZ(0deg);
+  }
+
+  [data-slot='blur-load-layer'] {
+    position: absolute;
+    inset: 0;
+    display: block;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    border: 2px solid;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.45);
+    transition:
+      transform 500ms var(--blur-load-ease),
+      opacity 200ms var(--blur-load-ease),
+      border-color 200ms var(--blur-load-ease);
+  }
+
+  [data-slot='blur-load-layer'][data-layer='1'] {
+    border-color: rgb(251 191 36 / 0.8);
+  }
+
+  /* Same heavy blur as the real component, bled past the edges */
+  [data-slot='blur-load-layer-blur'] {
+    position: absolute;
+    inset: calc(var(--blur-load-amount, 64px) * -1.5);
+    display: block;
+    width: calc(100% + var(--blur-load-amount, 64px) * 3);
+    height: calc(100% + var(--blur-load-amount, 64px) * 3);
+    max-width: none;
+    object-fit: cover;
+    filter: blur(var(--blur-load-amount, 64px)) saturate(1.2);
+    pointer-events: none;
+  }
+
+  [data-slot='blur-load-layer'][data-layer='2'] {
+    border-color: rgb(56 189 248 / 0.8);
+    background-color: rgb(255 255 255 / 0.08);
+  }
+
+  [data-slot='blur-load-layer'][data-layer='3'] {
+    border-color: rgb(52 211 153 / 0.9);
+  }
+
+  [data-slot='blur-load-layer-stage'][data-view='exploded']
+    [data-slot='blur-load-layer'][data-layer='1'] {
+    transform: translateZ(-55px);
+  }
+
+  [data-slot='blur-load-layer-stage'][data-view='exploded']
+    [data-slot='blur-load-layer'][data-layer='2'] {
+    transform: translateZ(0);
+  }
+
+  [data-slot='blur-load-layer-stage'][data-view='exploded']
+    [data-slot='blur-load-layer'][data-layer='3'] {
+    transform: translateZ(55px);
+  }
+
+  [data-slot='blur-load-layer-stage'][data-view='flat'] [data-slot='blur-load-layer'] {
+    transform: translateZ(0);
+  }
+
+  /* Flat composite reads as one image: the borders of the lower layers drop away */
+  [data-slot='blur-load-layer-stage'][data-view='flat']
+    [data-slot='blur-load-layer']:is([data-layer='1'], [data-layer='2']) {
+    border-color: transparent;
+  }
+
+  /* Layer 2 pulses until the download finishes */
+  [data-slot='blur-load-layers'][data-loaded='false']
+    [data-slot='blur-load-layer'][data-layer='2'] {
+    animation: blur-load-pulse 2.5s ease-in-out infinite;
+  }
+
+  /* Layer 3 high-res fades in with download progress */
+  [data-slot='blur-load-layer'][data-layer='3'] > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: var(--layer-progress, 0);
+    transition: opacity 200ms var(--blur-load-ease);
+  }
+
+  [data-slot='blur-load-layers'][data-loaded='true']
+    [data-slot='blur-load-layer'][data-layer='3']
+    > img {
+    opacity: 1;
+  }
+
+  /* Hidden via the layer chips */
+  [data-slot='blur-load-layer'][data-hidden='true'] {
+    opacity: 0;
+  }
+
+  [data-slot='blur-load-layer-label'] {
+    position: absolute;
+    bottom: 0.625rem;
+    left: 0.625rem;
+    z-index: 1;
+    border-radius: 0.25rem;
+    background: rgb(2 6 23 / 0.8);
+    padding: 0.125rem 0.5rem;
+    font-family: ui-monospace, monospace;
+    font-size: 10px;
+    line-height: 1.5;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+    transition: opacity 200ms var(--blur-load-ease);
+  }
+
+  /* In flat view the three labels would stack on top of each other; show only the top one */
+  [data-slot='blur-load-layer-stage'][data-view='flat']
+    [data-slot='blur-load-layer']:is([data-layer='1'], [data-layer='2'])
+    [data-slot='blur-load-layer-label'] {
+    opacity: 0;
+  }
+
+  [data-slot='blur-load-layer'][data-layer='1'] [data-slot='blur-load-layer-label'] {
+    color: rgb(252 211 77);
+  }
+
+  [data-slot='blur-load-layer'][data-layer='2'] [data-slot='blur-load-layer-label'] {
+    color: rgb(125 211 252);
+  }
+
+  [data-slot='blur-load-layer'][data-layer='3'] [data-slot='blur-load-layer-label'] {
+    color: rgb(110 231 183);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* Views still switch, just without the swing */
+    [data-slot='blur-load-layer-stage'],
+    [data-slot='blur-load-layer'],
+    [data-slot='blur-load-layer'][data-layer='3'] > img {
+      transition: none;
+    }
+
+    [data-slot='blur-load-layers'][data-loaded='false']
+      [data-slot='blur-load-layer'][data-layer='2'] {
+      animation: none;
+      background-color: rgb(255 255 255 / 0.12);
+    }
+  }
+}

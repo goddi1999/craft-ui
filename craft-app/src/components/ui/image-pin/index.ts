@@ -4,6 +4,8 @@ export { ImagePinFrame } from "./ImagePinFrame";
 export type { ImagePinFrameProps } from "./ImagePinFrame";
 export { ImagePinBoard } from "./ImagePinBoard";
 export type { ImagePinBoardProps } from "./ImagePinBoard";
+export { ImagePinDock } from "./ImagePinDock";
+export type { ImagePinDockProps } from "./ImagePinDock";
 export { ImagePinLibrary } from "./ImagePinLibrary";
 export type { ImagePinLibraryProps } from "./ImagePinLibrary";
 export { ImagePinRegionStage } from "./ImagePinRegionStage";

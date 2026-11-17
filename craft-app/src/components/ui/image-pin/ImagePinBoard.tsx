@@ -11,7 +11,18 @@ import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
 import { ImagePin } from "./ImagePin";
+import { ImagePinDock } from "./ImagePinDock";
 import { ImagePinFrame } from "./ImagePinFrame";
+import {
+  REGION_CORNER_RADIUS,
+  REGION_DASH,
+  REGION_FILL,
+  REGION_FILL_SELECTED,
+  REGION_STROKE_IDLE,
+  REGION_STROKE_SELECTED,
+  REGION_STROKE_WIDTH_ACTIVE,
+  REGION_STROKE_WIDTH_IDLE,
+} from "./image-pin.region-style";
 import type { ImagePinPoint, ImagePinRegion } from "./image-pin.types";
 import {
   clamp01,
@@ -219,11 +230,13 @@ export function ImagePinBoard({
                   const isHit = hit?.id === region.id;
                   const common = {
                     fill: isHit
-                      ? "rgba(96, 165, 250, 0.25)"
-                      : "rgba(186, 213, 228, 0.18)",
-                    stroke: isHit ? "#2563EB" : "#4D4DFF",
-                    strokeWidth: 2,
-                    strokeDasharray: "6 6",
+                      ? REGION_FILL_SELECTED
+                      : REGION_FILL,
+                    stroke: isHit ? REGION_STROKE_SELECTED : REGION_STROKE_IDLE,
+                    strokeWidth: isHit
+                      ? REGION_STROKE_WIDTH_ACTIVE
+                      : REGION_STROKE_WIDTH_IDLE,
+                    strokeDasharray: REGION_DASH.join(" "),
                     vectorEffect: "non-scaling-stroke" as const,
                   };
                   return resolveImagePinShape(region) === "circle" ? (
@@ -241,7 +254,7 @@ export function ImagePinBoard({
                       y={region.y}
                       width={region.width}
                       height={region.height}
-                      rx={8}
+                      rx={REGION_CORNER_RADIUS}
                       {...common}
                     />
                   );
@@ -268,12 +281,12 @@ export function ImagePinBoard({
       </ImagePinFrame>
 
       {imageSrc ? (
-        <div
-          data-slot="image-pin-dock"
-          className="flex items-center gap-3 self-center rounded-full border border-dashed border-muted-foreground/30 bg-muted/40 py-2 pr-4 pl-2"
-        >
-          <span className="flex size-10 items-center justify-center rounded-full bg-background shadow-sm">
-            {!pin && !drag ? (
+        <ImagePinDock
+          label={
+            pin ? "Drag the pin off the image to return it here" : dockLabel
+          }
+          pin={
+            !pin && !drag ? (
               <button
                 {...pinButtonProps}
                 aria-label="Pin. Drag it onto the image, or press Enter to place it in the centre."
@@ -281,12 +294,9 @@ export function ImagePinBoard({
               >
                 <ImagePin size={PIN_SIZE} />
               </button>
-            ) : null}
-          </span>
-          <span className="text-sm text-muted-foreground">
-            {pin ? "Drag the pin off the image to return it here" : dockLabel}
-          </span>
-        </div>
+            ) : null
+          }
+        />
       ) : null}
 
       {drag ? (

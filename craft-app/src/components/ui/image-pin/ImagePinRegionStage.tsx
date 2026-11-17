@@ -27,19 +27,29 @@ import type {
   ImagePinSize,
 } from "./image-pin.types";
 import {
+  ANCHOR_CORNER_SIZE,
+  ANCHOR_FILL,
+  ANCHOR_STROKE,
+  ANCHOR_STROKE_WIDTH,
+  REGION_CORNER_RADIUS,
+  REGION_DASH,
+  REGION_FILL_SELECTED,
+  REGION_LABEL_COLOR,
+  REGION_LABEL_SIZE,
+  REGION_STROKE_SELECTED,
+  REGION_STROKE_WIDTH_ACTIVE,
+  regionFillFor,
+  regionStrokeFor,
+  regionStrokeWidthFor,
+  resolveRegionVisualState,
+  styleImagePinAnchor,
+} from "./image-pin.region-style";
+import {
   IMAGE_PIN_REGION_MIN_SIZE,
   clampCircleToImage,
   clampRectToImage,
   resolveImagePinShape,
 } from "./image-pin.utils";
-
-const RECT_FILL = "rgba(186, 213, 228, 0.18)";
-const RECT_STROKE_SELECTED = "#0000FF";
-const RECT_STROKE = "#4D4DFF";
-const RECT_CORNER_RADIUS = 8;
-const RECT_DASH = [6, 6];
-const LABEL_FONT_SIZE = 20;
-const LABEL_FONT_COLOR = "#0000FF";
 
 type DraftBox = { sx: number; sy: number; cx: number; cy: number };
 
@@ -111,6 +121,7 @@ export function ImagePinRegionStage({
 }: ImagePinRegionStageProps) {
   const [image, status] = useImage(imageSrc);
   const [draft, setDraft] = useState<DraftBox | null>(null);
+  const [hoveredRegionId, setHoveredRegionId] = useState<string | null>(null);
   const [draftImageSrc, setDraftImageSrc] = useState(imageSrc);
   // Drop an in-progress draft when the image changes (adjust state during render).
   if (draftImageSrc !== imageSrc) {
@@ -351,14 +362,19 @@ export function ImagePinRegionStage({
                   rect.y,
                   rect.width,
                   rect.height,
-                  LABEL_FONT_SIZE,
+                  REGION_LABEL_SIZE,
                 );
 
                 const shape = resolveImagePinShape(rect);
-                const stroke =
-                  selectedRegionId === rect.id
-                    ? RECT_STROKE_SELECTED
-                    : RECT_STROKE;
+                const visual = resolveRegionVisualState(
+                  rect.id,
+                  selectedRegionId,
+                  hoveredRegionId,
+                );
+                const isSelected = visual === "selected";
+                const stroke = regionStrokeFor(visual);
+                const strokeWidth = regionStrokeWidthFor(visual);
+                const fill = regionFillFor(visual);
                 const radius = rect.width / 2;
 
                 return (
@@ -371,11 +387,17 @@ export function ImagePinRegionStage({
                         x={rect.x + radius}
                         y={rect.y + radius}
                         radius={radius}
-                        fill={RECT_FILL}
-                        stroke={stroke}
-                        strokeWidth={2}
-                        dash={RECT_DASH}
+                        fill={fill}
+                        stroke={isSelected ? "transparent" : stroke}
+                        strokeWidth={isSelected ? 0 : strokeWidth}
+                        dash={REGION_DASH}
                         draggable
+                        onMouseEnter={() => setHoveredRegionId(rect.id)}
+                        onMouseLeave={() =>
+                          setHoveredRegionId((id) =>
+                            id === rect.id ? null : id,
+                          )
+                        }
                         onClick={() => notifySelectedRegionIdChange(rect.id)}
                         onTap={() => notifySelectedRegionIdChange(rect.id)}
                         onDragEnd={(event) => {
@@ -423,12 +445,18 @@ export function ImagePinRegionStage({
                         y={rect.y}
                         width={rect.width}
                         height={rect.height}
-                        cornerRadius={RECT_CORNER_RADIUS}
-                        fill={RECT_FILL}
-                        stroke={stroke}
-                        strokeWidth={2}
-                        dash={RECT_DASH}
+                        cornerRadius={REGION_CORNER_RADIUS}
+                        fill={fill}
+                        stroke={isSelected ? "transparent" : stroke}
+                        strokeWidth={isSelected ? 0 : strokeWidth}
+                        dash={REGION_DASH}
                         draggable
+                        onMouseEnter={() => setHoveredRegionId(rect.id)}
+                        onMouseLeave={() =>
+                          setHoveredRegionId((id) =>
+                            id === rect.id ? null : id,
+                          )
+                        }
                         onClick={() => notifySelectedRegionIdChange(rect.id)}
                         onTap={() => notifySelectedRegionIdChange(rect.id)}
                         onDragEnd={(event) => {
@@ -481,12 +509,12 @@ export function ImagePinRegionStage({
                       x={labelPos.x}
                       y={labelPos.y}
                       text={rect.label || String(regionNumber)}
-                      fontSize={LABEL_FONT_SIZE}
+                      fontSize={REGION_LABEL_SIZE}
                       fontFamily="Arial, sans-serif"
                       fontStyle="bold"
-                      fill={LABEL_FONT_COLOR}
+                      fill={REGION_LABEL_COLOR}
                       align="center"
-                      pointerEvents="none"
+                      listening={false}
                     />
                   </Fragment>
                 );
@@ -504,10 +532,10 @@ export function ImagePinRegionStage({
                         x={draftShape.x + diameter / 2}
                         y={draftShape.y + diameter / 2}
                         radius={diameter / 2}
-                        fill="rgba(0, 0, 255, 0.08)"
-                        stroke={RECT_STROKE_SELECTED}
-                        strokeWidth={1}
-                        dash={RECT_DASH}
+                        fill={REGION_FILL_SELECTED}
+                        stroke={REGION_STROKE_SELECTED}
+                        strokeWidth={REGION_STROKE_WIDTH_ACTIVE}
+                        dash={REGION_DASH}
                         listening={false}
                       />
                     );
@@ -524,11 +552,11 @@ export function ImagePinRegionStage({
                       IMAGE_PIN_REGION_MIN_SIZE,
                       draftShape.height,
                     )}
-                    cornerRadius={RECT_CORNER_RADIUS}
-                    fill="rgba(0, 0, 255, 0.08)"
-                    stroke={RECT_STROKE_SELECTED}
-                    strokeWidth={1}
-                    dash={RECT_DASH}
+                    cornerRadius={REGION_CORNER_RADIUS}
+                    fill={REGION_FILL_SELECTED}
+                    stroke={REGION_STROKE_SELECTED}
+                    strokeWidth={REGION_STROKE_WIDTH_ACTIVE}
+                    dash={REGION_DASH}
                     listening={false}
                   />
                 )
@@ -541,6 +569,17 @@ export function ImagePinRegionStage({
                   rotateEnabled={false}
                   keepRatio={isCircleSelected}
                   centeredScaling={isCircleSelected}
+                  padding={0}
+                  borderEnabled
+                  borderStroke={REGION_STROKE_SELECTED}
+                  borderStrokeWidth={REGION_STROKE_WIDTH_ACTIVE}
+                  borderDash={REGION_DASH}
+                  anchorFill={ANCHOR_FILL}
+                  anchorStroke={ANCHOR_STROKE}
+                  anchorStrokeWidth={ANCHOR_STROKE_WIDTH}
+                  anchorSize={ANCHOR_CORNER_SIZE}
+                  anchorCornerRadius={ANCHOR_CORNER_SIZE / 2}
+                  anchorStyleFunc={styleImagePinAnchor}
                   boundBoxFunc={(oldBox, newBox) => {
                     if (isCircleSelected) {
                       // Enforce the min diameter and keep the bbox square so the region

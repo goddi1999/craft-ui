@@ -1,55 +1,12 @@
-/** Matches `rounded-4xl` (2rem) so the arcs follow the box's own curve. */
-const CORNER_RADIUS = 32;
-const CORNER_STROKE = 4;
-const HALF = CORNER_STROKE / 2;
-/** Quarter circle inset by half the stroke so it sits inside the box. */
-const CORNER_PATH = `M ${HALF} ${CORNER_RADIUS} A ${CORNER_RADIUS - HALF} ${CORNER_RADIUS - HALF} 0 0 1 ${CORNER_RADIUS} ${HALF}`;
-
-const CORNERS = [
-  "top-0 left-0",
-  "top-0 right-0 rotate-90",
-  "right-0 bottom-0 rotate-180",
-  "bottom-0 left-0 -rotate-90",
-];
-
-/** Four disconnected rounded corner arcs with round line ends, in place of a border. */
-export function CornerArcs() {
-  return (
-    <span
-      aria-hidden
-      className="pointer-events-none absolute inset-0 text-foreground/25"
-    >
-      {CORNERS.map((position) => (
-        <svg
-          key={position}
-          width={CORNER_RADIUS}
-          height={CORNER_RADIUS}
-          viewBox={`0 0 ${CORNER_RADIUS} ${CORNER_RADIUS}`}
-          overflow="visible"
-          fill="none"
-          className={`absolute ${position}`}
-        >
-          <path
-            d={CORNER_PATH}
-            stroke="currentColor"
-            strokeWidth={CORNER_STROKE}
-            strokeLinecap="round"
-          />
-        </svg>
-      ))}
-    </span>
-  );
-}
-
 /** Composition box in px; the icon sits at its centre and the guides line up with it. */
-const BOX = { width: 740, height: 416 };
-const CX = BOX.width / 2;
-const CY = BOX.height / 2;
+const BOX = { width: 740, height: 416 }
+const CX = BOX.width / 2
+const CY = BOX.height / 2
 /** Guide lines run far past the box; the frame clips them and the mask fades them. */
-const FAR = 2000;
+const FAR = 2000
 
-const DASHED = [241.5, 279, 461, 498.5];
-const DASHED_Y = [79, 117, 299, 336];
+const DASHED = [241.5, 279, 461, 498.5]
+const DASHED_Y = [79, 117, 299, 336]
 
 /** Faint construction lines behind the icon, like an icon-grid template. */
 function Guides() {
@@ -80,11 +37,53 @@ function Guides() {
       <circle cx={CX} cy={CY} r={91} />
       <circle cx={CX} cy={CY} r={129} />
     </svg>
-  );
+  )
 }
 
-/** An empty picture: rounded outline with a filled block in the top-left corner. */
-function EmptyImageIcon({ showInnerRect }: { showInnerRect: boolean }) {
+/** Empty-picture icon geometry (center illustration — not a photo). */
+const ICON = {
+  x: 231.5,
+  y: 106.5,
+  width: 277,
+  height: 203,
+  radius: 26,
+  stroke: 18,
+  leg: 56,
+}
+
+/** Local top-left L; placed with `translate(corner) rotate(deg)`. */
+function iconCornerPath() {
+  const half = ICON.stroke / 2
+  const arc = ICON.radius - half
+  return [
+    `M ${half} ${ICON.leg}`,
+    `L ${half} ${ICON.radius}`,
+    `A ${arc} ${arc} 0 0 1 ${ICON.radius} ${half}`,
+    `L ${ICON.leg} ${half}`,
+  ].join(' ')
+}
+
+const ICON_CORNER_PATH = iconCornerPath()
+
+const ICON_CORNERS = [
+  { x: ICON.x, y: ICON.y, rotate: 0 },
+  { x: ICON.x + ICON.width, y: ICON.y, rotate: 90 },
+  { x: ICON.x + ICON.width, y: ICON.y + ICON.height, rotate: 180 },
+  { x: ICON.x, y: ICON.y + ICON.height, rotate: 270 },
+] as const
+
+/**
+ * Empty-picture mark: four thick rounded corner brackets (no closed edge) and
+ * an optional filled block in the top-left. Pure SVG — not an image file.
+ */
+function EmptyImageIcon({
+  showInnerRect,
+  frame = 'corners',
+}: {
+  showInnerRect: boolean
+  /** `corners` = open L-brackets; `full` = closed rounded rect. */
+  frame?: 'corners' | 'full'
+}) {
   return (
     <svg
       aria-hidden
@@ -95,17 +94,31 @@ function EmptyImageIcon({ showInnerRect }: { showInnerRect: boolean }) {
       className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-sm:scale-75"
     >
       <g className="origin-center transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]">
-        <rect
-          x={231.5}
-          y={106.5}
-          width={277}
-          height={203}
-          rx={26}
-          stroke="currentColor"
-          strokeWidth={18}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+        {frame === 'full' ? (
+          <rect
+            x={ICON.x}
+            y={ICON.y}
+            width={ICON.width}
+            height={ICON.height}
+            rx={ICON.radius}
+            stroke="currentColor"
+            strokeWidth={ICON.stroke}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ) : (
+          ICON_CORNERS.map(({ x, y, rotate }) => (
+            <path
+              key={`${x}-${y}-${rotate}`}
+              d={ICON_CORNER_PATH}
+              stroke="currentColor"
+              strokeWidth={ICON.stroke}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              transform={`translate(${x} ${y}) rotate(${rotate})`}
+            />
+          ))
+        )}
         {showInnerRect ? (
           <rect
             x={260}
@@ -118,26 +131,34 @@ function EmptyImageIcon({ showInnerRect }: { showInnerRect: boolean }) {
         ) : null}
       </g>
     </svg>
-  );
+  )
 }
 
 const GUIDE_MASK =
-  "radial-gradient(ellipse 55% 60% at 50% 50%, #000 35%, transparent 100%)";
+  'radial-gradient(ellipse 55% 60% at 50% 50%, #000 35%, transparent 100%)'
 
 export type ImagePinEmptyArtProps = {
-  label: string;
-  hint?: string;
+  label: string
+  hint?: string
   /** The filled block in the icon's top-left corner. */
-  showInnerRect?: boolean;
-};
+  showInnerRect?: boolean
+  /**
+   * How the centre empty-picture mark is drawn.
+   * `corners` = four L-brackets only; `full` = closed rounded rect.
+   * @default 'corners'
+   */
+  iconFrame?: 'corners' | 'full'
+}
 
 /**
- * Guides, icon and text, centred in a positioned parent.
+ * Centre empty-state art: guides + SVG picture mark + label.
+ * Not a photo — all SVG. Outer brackets live in `@/components/ui/corner-frame`.
  */
 export function ImagePinEmptyArt({
   label,
   hint,
   showInnerRect = true,
+  iconFrame = 'corners',
 }: ImagePinEmptyArtProps) {
   return (
     <>
@@ -149,7 +170,7 @@ export function ImagePinEmptyArt({
       </span>
 
       <span className="pointer-events-none absolute inset-0 text-foreground/25">
-        <EmptyImageIcon showInnerRect={showInnerRect} />
+        <EmptyImageIcon showInnerRect={showInnerRect} frame={iconFrame} />
       </span>
 
       <span className="pointer-events-none absolute top-[calc(50%+140px)] left-1/2 flex -translate-x-1/2 flex-col items-center gap-0.5 whitespace-nowrap max-sm:top-[calc(50%+106px)]">
@@ -159,5 +180,5 @@ export function ImagePinEmptyArt({
         ) : null}
       </span>
     </>
-  );
+  )
 }

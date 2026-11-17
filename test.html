@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+.rounded-corners-box {
+  width: 240px;
+  height: 180px;
+
+  /* Control thickness, corner curve, and color */
+  --border-width: 12px;
+  --corner-radius: 28px;
+  --border-color: #FFF185;
+
+  /* 4 disconnected rounded corner arcs */
+  background-repeat: no-repeat;
+  background-size: var(--corner-radius) var(--corner-radius);
+  background-position:
+    top left,
+    top right,
+    bottom right,
+    bottom left;
+  background-image:
+    radial-gradient(
+      circle at 100% 100%,
+      transparent calc(var(--corner-radius) - var(--border-width)),
+      var(--border-color) calc(var(--corner-radius) - var(--border-width) + 0.5px),
+      var(--border-color) calc(var(--corner-radius) - 0.5px),
+      transparent var(--corner-radius)
+    ),
+    radial-gradient(
+      circle at 0% 100%,
+      transparent calc(var(--corner-radius) - var(--border-width)),
+      var(--border-color) calc(var(--corner-radius) - var(--border-width) + 0.5px),
+      var(--border-color) calc(var(--corner-radius) - 0.5px),
+      transparent var(--corner-radius)
+    ),
+    radial-gradient(
+      circle at 0% 0%,
+      transparent calc(var(--corner-radius) - var(--border-width)),
+      var(--border-color) calc(var(--corner-radius) - var(--border-width) + 0.5px),
+      var(--border-color) calc(var(--corner-radius) - 0.5px),
+      transparent var(--corner-radius)
+    ),
+    radial-gradient(
+      circle at 100% 0%,
+      transparent calc(var(--corner-radius) - var(--border-width)),
+      var(--border-color) calc(var(--corner-radius) - var(--border-width) + 0.5px),
+      var(--border-color) calc(var(--corner-radius) - 0.5px),
+      transparent var(--corner-radius)
+    );
+}
+</style>
+<body>
+    <div class="rounded-corners-box"></div>
+</body>
+</html>

@@ -1,4 +1,6 @@
-export { ImagePinPlaceholder } from "./ImagePinPlaceholder";
-export type { ImagePinPlaceholderProps } from "./ImagePinPlaceholder";
-export { imagePinPlaceholderVariants } from "./image-pin-empty.variants";
-export type { ImagePinPlaceholderBorder } from "./image-pin-empty.variants";
+export { ImagePinPlaceholder } from './ImagePinPlaceholder'
+export type { ImagePinPlaceholderProps } from './ImagePinPlaceholder'
+export { ImagePinEmptyArt } from './image-pin-empty-art'
+export type { ImagePinEmptyArtProps } from './image-pin-empty-art'
+export { imagePinPlaceholderVariants } from './image-pin-empty.variants'
+export type { ImagePinPlaceholderBorder } from './image-pin-empty.variants'

@@ -1,0 +1,1 @@
+export { CornerFramePage } from './page'

@@ -15,40 +15,58 @@ import {
 const DEFAULT_LABEL = 'No regions yet'
 const DEFAULT_HINT = 'Draw at least one region first.'
 
-const BORDERS: ImagePinPlaceholderBorder[] = ['corners', 'full', 'none']
+const BORDERS: ImagePinPlaceholderBorder[] = ['none', 'full']
+const ICON_FRAMES = ['corners', 'full'] as const
 
 const DEFAULTS = {
-  border: 'corners' as ImagePinPlaceholderBorder,
+  border: 'none' as ImagePinPlaceholderBorder,
+  iconFrame: 'corners' as (typeof ICON_FRAMES)[number],
   showInnerRect: true,
+  showArt: true,
   label: '',
   hint: '',
 }
 
 const PROPS: DemoPropDoc[] = [
-  { name: 'label', type: 'string', default: "'Nothing here yet'", description: 'First line under the icon.' },
+  { name: 'label', type: 'string', default: "'Nothing here yet'", description: 'First line under the centre art.' },
   { name: 'hint', type: 'string', description: 'Second, quieter line; hidden when omitted.' },
-  { name: 'showInnerRect', type: 'boolean', default: 'true', description: 'The filled block in the top-left of the picture icon.' },
-  { name: 'border', type: "'corners' | 'full' | 'none'", default: "'corners'", description: 'Outline: four rounded corner arcs with round ends, a full 1px border, or none.' },
+  { name: 'showInnerRect', type: 'boolean', default: 'true', description: 'Filled block in the top-left of the centre picture mark.' },
+  { name: 'showArt', type: 'boolean', default: 'true', description: 'Centre SVG (guides + picture mark + text).' },
+  { name: 'border', type: "'full' | 'none'", default: "'none'", description: 'Box outline only. Outer L-brackets are `CornerFrame`, not this component.' },
+  { name: 'iconFrame', type: "'corners' | 'full'", default: "'corners'", description: 'Centre picture mark: open L-brackets or a closed rounded rect.' },
   { name: 'className', type: 'string', default: "'h-[min(70dvh,52rem)]'", description: 'Size the box.' },
 ]
 
 export function ImagePinEmptyPage() {
   const settings = useDemoSettings(DEFAULTS)
-  const { border, showInnerRect, label, hint } = settings.values
+  const { border, iconFrame, showInnerRect, showArt, label, hint } =
+    settings.values
   const text = { label: label || DEFAULT_LABEL, hint: hint || DEFAULT_HINT }
 
   const usage = toUsageSnippet({
     component: 'ImagePinPlaceholder',
     from: '@/components/ui/image-pin-empty',
-    props: { label: text.label, hint: text.hint, border, showInnerRect },
-    defaults: { border: 'corners', showInnerRect: true },
+    props: {
+      label: text.label,
+      hint: text.hint,
+      border,
+      iconFrame,
+      showInnerRect,
+      showArt,
+    },
+    defaults: {
+      border: 'none',
+      iconFrame: 'corners',
+      showInnerRect: true,
+      showArt: true,
+    },
   })
 
   return (
     <DemoPage
       eyebrow="ui / image-pin-empty"
       title="Image Pin Empty"
-      description="A static empty state with corner arcs, a full border or none, an empty-picture icon with rounded strokes over faint guide lines, and a line of text."
+      description="Centre empty-picture SVG only (guides, L-bracket mark, label). Outer corner brackets belong to CornerFrame."
       align="stretch"
       settings={
         <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
@@ -57,6 +75,17 @@ export function ImagePinEmptyPage() {
             options={BORDERS}
             value={border}
             onChange={(next) => settings.set('border', next)}
+          />
+          <DemoControlGroup
+            title="Icon frame"
+            options={[...ICON_FRAMES]}
+            value={iconFrame}
+            onChange={(next) => settings.set('iconFrame', next)}
+          />
+          <DemoSwitch
+            label="Centre art"
+            checked={showArt}
+            onCheckedChange={(next) => settings.set('showArt', next)}
           />
           <DemoSwitch
             label="Inner rectangle"
@@ -83,7 +112,9 @@ export function ImagePinEmptyPage() {
         label={text.label}
         hint={text.hint}
         border={border}
+        iconFrame={iconFrame}
         showInnerRect={showInnerRect}
+        showArt={showArt}
       />
     </DemoPage>
   )
