@@ -1,0 +1,95 @@
+/* Menu popup motion: the panel springs out of the trigger, then its rows drop in one by one. */
+[data-slot="deck-card-menu"] {
+  --deck-menu-ease: linear(
+    0,
+    0.09,
+    0.289,
+    0.508,
+    0.707,
+    0.859,
+    0.964,
+    1.025,
+    1.054,
+    1.061,
+    1.054,
+    1.042,
+    1.029,
+    1.017,
+    1.008,
+    1.002,
+    0.998,
+    0.997,
+    0.996,
+    0.997,
+    0.998,
+    0.998,
+    0.999,
+    1,
+    1
+  );
+}
+
+@keyframes deck-menu-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--pop-from-y, -6px)) scale(0.96);
+  }
+}
+@keyframes deck-menu-pop-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+@keyframes deck-menu-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+@keyframes deck-menu-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+[data-slot="deck-card-menu"][data-side="top"] {
+  --pop-from-y: 6px;
+}
+[data-slot="deck-card-menu"][data-state="open"] {
+  animation: deck-menu-pop-in 420ms var(--deck-menu-ease) both;
+}
+[data-slot="deck-card-menu"][data-state="closed"] {
+  animation: deck-menu-pop-out 120ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+[data-slot="deck-card-menu"][data-state="open"] > div > * {
+  animation: deck-menu-row-in 380ms var(--deck-menu-ease) both;
+  animation-delay: calc(40ms + min(var(--row, 0), 6) * 40ms);
+}
+[data-slot="deck-card-menu"] > div > :nth-child(2) {
+  --row: 1;
+}
+[data-slot="deck-card-menu"] > div > :nth-child(3) {
+  --row: 2;
+}
+[data-slot="deck-card-menu"] > div > :nth-child(4) {
+  --row: 3;
+}
+[data-slot="deck-card-menu"] > div > :nth-child(5) {
+  --row: 4;
+}
+[data-slot="deck-card-menu"] > div > :nth-child(6) {
+  --row: 5;
+}
+[data-slot="deck-card-menu"] > div > :nth-child(n + 7) {
+  --row: 6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="deck-card-menu"][data-state="open"] {
+    animation: deck-menu-fade-in 150ms ease-out both;
+  }
+  [data-slot="deck-card-menu"][data-state="open"] > div > * {
+    animation: none;
+  }
+}

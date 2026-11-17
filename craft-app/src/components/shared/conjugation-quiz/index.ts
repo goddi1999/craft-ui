@@ -1,0 +1,1 @@
+export { ConjugationQuizPage } from "./page";

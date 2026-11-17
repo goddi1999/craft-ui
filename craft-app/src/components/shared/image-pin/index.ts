@@ -1,0 +1,1 @@
+export { ImagePinPage } from './page'

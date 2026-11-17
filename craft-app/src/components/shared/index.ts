@@ -547,3 +547,8 @@ export type { StepperProgressBarTitlesItem, StepperProgressBarTitlesProps } from
 export { StreakWidgetPage } from './streak-widget'
 export { BlankTextPage } from './blank-text'
 export { GlyphWritePage } from './glyph-write'
+export { MagicTransformPage } from './magic-transform'
+export { DeckCardPage } from './deck-card'
+export { ConjugationTablePage } from './conjugation-table'
+export { ImagePinPage } from './image-pin'
+export { ConjugationQuizPage } from './conjugation-quiz'

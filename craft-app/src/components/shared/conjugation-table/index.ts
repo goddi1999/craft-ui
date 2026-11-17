@@ -1,0 +1,1 @@
+export { ConjugationTablePage } from "./page";
