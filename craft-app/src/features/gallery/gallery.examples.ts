@@ -42,6 +42,7 @@ RadarChartPage,
   GlyphWritePage,
   MagicTransformPage,
   ImagePinPage,
+  ImagePinEmptyPage,
   FunnelChartPage,
   PackageBoxPage,
   AccordionPageTransitionPage,
@@ -2371,5 +2372,15 @@ export const GALLERY_EXAMPLES: GalleryExample[] = sortNewestFirst([
     tech: 'React · Motion',
     categories: ['inputs', 'animation'],
     page: ConjugationQuizPage,
+  },
+  {
+    slug: 'image-pin-empty',
+    addedAt: '2026-11-17',
+    title: 'Image Pin Empty',
+    description:
+      'A static empty state: four rounded corner arcs instead of a border, and an empty-picture icon with rounded strokes over faint guide lines.',
+    tech: 'React · SVG',
+    categories: ['media'],
+    page: ImagePinEmptyPage,
   },
 ])

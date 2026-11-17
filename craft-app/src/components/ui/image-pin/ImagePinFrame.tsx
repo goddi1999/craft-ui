@@ -1,5 +1,8 @@
 import { useRef, type CSSProperties, type ReactNode } from "react";
+import { XIcon } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import { ImagePinPlaceholder } from "@/components/ui/image-pin-empty";
 import { useElementSize } from "@/hooks";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +19,8 @@ export type ImagePinFrameProps = {
   fallback?: ReactNode;
   /** Fade the image's edges into the blurred backdrop. Off = hard edge. */
   feather?: boolean;
+  /** Shows a round X at the top edge that removes the image. */
+  onRemove?: () => void;
   className?: string;
 };
 
@@ -37,14 +42,22 @@ const FEATHER_MASK: CSSProperties = {
  * inside (`contain`), fades its edges out, and fills the rest with a heavily
  * blurred copy so the photo melts into its own colours.
  * The frame draws the image; `children` only draw what sits on top of it.
+ * With no image it shows the empty state in the same box.
  * Size it with `className` — the default follows the screen height.
  */
-export function ImagePinFrame({
+export function ImagePinFrame(props: ImagePinFrameProps) {
+  if (props.imageSrc !== "") return <FilledFrame {...props} />;
+  return <ImagePinPlaceholder label="No image" className={props.className} />;
+}
+
+/** Mounted only with an image, so the size observer starts with its box in place. */
+function FilledFrame({
   imageSrc,
   natural,
   children,
   fallback,
   feather = true,
+  onRemove,
   className,
 }: ImagePinFrameProps) {
   const boxRef = useRef<HTMLDivElement>(null);
@@ -56,19 +69,17 @@ export function ImagePinFrame({
     <div
       data-slot="image-pin-frame"
       className={cn(
-        "relative isolate h-[min(70dvh,52rem)] min-h-72 w-full overflow-hidden rounded-xl bg-muted",
+        "relative isolate h-[min(70dvh,52rem)] min-h-72 w-full overflow-hidden rounded-4xl bg-muted",
         className,
       )}
     >
-      {imageSrc ? (
-        <img
-          src={imageSrc}
-          alt=""
-          aria-hidden
-          draggable={false}
-          className="pointer-events-none absolute inset-0 -z-10 size-full scale-125 object-cover blur-[48px] saturate-125 select-none"
-        />
-      ) : null}
+      <img
+        src={imageSrc}
+        alt=""
+        aria-hidden
+        draggable={false}
+        className="pointer-events-none absolute inset-0 -z-10 size-full scale-125 object-cover blur-[48px] saturate-125 select-none"
+      />
 
       <div
         ref={boxRef}
@@ -87,6 +98,19 @@ export function ImagePinFrame({
           </div>
         ) : null}
       </div>
+
+      {onRemove ? (
+        <Button
+          type="button"
+          variant="secondary"
+          size="icon-sm"
+          aria-label="Remove image"
+          onClick={onRemove}
+          className="absolute top-4 right-4 z-10 rounded-full bg-background/80 shadow-sm backdrop-blur-md transition-transform duration-150 ease-out active:scale-[0.94]"
+        >
+          <XIcon />
+        </Button>
+      ) : null}
 
       {fallback ? (
         <div className="absolute inset-0 flex items-center justify-center bg-background/60 text-sm text-muted-foreground backdrop-blur-sm">

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Circle, MapPin, PenTool, Square } from 'lucide-react'
 
 import { DemoSettings, DemoSwitch } from '@/components/shared/demo-controls'
 import { type DemoPropDoc } from '@/components/shared/demo-docs'
@@ -16,9 +17,25 @@ import {
   type ImagePinShape,
   type ImagePinSize,
 } from '@/components/ui/image-pin'
-import { Segmented } from '@/components/ui/segmented-control'
+import { FileDrop } from '@/components/ui/file-drop'
+import { ImagePinPlaceholder } from '@/components/ui/image-pin-empty'
+import { RubberDock, type RubberDockItem } from '@/components/ui/rubber-dock'
 
 type Tab = 'draw' | 'pin'
+
+const TAB_ITEMS: RubberDockItem[] = [
+  { value: 'draw', label: 'Draw regions', icon: <PenTool /> },
+  { value: 'pin', label: 'Drop the pin', icon: <MapPin /> },
+]
+
+const SHAPE_ITEMS: RubberDockItem[] = [
+  { value: 'rectangle', label: 'Rectangle', icon: <Square /> },
+  { value: 'circle', label: 'Circle', icon: <Circle /> },
+]
+
+const isTab = (value: string): value is Tab => value === 'draw' || value === 'pin'
+const isShape = (value: string): value is ImagePinShape =>
+  value === 'rectangle' || value === 'circle'
 
 const vietnam = (id: number, caption: string): ImagePinLibraryImage => ({
   id: `vietnam-${id}`,
@@ -65,9 +82,9 @@ const PROPS: DemoPropDoc[] = [
   { name: 'pin / onPinChange', type: 'ImagePinPoint | null', description: 'Board: pin centre in 0..1 image space. Drag from the dock onto the image; drop outside to return it (null).' },
   { name: 'dockLabel', type: 'string', default: "'Drag the pin onto the image'", description: 'Board: hint beside the docked pin.' },
   { name: 'className (stage) / frameClassName (board)', type: 'string', default: "'h-[min(70dvh,52rem)]'", description: 'Sizes the image frame. The image always fits inside; empty bands show a blurred copy.' },
+  { name: 'onImageRemove', type: '() => void', description: 'Both: round X at the top edge of the frame that removes the image.' },
   { name: 'ImagePinLibrary images / value', type: 'ImagePinLibraryImage[] / string', description: 'Library: the strip of images; `value` (a src) is outlined.' },
   { name: 'ImagePinLibrary onInsert', type: '(image) => void', description: 'Library: the Insert button in the full preview a thumbnail opens.' },
-  { name: 'ImagePinLibrary onImport', type: '(files: File[]) => void', description: 'Library: drop zone for your own images (readImageFile turns one into a library entry). Omit to hide it.' },
   { name: 'showRegions', type: 'boolean', default: 'false', description: 'Board: draw the targets over the image (debug only).' },
   { name: 'showResult', type: 'boolean', default: 'true', description: 'Board: blue pin on a hit, red on a miss.' },
 ]
@@ -107,13 +124,18 @@ export function ImagePinPage() {
     return () => urls.forEach((url) => URL.revokeObjectURL(url))
   }, [])
 
-  const insertImage = (image: ImagePinLibraryImage) => {
-    if (image.src === imageSrc) return
-    setImageSrc(image.src)
+  const showImage = (src: string) => {
+    setImageSrc(src)
     setRegions([])
     setSelectedId(null)
     setPin(null)
   }
+
+  const insertImage = (image: ImagePinLibraryImage) => {
+    if (image.src !== imageSrc) showImage(image.src)
+  }
+
+  const removeImage = () => showImage('')
 
   const importImages = async (files: File[]) => {
     const images = files.filter((file) => file.type.startsWith('image/'))
@@ -141,11 +163,13 @@ export function ImagePinPage() {
 
   const hit = pin && scene ? findHitRegion(pin, regions, scene) : null
   const hitNumber = hit ? regions.findIndex((region) => region.id === hit.id) + 1 : 0
-  const pinStatus = !pin
-    ? 'Drag the pin from the dock onto the image.'
-    : hit
-      ? `Hit region ${hit.label || hitNumber}`
-      : 'Miss: the pin is outside every region.'
+  const pinStatus = !imageSrc
+    ? 'Drop an image to start.'
+    : !pin
+      ? 'Drag the pin from the dock onto the image.'
+      : hit
+        ? `Hit region ${hit.label || hitNumber}`
+        : 'Miss: the pin is outside every region.'
 
   return (
     <DemoPage
@@ -168,29 +192,26 @@ export function ImagePinPage() {
     >
       <div className="flex w-full flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Segmented<Tab>
-            label="Mode"
+          <RubberDock
+            aria-label="Mode"
+            items={TAB_ITEMS}
             value={tab}
             onValueChange={(next) => {
+              if (!isTab(next)) return
               setTab(next)
               setSelectedId(null)
             }}
-            options={[
-              { value: 'draw', label: 'Draw' },
-              { value: 'pin', label: 'Pin' },
-            ]}
           />
 
           {tab === 'draw' ? (
             <div className="flex flex-wrap items-center gap-2">
-              <Segmented<ImagePinShape>
-                label="Shape"
+              <RubberDock
+                aria-label="Shape"
+                items={SHAPE_ITEMS}
                 value={drawMode}
-                onValueChange={setDrawMode}
-                options={[
-                  { value: 'rectangle', label: 'Rectangle' },
-                  { value: 'circle', label: 'Circle' },
-                ]}
+                onValueChange={(next) => {
+                  if (isShape(next)) setDrawMode(next)
+                }}
               />
             </div>
           ) : (
@@ -213,15 +234,23 @@ export function ImagePinPage() {
 
         {tab === 'draw' ? (
           <>
-            <ImagePinRegionStage
-              imageSrc={imageSrc}
-              regions={regions}
-              onRegionsChange={setRegions}
-              selectedRegionId={selectedId}
-              onSelectedRegionIdChange={setSelectedId}
-              drawMode={drawMode}
-              onSceneMetrics={setScene}
-            />
+            {imageSrc ? (
+              <ImagePinRegionStage
+                imageSrc={imageSrc}
+                regions={regions}
+                onRegionsChange={setRegions}
+                selectedRegionId={selectedId}
+                onSelectedRegionIdChange={setSelectedId}
+                drawMode={drawMode}
+                onSceneMetrics={setScene}
+                onImageRemove={removeImage}
+              />
+            ) : (
+              <ImagePinPlaceholder
+                label="No image yet"
+                hint="Drop one in the Pin tab, or insert one from the library below."
+              />
+            )}
             <p className="text-sm text-muted-foreground">
               Click and drag on the image to draw. Click a region to select, move or resize it.
               Delete or Backspace removes it. {regions.length} region
@@ -231,13 +260,23 @@ export function ImagePinPage() {
               images={library}
               value={imageSrc}
               onInsert={insertImage}
-              onImport={importImages}
             />
           </>
+        ) : !imageSrc ? (
+          // The only place to drop a new image: the Pin tab with no image.
+          <div className="flex h-[min(70dvh,52rem)] min-h-72 w-full items-center justify-center">
+            <FileDrop
+              accept="image/*"
+              label="Drop an image"
+              hint="or click to choose one"
+              onFilesChange={importImages}
+            />
+          </div>
         ) : regions.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
-            Draw at least one region in the Draw tab first.
-          </p>
+          <ImagePinPlaceholder
+            label="No regions yet"
+            hint="Draw at least one region in the Draw tab first."
+          />
         ) : (
           <ImagePinBoard
             imageSrc={imageSrc}

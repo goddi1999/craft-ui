@@ -33,6 +33,8 @@ export type ImagePinBoardProps = {
   dockLabel?: string;
   /** Sizes the image frame; defaults to a screen-height box. */
   frameClassName?: string;
+  /** Round X on the frame that removes the image. */
+  onImageRemove?: () => void;
   className?: string;
 };
 
@@ -80,6 +82,7 @@ export function ImagePinBoard({
   showResult = true,
   dockLabel = "Drag the pin onto the image",
   frameClassName,
+  onImageRemove,
   className,
 }: ImagePinBoardProps) {
   const [image, status] = useImage(imageSrc);
@@ -195,6 +198,7 @@ export function ImagePinBoard({
         imageSrc={imageSrc}
         natural={natural}
         fallback={fallback}
+        onRemove={onImageRemove}
         className={cn(
           "transition-[box-shadow] duration-150",
           overImage &&
@@ -263,25 +267,27 @@ export function ImagePinBoard({
         )}
       </ImagePinFrame>
 
-      <div
-        data-slot="image-pin-dock"
-        className="flex items-center gap-3 self-center rounded-full border border-dashed border-muted-foreground/30 bg-muted/40 py-2 pr-4 pl-2"
-      >
-        <span className="flex size-10 items-center justify-center rounded-full bg-background shadow-sm">
-          {!pin && !drag ? (
-            <button
-              {...pinButtonProps}
-              aria-label="Pin. Drag it onto the image, or press Enter to place it in the centre."
-              className={cn(pinButtonProps.className, "cursor-grab")}
-            >
-              <ImagePin size={PIN_SIZE} />
-            </button>
-          ) : null}
-        </span>
-        <span className="text-sm text-muted-foreground">
-          {pin ? "Drag the pin off the image to return it here" : dockLabel}
-        </span>
-      </div>
+      {imageSrc ? (
+        <div
+          data-slot="image-pin-dock"
+          className="flex items-center gap-3 self-center rounded-full border border-dashed border-muted-foreground/30 bg-muted/40 py-2 pr-4 pl-2"
+        >
+          <span className="flex size-10 items-center justify-center rounded-full bg-background shadow-sm">
+            {!pin && !drag ? (
+              <button
+                {...pinButtonProps}
+                aria-label="Pin. Drag it onto the image, or press Enter to place it in the centre."
+                className={cn(pinButtonProps.className, "cursor-grab")}
+              >
+                <ImagePin size={PIN_SIZE} />
+              </button>
+            ) : null}
+          </span>
+          <span className="text-sm text-muted-foreground">
+            {pin ? "Drag the pin off the image to return it here" : dockLabel}
+          </span>
+        </div>
+      ) : null}
 
       {drag ? (
         <div

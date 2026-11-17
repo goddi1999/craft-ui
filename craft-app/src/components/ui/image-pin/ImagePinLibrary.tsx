@@ -2,7 +2,6 @@ import { useState } from "react";
 import { ImagePlus } from "lucide-react";
 
 import { BlurredScrollArea } from "@/components/ui/blurred-scroll-area";
-import { FileDrop } from "@/components/ui/file-drop";
 import {
   Lightbox,
   LightboxCaption,
@@ -30,20 +29,17 @@ export type ImagePinLibraryProps = {
   value?: string;
   /** The preview's Insert button; the lightbox closes after it. */
   onInsert: (image: ImagePinLibraryImage) => void;
-  /** Files dropped or picked in the drop zone. Omit to hide the drop zone. */
-  onImport?: (files: File[]) => void;
   className?: string;
 };
 
 /**
  * A short strip of images to put on the board. A thumbnail opens a full preview
- * (swipe, zoom) with an Insert button; the drop zone imports images of your own.
+ * (swipe, zoom) with an Insert button.
  */
 export function ImagePinLibrary({
   images,
   value,
   onInsert,
-  onImport,
   className,
 }: ImagePinLibraryProps) {
   const [index, setIndex] = useState(0);
@@ -53,21 +49,8 @@ export function ImagePinLibrary({
     <section
       data-slot="image-pin-library"
       aria-label="Image library"
-      className={cn(
-        "flex flex-col gap-3 md:flex-row md:items-center",
-        className,
-      )}
+      className={cn("flex flex-col gap-2", className)}
     >
-      {onImport ? (
-        <FileDrop
-          accept="image/*"
-          label="Drop an image"
-          hint="or click to choose one"
-          onFilesChange={onImport}
-          className="shrink-0 self-center"
-        />
-      ) : null}
-
       <Lightbox index={index} onIndexChange={setIndex}>
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <p className="px-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">

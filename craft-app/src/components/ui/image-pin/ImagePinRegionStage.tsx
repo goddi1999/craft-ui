@@ -67,6 +67,8 @@ export type ImagePinRegionStageProps = {
   drawMode?: ImagePinShape;
   onSceneMetrics?: (metrics: ImagePinSize) => void;
   onImageLoadFailed?: (imageSrc: string) => void;
+  /** Round X on the frame that removes the image. */
+  onImageRemove?: () => void;
   /** Sizes the image frame; defaults to a screen-height box. */
   className?: string;
 };
@@ -104,6 +106,7 @@ export function ImagePinRegionStage({
   drawMode = "rectangle",
   onSceneMetrics,
   onImageLoadFailed,
+  onImageRemove,
   className,
 }: ImagePinRegionStageProps) {
   const [image, status] = useImage(imageSrc);
@@ -313,6 +316,7 @@ export function ImagePinRegionStage({
       imageSrc={imageSrc}
       natural={hasImage ? sceneSize : null}
       fallback={fallback}
+      onRemove={onImageRemove}
       className={className}
     >
       {(fitted) => {
