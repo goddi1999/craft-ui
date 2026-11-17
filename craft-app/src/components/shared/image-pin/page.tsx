@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Circle, MapPin, PenTool, Square } from 'lucide-react'
+import { Check, Circle, MapPin, PenTool, Square } from 'lucide-react'
 
 import { DemoSettings, DemoSwitch } from '@/components/shared/demo-controls'
 import { type DemoPropDoc } from '@/components/shared/demo-docs'
@@ -86,7 +86,10 @@ const PROPS: DemoPropDoc[] = [
   { name: 'ImagePinLibrary images / value', type: 'ImagePinLibraryImage[] / string', description: 'Library: the strip of images; `value` (a src) is outlined.' },
   { name: 'ImagePinLibrary onInsert', type: '(image) => void', description: 'Library: the Insert button in the full preview a thumbnail opens.' },
   { name: 'showRegions', type: 'boolean', default: 'false', description: 'Board: draw the targets over the image (debug only).' },
-  { name: 'showResult', type: 'boolean', default: 'true', description: 'Board: blue pin on a hit, red on a miss.' },
+  { name: 'showResult', type: 'boolean', default: 'true', description: 'Board: blue pin on a hit, red on a miss, after the beam crosses it.' },
+  { name: 'checkSignal', type: 'number', description: 'Board: bump it to sweep a blue beam left to right. The pin stays neutral until the beam crosses it.' },
+  { name: 'onChecked', type: '() => void', description: 'Board: fires when the beam reaches the pin.' },
+  { name: 'onScanEnd', type: '() => void', description: 'Board: fires when the beam has left the image.' },
 ]
 
 const USAGE = `const [regions, setRegions] = useState<ImagePinRegion[]>([])
@@ -117,6 +120,9 @@ export function ImagePinPage() {
   const [scene, setScene] = useState<ImagePinSize | null>(null)
   const [pin, setPin] = useState<ImagePinPoint | null>(null)
   const [showRegions, setShowRegions] = useState(false)
+  const [checkSignal, setCheckSignal] = useState(0)
+  const [pending, setPending] = useState(false)
+  const [read, setRead] = useState(false)
 
   // Imported images stay in the library, so their object URLs live until the page goes.
   useEffect(() => {
@@ -167,9 +173,19 @@ export function ImagePinPage() {
     ? 'Drop an image to start.'
     : !pin
       ? 'Drag the pin from the dock onto the image.'
-      : hit
-        ? `Hit region ${hit.label || hitNumber}`
-        : 'Miss: the pin is outside every region.'
+      : !read
+        ? pending
+          ? 'Checking the pin.'
+          : 'Pin is on the image. Check it.'
+        : hit
+          ? `Hit region ${hit.label || hitNumber}`
+          : 'Miss: the pin is outside every region.'
+
+  const placePin = (next: ImagePinPoint | null) => {
+    setPin(next)
+    setRead(false)
+    setPending(false)
+  }
 
   return (
     <DemoPage
@@ -221,10 +237,24 @@ export function ImagePinPage() {
               </p>
               <Button
                 type="button"
+                variant="check"
+                size="sm"
+                disabled={!pin || pending}
+                onClick={() => {
+                  setRead(false)
+                  setPending(true)
+                  setCheckSignal((n) => n + 1)
+                }}
+              >
+                <Check />
+                Check
+              </Button>
+              <Button
+                type="button"
                 variant="outline"
                 size="sm"
                 disabled={!pin}
-                onClick={() => setPin(null)}
+                onClick={() => placePin(null)}
               >
                 Reset pin
               </Button>
@@ -282,8 +312,11 @@ export function ImagePinPage() {
             imageSrc={imageSrc}
             regions={regions}
             pin={pin}
-            onPinChange={setPin}
+            onPinChange={placePin}
             showRegions={showRegions}
+            checkSignal={checkSignal}
+            onChecked={() => setRead(true)}
+            onScanEnd={() => setPending(false)}
           />
         )}
       </div>
