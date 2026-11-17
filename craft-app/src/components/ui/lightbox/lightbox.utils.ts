@@ -11,9 +11,24 @@ const lerp = (from: number, to: number, progress: number) =>
 /** Spring used by every settle: slide changes, zoom, and cancelled pulls. */
 export const SETTLE_SPRING = { type: 'spring', stiffness: 300, damping: 34 } as const
 
-/** Matches the open/close morph: a long ease-out, so the end is gentle. */
+/** Open morph: a long ease-out, so the photo lands gently. */
 export const MORPH_DURATION = 0.36
+/** Closing answers the user, so it is quicker than opening. */
+export const MORPH_OUT_DURATION = 0.26
 const MORPH_EASE = [0.16, 1, 0.3, 1] as const
+
+/**
+ * The latest morph or fade per media element. A newer run (re-opening during the
+ * close) takes over; the older one stops writing styles when it finishes, so it
+ * can't hide the photo or the thumbnail behind the newer run's back.
+ */
+const activeRuns = new WeakMap<HTMLElement, symbol>()
+
+function claimRun(media: HTMLElement): () => boolean {
+  const run = Symbol('lightbox-morph')
+  activeRuns.set(media, run)
+  return () => activeRuns.get(media) === run
+}
 
 /** Swipe and pull thresholds (px, px/s). */
 export const SWIPE_DISTANCE = 50
@@ -92,7 +107,7 @@ export async function morphMedia({ media, thumb, direction }: MorphOptions) {
   const fromRadius = parseFloat(getComputedStyle(thumb).borderTopLeftRadius) || 0
   const toRadius = parseFloat(getComputedStyle(media).borderTopLeftRadius) || 0
 
-  const thumbVisibility = thumb.style.visibility
+  const isCurrent = claimRun(media)
   const placeholder = thumb instanceof HTMLImageElement ? thumb.currentSrc : ''
 
   const apply = (progress: number) => {
@@ -115,12 +130,17 @@ export async function morphMedia({ media, thumb, direction }: MorphOptions) {
   media.style.opacity = ''
 
   await animate(start, end, {
-    duration: MORPH_DURATION,
+    duration: direction === 'in' ? MORPH_DURATION : MORPH_OUT_DURATION,
     ease: MORPH_EASE,
-    onUpdate: apply,
+    onUpdate: (progress) => {
+      if (isCurrent()) apply(progress)
+    },
   })
+  // Superseded: the newer run owns the styles now. Report done so callers move on.
+  if (!isCurrent()) return true
 
-  thumb.style.visibility = thumbVisibility
+  // Always back to visible: a saved value could be our own (or an older run's) "hidden".
+  thumb.style.visibility = ''
   media.style.transform = ''
   media.style.clipPath = ''
   // Closing: stay hidden until the lightbox unmounts, or the photo flashes at full size.
@@ -132,14 +152,15 @@ export async function morphMedia({ media, thumb, direction }: MorphOptions) {
 
 /** Fallback when there is no thumbnail to morph from or to. */
 export async function fadeMedia(media: HTMLElement, direction: 'in' | 'out') {
+  const isCurrent = claimRun(media)
   const [start, end] = direction === 'in' ? [0, 1] : [1, 0]
   media.style.opacity = String(start)
   await animate(start, end, {
-    duration: MORPH_DURATION * 0.8,
+    duration: (direction === 'in' ? MORPH_DURATION : MORPH_OUT_DURATION) * 0.8,
     ease: 'easeOut',
     onUpdate: (value) => {
-      media.style.opacity = String(value)
+      if (isCurrent()) media.style.opacity = String(value)
     },
   })
-  if (direction === 'in') media.style.opacity = ''
+  if (direction === 'in' && isCurrent()) media.style.opacity = ''
 }

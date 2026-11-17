@@ -70,8 +70,9 @@ export function LightboxBackdrop({
     <LightboxPrimitiveBackdrop
       className={cn(
         'fixed inset-0 z-50 bg-background opacity-0',
-        // Same ease-out as the open/close morph, so the two land together.
-        'transition-opacity duration-360 ease-[cubic-bezier(0.16,1,0.3,1)]',
+        // Same ease-out and durations as the morph (MORPH_DURATION / MORPH_OUT_DURATION),
+        // so photo and backdrop land together; closing is the quicker one.
+        'transition-opacity duration-260 ease-[cubic-bezier(0.16,1,0.3,1)] data-open:duration-360',
         'data-open:opacity-[calc(1-var(--lightbox-pull-progress,0)*0.6)]',
         'data-pulling:transition-none',
         className,

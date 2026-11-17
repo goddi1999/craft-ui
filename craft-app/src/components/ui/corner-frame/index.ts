@@ -1,0 +1,5 @@
+export { CornerFrame, CORNER_FRAME_DEFAULTS } from './CornerFrame'
+export type { CornerFrameProps } from './CornerFrame'
+export { CORNER_FRAME_SIZES } from './corner-frame.constants'
+export type { CornerFrameSize } from './corner-frame.constants'
+export { cornerFrameVariants } from './corner-frame.variants'
