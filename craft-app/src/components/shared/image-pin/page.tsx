@@ -172,6 +172,8 @@ const PROPS: DemoPropDoc[] = [
   { name: 'onImageRemove', type: '() => void', description: 'Both: round X at the top edge of the frame that removes the image.' },
   { name: 'ImagePinLibrary images / value', type: 'ImagePinLibraryImage[] / string', description: 'Library: the strip of images; `value` (a src) is outlined.' },
   { name: 'ImagePinLibrary onInsert', type: '(image) => void', description: 'Library: fires when a thumbnail is clicked, or from the Insert button in the preview that the round expand button opens.' },
+  { name: 'missEffect', type: "'shatter' | 'stay'", default: "'shatter'", description: 'Board: what a miss does. `shatter` bursts the pin into balls (fading to red) as the beam crosses it and returns it to the dock; `stay` turns it red and leaves it. A hit always stays and turns blue.' },
+  { name: 'onMissEnd', type: '() => void', description: 'Board: fires when a missed pin has burst, its balls have faded and it is back in the dock.' },
   { name: 'scan', type: 'ImagePinScanOptions', description: 'Board: beam look and timing, and the blur-zoom around the pin. Every field is optional; the ones below show their defaults.' },
   { name: 'scan.duration', type: 'number', default: '1400', description: 'Length of the beam pass in ms. Zoom time comes on top.' },
   { name: 'scan.thickness / glow', type: 'number', default: '4 / 8', description: 'Beam width and glow radius in px.' },
@@ -215,6 +217,8 @@ export function ImagePinPage() {
   const [scene, setScene] = useState<ImagePinSize | null>(null)
   const [pin, setPin] = useState<ImagePinPoint | null>(null)
   const [showRegions, setShowRegions] = useState(false)
+  const [shatterMiss, setShatterMiss] = useState(true)
+  const [missed, setMissed] = useState(false)
   const [scan, setScan] = useState<Required<ImagePinScanOptions>>(IMAGE_PIN_SCAN_DEFAULTS)
   const [beamColor, setBeamColor] = useState<BeamColor>('gray')
   const setScanField = <K extends keyof ImagePinScanOptions>(
@@ -273,7 +277,9 @@ export function ImagePinPage() {
   const pinStatus = !imageSrc
     ? 'Drop an image to start.'
     : !pin
-      ? 'Drag the pin from the dock onto the image.'
+      ? missed
+        ? 'Miss: the pin burst and is back in the dock.'
+        : 'Drag the pin from the dock onto the image.'
       : !read
         ? pending
           ? 'Checking the pin.'
@@ -283,6 +289,7 @@ export function ImagePinPage() {
           : 'Miss: the pin is outside every region.'
 
   const placePin = (next: ImagePinPoint | null) => {
+    if (next) setMissed(false)
     setPin(next)
     setRead(false)
     setPending(false)
@@ -313,6 +320,11 @@ export function ImagePinPage() {
               label="Show regions"
               checked={showRegions}
               onCheckedChange={setShowRegions}
+            />
+            <DemoSwitch
+              label="Burst the pin on a miss"
+              checked={shatterMiss}
+              onCheckedChange={setShatterMiss}
             />
             <DemoControlGroup
               title="Beam colour"
@@ -440,6 +452,8 @@ export function ImagePinPage() {
             onPinChange={placePin}
             showRegions={showRegions}
             scan={scan}
+            missEffect={shatterMiss ? 'shatter' : 'stay'}
+            onMissEnd={() => setMissed(true)}
             checkSignal={checkSignal}
             onChecked={() => setRead(true)}
             onScanEnd={() => setPending(false)}

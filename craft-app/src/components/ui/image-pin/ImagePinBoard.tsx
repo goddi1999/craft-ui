@@ -9,6 +9,11 @@ import {
 import { useReducedMotion } from "motion/react";
 import useImage from "use-image";
 
+import {
+  SHATTER_FADE_COLOR,
+  resolveCssColor,
+  usePinShatter,
+} from "@/components/ui/pin-shatter/engine";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
@@ -64,6 +69,14 @@ export type ImagePinBoardProps = {
   onChecked?: () => void;
   /** Fires when the beam has left the image. */
   onScanEnd?: () => void;
+  /**
+   * What a miss does. `shatter` (default): the pin bursts into balls as the beam
+   * crosses it and returns to the dock. `stay`: the pin turns red and stays.
+   * A hit always stays and turns blue.
+   */
+  missEffect?: "shatter" | "stay";
+  /** Fires when a missed pin has burst, its balls have faded and it is back in the dock. */
+  onMissEnd?: () => void;
   /** Beam look, timing and the blur-zoom around the pin; see `ImagePinScanOptions`. */
   scan?: ImagePinScanOptions;
   /** Hint next to the docked pin. */
@@ -117,6 +130,8 @@ export function ImagePinBoard({
   checkSignal,
   onChecked,
   onScanEnd,
+  missEffect = "shatter",
+  onMissEnd,
   scan,
   dockLabel = "Drag the pin onto the image",
   frameClassName,
@@ -131,12 +146,14 @@ export function ImagePinBoard({
   const resultRef = useRef<HTMLSpanElement>(null);
   const neutralRef = useRef<HTMLSpanElement>(null);
   const pinRef = useRef(pin);
+  const burstRef = useRef({ shatter: false, pop: () => {} });
   const onCheckedRef = useRef(onChecked);
   const onScanEndRef = useRef(onScanEnd);
   const options = resolveScan(scan);
   const optionsRef = useRef(options);
   const [drag, setDrag] = useState<Drag | null>(null);
   const [run, setRun] = useState(0);
+  const [burst, setBurst] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const seenPin = useRef<string | null>(null);
   const seenSignal = useRef(checkSignal ?? 0);
@@ -150,6 +167,28 @@ export function ImagePinBoard({
     ? { width: image.naturalWidth, height: image.naturalHeight }
     : null;
   const hit = pin && natural ? findHitRegion(pin, regions, natural) : null;
+
+  const { canvasRef: burstCanvasRef, shatter } = usePinShatter(() => {
+    setBurst(false);
+    onPinChange(null);
+    onMissEnd?.();
+  });
+
+  /** Bursts the pin at its spot, from the neutral dot the beam is still crossing to red. */
+  const popPin = () => {
+    const point = pinRef.current;
+    const surface = surfaceRef.current;
+    const dot = surface?.querySelector('[data-slot="image-pin"]');
+    if (!point || !surface || !dot) return;
+    const origin = {
+      x: point.x * surface.clientWidth,
+      y: point.y * surface.clientHeight,
+    };
+    const fill = getComputedStyle(dot).backgroundColor;
+    const tint = resolveCssColor(surface, SHATTER_FADE_COLOR);
+    if (shatter(origin, PIN_SIZE / 2, fill, tint)) setBurst(true);
+  };
+  burstRef.current = { shatter: missEffect === "shatter" && hit === null, pop: popPin };
   const waits = checkSignal !== undefined;
   const scanning = run > 0 && !revealed && !reduced;
   const variant =
@@ -252,7 +291,10 @@ export function ImagePinBoard({
     }
 
     const timer = window.setTimeout(
-      () => tell(onCheckedRef.current),
+      () => {
+        tell(onCheckedRef.current);
+        if (!cancelled && burstRef.current.shatter) burstRef.current.pop();
+      },
       lead + timeline.timeAt(point.x) * o.duration,
     );
     beamAnim.onfinish = () => {
@@ -443,7 +485,7 @@ export function ImagePinBoard({
               </svg>
             ) : null}
 
-            {pin && !drag ? (
+            {pin && !drag && !burst ? (
               <button
                 {...pinButtonProps}
                 aria-label={
@@ -482,6 +524,12 @@ export function ImagePinBoard({
                 )}
               </button>
             ) : null}
+
+            <canvas
+              ref={burstCanvasRef}
+              aria-hidden
+              className="pointer-events-none absolute inset-0 z-20 size-full"
+            />
 
             {scanning ? (
               <div
