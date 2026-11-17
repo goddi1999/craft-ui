@@ -3,6 +3,8 @@ export type { ImagePinProps } from "./ImagePin";
 export { ImagePinFrame, IMAGE_PIN_FEATHER_MASK } from "./ImagePinFrame";
 export type { ImagePinFrameProps } from "./ImagePinFrame";
 export { ImagePinBoard } from "./ImagePinBoard";
+export { IMAGE_PIN_SCAN_DEFAULTS } from "./image-pin-scan";
+export type { ImagePinScanOptions } from "./image-pin-scan";
 export type { ImagePinBoardProps } from "./ImagePinBoard";
 export { ImagePinDock } from "./ImagePinDock";
 export type { ImagePinDockProps } from "./ImagePinDock";

@@ -1,4 +1,4 @@
-import { useRef, type CSSProperties, type ReactNode } from "react";
+import { useRef, type CSSProperties, type ReactNode, type Ref } from "react";
 import { XIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ export type ImagePinFrameProps = {
   natural: ImagePinSize | null;
   /** Rendered centred at the fitted size once both the frame and the image are measured. */
   children: (fitted: ImagePinSize) => ReactNode;
+  /** The box that holds the sharp image and `children`, e.g. to zoom it. */
+  contentRef?: Ref<HTMLDivElement>;
   /** Overlay shown instead of `children` (loading, error). */
   fallback?: ReactNode;
   /** Fade the image's edges into the blurred backdrop. Off = hard edge. */
@@ -55,6 +57,7 @@ function FilledFrame({
   imageSrc,
   natural,
   children,
+  contentRef,
   fallback,
   feather = true,
   onRemove,
@@ -86,7 +89,7 @@ function FilledFrame({
         className="absolute inset-0 flex items-center justify-center"
       >
         {showContent ? (
-          <div className="relative" style={fitted}>
+          <div ref={contentRef} className="relative" style={fitted}>
             <img
               src={imageSrc}
               alt=""

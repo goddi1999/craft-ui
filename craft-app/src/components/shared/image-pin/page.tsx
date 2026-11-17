@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { Check, Circle, MapPin, PenTool, Square } from 'lucide-react'
 
-import { DemoSettings, DemoSwitch } from '@/components/shared/demo-controls'
+import {
+  DemoControlGroup,
+  DemoSettings,
+  DemoSlider,
+  DemoSwitch,
+} from '@/components/shared/demo-controls'
 import { type DemoPropDoc } from '@/components/shared/demo-docs'
 import { DemoPage } from '@/components/shared/demo-page'
 import { Button } from '@/components/ui/button'
 import {
+  IMAGE_PIN_SCAN_DEFAULTS,
   ImagePinBoard,
   ImagePinLibrary,
   ImagePinRegionStage,
@@ -14,6 +20,7 @@ import {
   type ImagePinLibraryImage,
   type ImagePinPoint,
   type ImagePinRegion,
+  type ImagePinScanOptions,
   type ImagePinShape,
   type ImagePinSize,
 } from '@/components/ui/image-pin'
@@ -22,6 +29,15 @@ import { ImagePinPlaceholder } from '@/components/ui/image-pin-empty'
 import { RubberDock, type RubberDockItem } from '@/components/ui/rubber-dock'
 
 type Tab = 'draw' | 'pin'
+
+const BEAM_COLORS = {
+  gray: 'var(--color-neutral-400)',
+  blue: 'var(--color-blue-400)',
+  red: 'var(--color-red-400)',
+  green: 'var(--color-green-400)',
+} as const
+
+type BeamColor = keyof typeof BEAM_COLORS
 
 const TAB_ITEMS: RubberDockItem[] = [
   { value: 'draw', label: 'Draw regions', icon: <PenTool /> },
@@ -156,6 +172,14 @@ const PROPS: DemoPropDoc[] = [
   { name: 'onImageRemove', type: '() => void', description: 'Both: round X at the top edge of the frame that removes the image.' },
   { name: 'ImagePinLibrary images / value', type: 'ImagePinLibraryImage[] / string', description: 'Library: the strip of images; `value` (a src) is outlined.' },
   { name: 'ImagePinLibrary onInsert', type: '(image) => void', description: 'Library: fires when a thumbnail is clicked, or from the Insert button in the preview that the round expand button opens.' },
+  { name: 'scan', type: 'ImagePinScanOptions', description: 'Board: beam look and timing, and the blur-zoom around the pin. Every field is optional; the ones below show their defaults.' },
+  { name: 'scan.duration', type: 'number', default: '1400', description: 'Length of the beam pass in ms. Zoom time comes on top.' },
+  { name: 'scan.thickness / glow', type: 'number', default: '4 / 8', description: 'Beam width and glow radius in px.' },
+  { name: 'scan.color', type: 'string', default: "'var(--color-neutral-400)'", description: 'Beam colour: any CSS colour or var(). Neutral grey by default.' },
+  { name: 'scan.slowMo / slowZone', type: 'number', default: '0.25 / 0.12', description: 'Beam speed next to the pin (1 = no slow motion) and the half-width of that stretch as a share of the image width.' },
+  { name: 'scan.zoom', type: 'boolean', default: 'true', description: 'Blur-zoom into the pin just before the beam reaches it; zoom out as the beam leaves the image.' },
+  { name: 'scan.zoomScale / zoomBlur', type: 'number', default: '1.5 / 4', description: 'How far the image scales around the pin and the peak blur in px while it moves.' },
+  { name: 'scan.zoomInMs / zoomOutMs', type: 'number', default: '380 / 420', description: 'Zoom-in ends as the beam enters the slow stretch; zoom-out starts as it leaves the image.' },
   { name: 'showRegions', type: 'boolean', default: 'false', description: 'Board: draw the targets over the image (debug only).' },
   { name: 'showResult', type: 'boolean', default: 'true', description: 'Board: blue pin on a hit, red on a miss, after the beam crosses it.' },
   { name: 'checkSignal', type: 'number', description: 'Board: bump it to sweep a blue beam left to right. The pin stays neutral until the beam crosses it.' },
@@ -191,6 +215,12 @@ export function ImagePinPage() {
   const [scene, setScene] = useState<ImagePinSize | null>(null)
   const [pin, setPin] = useState<ImagePinPoint | null>(null)
   const [showRegions, setShowRegions] = useState(false)
+  const [scan, setScan] = useState<Required<ImagePinScanOptions>>(IMAGE_PIN_SCAN_DEFAULTS)
+  const [beamColor, setBeamColor] = useState<BeamColor>('gray')
+  const setScanField = <K extends keyof ImagePinScanOptions>(
+    key: K,
+    value: Required<ImagePinScanOptions>[K],
+  ) => setScan((current) => ({ ...current, [key]: value }))
   const [checkSignal, setCheckSignal] = useState(0)
   const [pending, setPending] = useState(false)
   const [read, setRead] = useState(false)
@@ -272,6 +302,29 @@ export function ImagePinPage() {
               checked={showRegions}
               onCheckedChange={setShowRegions}
             />
+            <DemoControlGroup
+              title="Beam colour"
+              options={['gray', 'blue', 'red', 'green'] as const}
+              value={beamColor}
+              onChange={(next) => {
+                setBeamColor(next)
+                setScanField('color', BEAM_COLORS[next])
+              }}
+            />
+            <DemoSlider label="Duration" value={scan.duration} onValueChange={(v) => setScanField('duration', v)} min={600} max={3000} step={50} unit="ms" />
+            <DemoSlider label="Beam thickness" value={scan.thickness} onValueChange={(v) => setScanField('thickness', v)} min={1} max={12} unit="px" />
+            <DemoSlider label="Beam glow" value={scan.glow} onValueChange={(v) => setScanField('glow', v)} min={0} max={24} unit="px" />
+            <DemoSlider label="Slow motion speed" value={Math.round(scan.slowMo * 100)} onValueChange={(v) => setScanField('slowMo', v / 100)} min={10} max={100} step={5} unit="%" />
+            <DemoSlider label="Slow zone" value={Math.round(scan.slowZone * 100)} onValueChange={(v) => setScanField('slowZone', v / 100)} min={0} max={30} unit="%" />
+            <DemoSwitch
+              label="Zoom into the pin"
+              checked={scan.zoom}
+              onCheckedChange={(next) => setScanField('zoom', next)}
+            />
+            <DemoSlider label="Zoom scale" value={Math.round(scan.zoomScale * 100)} onValueChange={(v) => setScanField('zoomScale', v / 100)} min={100} max={250} step={5} unit="%" />
+            <DemoSlider label="Zoom blur" value={scan.zoomBlur} onValueChange={(v) => setScanField('zoomBlur', v)} min={0} max={12} unit="px" />
+            <DemoSlider label="Zoom in" value={scan.zoomInMs} onValueChange={(v) => setScanField('zoomInMs', v)} min={100} max={800} step={20} unit="ms" />
+            <DemoSlider label="Zoom out" value={scan.zoomOutMs} onValueChange={(v) => setScanField('zoomOutMs', v)} min={100} max={800} step={20} unit="ms" />
           </DemoSettings>
         ) : undefined
       }
@@ -385,6 +438,7 @@ export function ImagePinPage() {
             pin={pin}
             onPinChange={placePin}
             showRegions={showRegions}
+            scan={scan}
             checkSignal={checkSignal}
             onChecked={() => setRead(true)}
             onScanEnd={() => setPending(false)}

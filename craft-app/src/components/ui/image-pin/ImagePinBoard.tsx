@@ -14,11 +14,16 @@ import { cn } from "@/lib/utils";
 
 import { ImagePin } from "./ImagePin";
 import {
-  SCAN_MS,
+  ZOOM_EASING,
+  ZOOM_RELEASE_MS,
   beamFrames,
   coverFrames,
   pinWindow,
+  resolveScan,
   revealFrames,
+  scanTimeline,
+  zoomFrames,
+  type ImagePinScanOptions,
 } from "./image-pin-scan";
 import { ImagePinDock } from "./ImagePinDock";
 import { ImagePinFrame } from "./ImagePinFrame";
@@ -59,6 +64,8 @@ export type ImagePinBoardProps = {
   onChecked?: () => void;
   /** Fires when the beam has left the image. */
   onScanEnd?: () => void;
+  /** Beam look, timing and the blur-zoom around the pin; see `ImagePinScanOptions`. */
+  scan?: ImagePinScanOptions;
   /** Hint next to the docked pin. */
   dockLabel?: string;
   /** Sizes the image frame; defaults to a screen-height box. */
@@ -82,6 +89,17 @@ type Drag = {
   overImage: boolean;
 };
 
+/** Cuts a running zoom short: settles from wherever it is back to the resting size. */
+function releaseZoom(node: HTMLElement, running: Animation[]) {
+  const from = getComputedStyle(node).transform;
+  running.forEach((anim) => anim.cancel());
+  if (from === "none") return;
+  node.animate([{ transform: from }, { transform: "none" }], {
+    duration: ZOOM_RELEASE_MS,
+    easing: "ease-out",
+  });
+}
+
 /**
  * Play surface: drag the pin from the dock and drop it on the image. Drag a placed
  * pin to move it, or drop it outside the image to send it back to the dock.
@@ -99,6 +117,7 @@ export function ImagePinBoard({
   checkSignal,
   onChecked,
   onScanEnd,
+  scan,
   dockLabel = "Drag the pin onto the image",
   frameClassName,
   onImageRemove,
@@ -107,12 +126,15 @@ export function ImagePinBoard({
   const [image, status] = useImage(imageSrc);
   const reduced = useReducedMotion() ?? false;
   const surfaceRef = useRef<HTMLDivElement>(null);
+  const zoomRef = useRef<HTMLDivElement>(null);
   const beamRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLSpanElement>(null);
   const neutralRef = useRef<HTMLSpanElement>(null);
   const pinRef = useRef(pin);
   const onCheckedRef = useRef(onChecked);
   const onScanEndRef = useRef(onScanEnd);
+  const options = resolveScan(scan);
+  const optionsRef = useRef(options);
   const [drag, setDrag] = useState<Drag | null>(null);
   const [run, setRun] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -122,6 +144,7 @@ export function ImagePinBoard({
   pinRef.current = pin;
   onCheckedRef.current = onChecked;
   onScanEndRef.current = onScanEnd;
+  optionsRef.current = options;
 
   const natural = image
     ? { width: image.naturalWidth, height: image.naturalHeight }
@@ -187,33 +210,64 @@ export function ImagePinBoard({
       return;
     }
 
-    const beamAnim = beam.animate(beamFrames(width), {
-      duration: SCAN_MS,
+    const o = optionsRef.current;
+    const timeline = scanTimeline(point.x, o.slowMo, o.slowZone);
+    const content = o.zoom ? zoomRef.current : null;
+    const zoomIn = content ? o.zoomInMs : 0;
+    // The pass waits just long enough that the zoom-in ends as the beam reaches the slow stretch.
+    const lead = Math.max(0, zoomIn - timeline.timeAt(timeline.slow.from) * o.duration);
+    const timing: KeyframeAnimationOptions = {
+      duration: o.duration,
+      delay: lead,
       easing: "linear",
-      fill: "forwards",
-    });
+      fill: "both",
+    };
+
+    const beamAnim = beam.animate(beamFrames(width, timeline), timing);
     const band = pinWindow(point.x, width, PIN_SIZE);
     const resultAnim = resultRef.current?.animate(
-      revealFrames(band.start, band.end),
-      { duration: SCAN_MS, easing: "linear", fill: "forwards" },
+      revealFrames(band.start, band.end, timeline),
+      timing,
     );
     const neutralAnim = neutralRef.current?.animate(
-      coverFrames(band.start, band.end),
-      { duration: SCAN_MS, easing: "linear", fill: "forwards" },
+      coverFrames(band.start, band.end, timeline),
+      timing,
     );
     if (beamAnim.startTime != null) {
       if (resultAnim) resultAnim.startTime = beamAnim.startTime;
       if (neutralAnim) neutralAnim.startTime = beamAnim.startTime;
     }
 
+    const zoomAnims: Animation[] = [];
+    if (content) {
+      content.style.transformOrigin = `${point.x * 100}% ${point.y * 100}%`;
+      zoomAnims.push(
+        content.animate(zoomFrames(1, o.zoomScale, o.zoomBlur), {
+          duration: o.zoomInMs,
+          delay: lead + timeline.timeAt(timeline.slow.from) * o.duration - o.zoomInMs,
+          easing: ZOOM_EASING,
+          fill: "both",
+        }),
+      );
+    }
+
     const timer = window.setTimeout(
       () => tell(onCheckedRef.current),
-      point.x * SCAN_MS,
+      lead + timeline.timeAt(point.x) * o.duration,
     );
     beamAnim.onfinish = () => {
       if (cancelled) return;
       if (showResult) setRevealed(true);
       tell(onScanEndRef.current);
+      if (!content) return;
+      const out = content.animate(zoomFrames(o.zoomScale, 1, o.zoomBlur), {
+        duration: o.zoomOutMs,
+        easing: ZOOM_EASING,
+      });
+      zoomAnims.forEach((anim) => anim.cancel());
+      zoomAnims.length = 0;
+      zoomAnims.push(out);
+      out.onfinish = () => out.cancel();
     };
 
     return () => {
@@ -222,6 +276,7 @@ export function ImagePinBoard({
       resultAnim?.cancel();
       neutralAnim?.cancel();
       window.clearTimeout(timer);
+      if (content) releaseZoom(content, zoomAnims);
     };
   }, [run, reduced, showResult]);
 
@@ -331,6 +386,7 @@ export function ImagePinBoard({
       className={cn("flex w-full flex-col gap-3", className)}
     >
       <ImagePinFrame
+        contentRef={zoomRef}
         imageSrc={imageSrc}
         natural={natural}
         fallback={fallback}
@@ -432,12 +488,14 @@ export function ImagePinBoard({
                 ref={beamRef}
                 aria-hidden
                 data-slot="image-pin-scan"
-                className="pointer-events-none absolute top-0 left-0 z-10 h-full w-0.5"
+                className="pointer-events-none absolute top-0 left-0 z-10 h-full"
                 style={{
                   opacity: 0,
-                  background:
-                    "linear-gradient(to bottom, transparent 8%, oklch(var(--oklch-blue)) 28%, oklch(var(--oklch-blue)) 72%, transparent 92%)",
-                  boxShadow: "0 0 8px oklch(var(--oklch-blue))",
+                  width: options.thickness,
+                  marginLeft: -options.thickness / 2,
+                  background: `linear-gradient(to bottom, transparent 8%, ${options.color} 28%, ${options.color} 72%, transparent 92%)`,
+                  boxShadow:
+                    options.glow > 0 ? `0 0 ${options.glow}px ${options.color}` : undefined,
                 }}
               />
             ) : null}
