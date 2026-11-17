@@ -30,7 +30,7 @@ const fade = (direction: string) =>
   `linear-gradient(${direction}, transparent, #000 ${FEATHER}, #000 calc(100% - ${FEATHER}), transparent)`;
 
 /** Two fades intersected so all four edges soften and the corners round off. */
-const FEATHER_MASK: CSSProperties = {
+export const IMAGE_PIN_FEATHER_MASK: CSSProperties = {
   maskImage: `${fade("to right")}, ${fade("to bottom")}`,
   maskComposite: "intersect",
   WebkitMaskImage: `${fade("to right")}, ${fade("to bottom")}`,
@@ -92,7 +92,7 @@ function FilledFrame({
               alt=""
               draggable={false}
               className="pointer-events-none absolute inset-0 size-full select-none"
-              style={feather ? FEATHER_MASK : undefined}
+              style={feather ? IMAGE_PIN_FEATHER_MASK : undefined}
             />
             {children(fitted)}
           </div>

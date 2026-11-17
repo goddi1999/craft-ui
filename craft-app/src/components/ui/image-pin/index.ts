@@ -1,6 +1,6 @@
 export { ImagePin } from "./ImagePin";
 export type { ImagePinProps } from "./ImagePin";
-export { ImagePinFrame } from "./ImagePinFrame";
+export { ImagePinFrame, IMAGE_PIN_FEATHER_MASK } from "./ImagePinFrame";
 export type { ImagePinFrameProps } from "./ImagePinFrame";
 export { ImagePinBoard } from "./ImagePinBoard";
 export type { ImagePinBoardProps } from "./ImagePinBoard";

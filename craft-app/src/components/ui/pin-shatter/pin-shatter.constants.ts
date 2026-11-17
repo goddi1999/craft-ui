@@ -50,3 +50,15 @@ export const MAX_FRAME_S = 0.05
 export const DEFAULT_PIN_SIZE = 36
 /** On touch the pin rides above the finger so the learner can see where it lands. */
 export const TOUCH_LIFT_PX = 36
+
+/** Drop micro-interaction defaults; the caller can tune all three. */
+export const DROP_RADIUS = 56
+/** 0..1 share of the image warp; 0 turns it off. */
+export const DROP_STRENGTH = 0.65
+export const DROP_DURATION_MS = 680
+/** The image wave reaches a little past the outer ring. */
+export const WAVE_REACH = 1.65
+/** Peak pixel shift of the image warp at full strength. */
+export const WAVE_AMPLITUDE_PX = 11.5
+/** Waves that can run at once; the oldest is dropped. */
+export const MAX_WAVES = 6
