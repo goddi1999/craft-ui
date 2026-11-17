@@ -449,8 +449,8 @@ export function ImagePinBoard({
                 style={{
                   opacity: 0,
                   background:
-                    "linear-gradient(to bottom, transparent, var(--color-blue-400), color-mix(in srgb, var(--color-blue-400) 45%, white), var(--color-blue-400), transparent)",
-                  boxShadow: "0 0 18px var(--color-blue-400)",
+                    "linear-gradient(to bottom, transparent 8%, oklch(var(--oklch-blue)) 28%, oklch(var(--oklch-blue)) 72%, transparent 92%)",
+                  boxShadow: "0 0 8px oklch(var(--oklch-blue))",
                 }}
               />
             ) : null}

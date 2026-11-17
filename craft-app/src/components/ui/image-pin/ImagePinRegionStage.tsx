@@ -35,13 +35,15 @@ import {
   REGION_DASH,
   REGION_FILL_SELECTED,
   REGION_LABEL_COLOR,
-  REGION_LABEL_SIZE,
+  REGION_LABEL_HALO,
   REGION_STROKE_SELECTED,
   REGION_STROKE_WIDTH_ACTIVE,
   regionFillFor,
+  regionLabelFontSize,
   regionStrokeFor,
   regionStrokeWidthFor,
   resolveRegionVisualState,
+  scenePixels,
   styleImagePinAnchor,
 } from "./image-pin.region-style";
 import {
@@ -52,20 +54,6 @@ import {
 } from "./image-pin.utils";
 
 type DraftBox = { sx: number; sy: number; cx: number; cy: number };
-
-/** Calculate text position to center it inside a rectangle */
-function getCenteredTextPosition(
-  rectX: number,
-  rectY: number,
-  rectWidth: number,
-  rectHeight: number,
-  fontSize: number,
-): { x: number; y: number } {
-  const textWidth = fontSize * 0.6; // Approximate character width
-  const x = rectX + (rectWidth - textWidth) / 2;
-  const y = rectY + (rectHeight - fontSize) / 2;
-  return { x, y };
-}
 
 export type ImagePinRegionStageProps = {
   imageSrc: string;
@@ -332,6 +320,15 @@ export function ImagePinRegionStage({
     >
       {(fitted) => {
         const stageScale = fitted.width / sceneSize.width;
+        const px = (screen: number) => scenePixels(screen, stageScale);
+        const dash = REGION_DASH.map(px);
+        const halo = {
+          shadowColor: REGION_LABEL_HALO,
+          shadowBlur: px(2),
+          shadowOpacity: 1,
+          shadowForStrokeEnabled: true,
+          shadowEnabled: true,
+        };
         return (
           <Stage
             data-slot="image-pin-region-stage"
@@ -357,15 +354,14 @@ export function ImagePinRegionStage({
 
               {regions.map((rect, index) => {
                 const regionNumber = index + 1;
-                const labelPos = getCenteredTextPosition(
-                  rect.x,
-                  rect.y,
+                const shape = resolveImagePinShape(rect);
+                const label = rect.label || String(regionNumber);
+                const fontSize = regionLabelFontSize(
+                  label,
                   rect.width,
                   rect.height,
-                  REGION_LABEL_SIZE,
+                  shape,
                 );
-
-                const shape = resolveImagePinShape(rect);
                 const visual = resolveRegionVisualState(
                   rect.id,
                   selectedRegionId,
@@ -373,7 +369,7 @@ export function ImagePinRegionStage({
                 );
                 const isSelected = visual === "selected";
                 const stroke = regionStrokeFor(visual);
-                const strokeWidth = regionStrokeWidthFor(visual);
+                const strokeWidth = px(regionStrokeWidthFor(visual));
                 const fill = regionFillFor(visual);
                 const radius = rect.width / 2;
 
@@ -390,7 +386,8 @@ export function ImagePinRegionStage({
                         fill={fill}
                         stroke={isSelected ? "transparent" : stroke}
                         strokeWidth={isSelected ? 0 : strokeWidth}
-                        dash={REGION_DASH}
+                        dash={dash}
+                        {...halo}
                         draggable
                         onMouseEnter={() => setHoveredRegionId(rect.id)}
                         onMouseLeave={() =>
@@ -449,7 +446,8 @@ export function ImagePinRegionStage({
                         fill={fill}
                         stroke={isSelected ? "transparent" : stroke}
                         strokeWidth={isSelected ? 0 : strokeWidth}
-                        dash={REGION_DASH}
+                        dash={dash}
+                        {...halo}
                         draggable
                         onMouseEnter={() => setHoveredRegionId(rect.id)}
                         onMouseLeave={() =>
@@ -504,16 +502,21 @@ export function ImagePinRegionStage({
                       />
                     )}
 
-                    {/* Question number label centered in the region */}
                     <Text
-                      x={labelPos.x}
-                      y={labelPos.y}
-                      text={rect.label || String(regionNumber)}
-                      fontSize={REGION_LABEL_SIZE}
+                      x={rect.x}
+                      y={rect.y}
+                      width={rect.width}
+                      height={rect.height}
+                      text={label}
+                      fontSize={fontSize}
                       fontFamily="Arial, sans-serif"
                       fontStyle="bold"
-                      fill={REGION_LABEL_COLOR}
                       align="center"
+                      verticalAlign="middle"
+                      fill={REGION_LABEL_COLOR}
+                      stroke={REGION_LABEL_HALO}
+                      strokeWidth={fontSize * 0.045}
+                      fillAfterStrokeEnabled
                       listening={false}
                     />
                   </Fragment>
@@ -534,8 +537,9 @@ export function ImagePinRegionStage({
                         radius={diameter / 2}
                         fill={REGION_FILL_SELECTED}
                         stroke={REGION_STROKE_SELECTED}
-                        strokeWidth={REGION_STROKE_WIDTH_ACTIVE}
-                        dash={REGION_DASH}
+                        strokeWidth={px(REGION_STROKE_WIDTH_ACTIVE)}
+                        dash={dash}
+                        {...halo}
                         listening={false}
                       />
                     );
@@ -555,8 +559,9 @@ export function ImagePinRegionStage({
                     cornerRadius={REGION_CORNER_RADIUS}
                     fill={REGION_FILL_SELECTED}
                     stroke={REGION_STROKE_SELECTED}
-                    strokeWidth={REGION_STROKE_WIDTH_ACTIVE}
-                    dash={REGION_DASH}
+                    strokeWidth={px(REGION_STROKE_WIDTH_ACTIVE)}
+                    dash={dash}
+                    {...halo}
                     listening={false}
                   />
                 )
@@ -572,8 +577,8 @@ export function ImagePinRegionStage({
                   padding={0}
                   borderEnabled
                   borderStroke={REGION_STROKE_SELECTED}
-                  borderStrokeWidth={REGION_STROKE_WIDTH_ACTIVE}
-                  borderDash={REGION_DASH}
+                  borderStrokeWidth={px(REGION_STROKE_WIDTH_ACTIVE)}
+                  borderDash={dash}
                   anchorFill={ANCHOR_FILL}
                   anchorStroke={ANCHOR_STROKE}
                   anchorStrokeWidth={ANCHOR_STROKE_WIDTH}

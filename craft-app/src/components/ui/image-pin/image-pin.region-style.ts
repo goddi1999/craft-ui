@@ -1,24 +1,49 @@
 import type { Rect as KonvaRect } from 'konva/lib/shapes/Rect'
 
-/** Soft fill shared by idle / hover / selected regions. */
-export const REGION_FILL = 'rgba(186, 213, 228, 0.18)'
-export const REGION_FILL_HOVER = 'rgba(186, 213, 228, 0.28)'
-export const REGION_FILL_SELECTED = 'rgba(96, 165, 250, 0.22)'
+/** Blue wash. Idle is strong enough to read on water and on a white wall. */
+export const REGION_FILL = 'rgba(37, 99, 235, 0.46)'
+export const REGION_FILL_HOVER = 'rgba(37, 99, 235, 0.56)'
+export const REGION_FILL_SELECTED = 'rgba(29, 78, 216, 0.66)'
 
-export const REGION_STROKE_IDLE = '#6366F1'
-export const REGION_STROKE_HOVER = '#4F46E5'
-export const REGION_STROKE_SELECTED = '#2563EB'
+export const REGION_STROKE_IDLE = '#1D4ED8'
+export const REGION_STROKE_HOVER = '#1E40AF'
+export const REGION_STROKE_SELECTED = '#1E3A8A'
 
-/** Idle outline — readable without shouting. */
-export const REGION_STROKE_WIDTH_IDLE = 2.5
-/** Hover / selected outline — thicker so the hit target feels intentional. */
-export const REGION_STROKE_WIDTH_ACTIVE = 3.5
+/** Screen pixels. The stage divides by its fit-scale; the board stroke does not scale. */
+export const REGION_STROKE_WIDTH_IDLE = 3
+export const REGION_STROKE_WIDTH_ACTIVE = 4
 
-export const REGION_DASH: number[] = [8, 6]
+/** Screen pixels, same split as the stroke widths. */
+export const REGION_DASH: number[] = [12, 8]
 export const REGION_CORNER_RADIUS = 8
 
-export const REGION_LABEL_SIZE = 20
-export const REGION_LABEL_COLOR = '#2563EB'
+/** Navy on the blue wash, with a white edge so it survives dark cliffs and bright water. */
+export const REGION_LABEL_COLOR = '#1E3A8A'
+export const REGION_LABEL_HALO = '#FFFFFF'
+
+/** Scene pixels for a length that should stay `screenPx` on the fitted image. */
+export function scenePixels(screenPx: number, stageScale: number): number {
+  const scale = stageScale > 0 ? stageScale : 1
+  return screenPx / scale
+}
+
+/**
+ * Digit height tracks the region. Rectangles use the full height; circles stop
+ * inside the curve. A wide label shrinks so it stays inside the width.
+ */
+export function regionLabelFontSize(
+  text: string,
+  width: number,
+  height: number,
+  shape: 'rectangle' | 'circle',
+): number {
+  const heightShare = shape === 'circle' ? 0.7 : 0.82
+  const widthShare = shape === 'circle' ? 0.7 : 0.9
+  const chars = Math.max(text.length, 1)
+  const byHeight = height * heightShare
+  const byWidth = (width * widthShare) / (chars * 0.62)
+  return Math.max(1, Math.min(byHeight, byWidth))
+}
 
 /** Corner drag thumbs — circles, same footprint as before. */
 export const ANCHOR_CORNER_SIZE = 12
