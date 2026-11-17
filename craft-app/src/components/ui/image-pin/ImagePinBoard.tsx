@@ -37,6 +37,7 @@ import {
   clamp01,
   findHitRegion,
   resolveImagePinShape,
+  toElementPoint,
 } from "./image-pin.utils";
 
 export type ImagePinBoardProps = {
@@ -80,20 +81,6 @@ type Drag = {
   /** Whether the lifted pin is over the image right now. */
   overImage: boolean;
 };
-
-/** Client point → 0..1 point inside `element`, or null when it falls outside. */
-function toElementPoint(
-  element: HTMLElement | null,
-  clientX: number,
-  clientY: number,
-): ImagePinPoint | null {
-  const box = element?.getBoundingClientRect();
-  if (!box || box.width === 0 || box.height === 0) return null;
-  const x = (clientX - box.left) / box.width;
-  const y = (clientY - box.top) / box.height;
-  if (x < 0 || x > 1 || y < 0 || y > 1) return null;
-  return { x, y };
-}
 
 /**
  * Play surface: drag the pin from the dock and drop it on the image. Drag a placed

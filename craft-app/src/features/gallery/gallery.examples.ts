@@ -46,6 +46,7 @@ RadarChartPage,
   ImagePinEmptyPage,
   BlurLoadPage,
   CornerFramePage,
+  PinShatterPage,
   FunnelChartPage,
   PackageBoxPage,
   AccordionPageTransitionPage,
@@ -2415,5 +2416,15 @@ export const GALLERY_EXAMPLES: GalleryExample[] = sortNewestFirst([
     tech: 'React · SVG',
     categories: ['layout', 'media'],
     page: CornerFramePage,
+  },
+  {
+    slug: 'pin-shatter',
+    addedAt: '2026-11-17',
+    title: 'Pin Shatter',
+    description:
+      'Drag the pin onto an image and click it: it pops into small matte rubber balls that bounce off the edges and each other, then fade away.',
+    tech: 'React · Canvas · Physics',
+    categories: ['animation', 'effects'],
+    page: PinShatterPage,
   },
 ])

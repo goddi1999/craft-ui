@@ -1,0 +1,1 @@
+export { PinShatterPage } from './page'

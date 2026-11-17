@@ -27,4 +27,5 @@ export {
   isPointInRegion,
   readImageFile,
   resolveImagePinShape,
+  toElementPoint,
 } from "./image-pin.utils";

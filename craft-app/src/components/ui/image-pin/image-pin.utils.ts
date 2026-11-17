@@ -102,6 +102,20 @@ export function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));
 }
 
+/** Client point → 0..1 point inside `element`, or null when it falls outside. */
+export function toElementPoint(
+  element: HTMLElement | null,
+  clientX: number,
+  clientY: number,
+): ImagePinPoint | null {
+  const box = element?.getBoundingClientRect();
+  if (!box || box.width === 0 || box.height === 0) return null;
+  const x = (clientX - box.left) / box.width;
+  const y = (clientY - box.top) / box.height;
+  if (x < 0 || x > 1 || y < 0 || y > 1) return null;
+  return { x, y };
+}
+
 /**
  * Turn an image file into a library entry backed by an object URL.
  * The caller owns the URL and revokes it with `URL.revokeObjectURL` when done.
