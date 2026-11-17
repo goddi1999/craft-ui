@@ -21,10 +21,12 @@ import {
   MOVE_DRAG_SCALE,
   MOVE_DRAG_SCALE_MS,
   PIN_SHATTER_IMAGE_SRC,
+  SHATTER_FADE_COLOR,
 } from './pin-shatter.constants'
 import { PinDropLens } from './PinDropLens'
 import { PinDropRipple } from './PinDropRipple'
 import { useImageWave } from './use-image-wave'
+import { resolveCssColor } from './pin-shatter.utils'
 import { usePinDrag, type PinDragSource } from './use-pin-drag'
 import { usePinShatter } from './use-pin-shatter'
 
@@ -35,6 +37,10 @@ export type PinShatterProps = {
   pinSize?: number
   /** Hint beside the docked pin. */
   dockLabel?: string
+  /** Turn the balls from the pin's colour to `fadeColor` as they fly. Off by default. */
+  fadeToColor?: boolean
+  /** CSS colour or `var()` the balls fade to; red-400 by default. */
+  fadeColor?: string
   /** Outer radius in px of the rings that leave a dropped pin. */
   dropRadius?: number
   /**
@@ -83,6 +89,8 @@ export function PinShatter({
   imageSrc = PIN_SHATTER_IMAGE_SRC,
   pinSize = DEFAULT_PIN_SIZE,
   dockLabel = 'Drag the pin onto the image',
+  fadeToColor = false,
+  fadeColor = SHATTER_FADE_COLOR,
   dropRadius = DROP_RADIUS,
   dropStrength = DROP_STRENGTH,
   dropDuration = DROP_DURATION_MS,
@@ -154,7 +162,8 @@ export function PinShatter({
 
     setPin(null)
     onShatter?.(pin)
-    if (reduced || !shatter(origin, pinSize / 2, fill)) {
+    const tint = fadeToColor ? resolveCssColor(surface, fadeColor) : undefined
+    if (reduced || !shatter(origin, pinSize / 2, fill, tint)) {
       finish()
       return
     }

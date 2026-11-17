@@ -7,7 +7,7 @@ import { createBalls, stepBalls, type Ball, type Point } from './pin-shatter.phy
 /**
  * Owns one canvas and a frame loop that runs only while balls are visible.
  * `shatter` pops a pin of `pinRadius` at `origin` (canvas px) into rubber balls
- * of colour `fill`; `onComplete` fires when the last one has faded.
+ * of colour `fill` (fading to `tint` when given); `onComplete` fires when the last one has faded.
  * Nothing here touches React state per frame.
  */
 export function usePinShatter(onComplete?: () => void) {
@@ -19,7 +19,7 @@ export function usePinShatter(onComplete?: () => void) {
   useEffect(() => () => cancelAnimationFrame(frameRef.current), [])
 
   const shatter = useCallback(
-    (origin: Point, pinRadius: number, fill: string) => {
+    (origin: Point, pinRadius: number, fill: string, tint?: string) => {
       const canvas = canvasRef.current
       const ctx = canvas?.getContext('2d')
       if (!canvas || !ctx) return false
@@ -41,7 +41,7 @@ export function usePinShatter(onComplete?: () => void) {
           balls = stepBalls(balls, STEP_S, bounds)
           carry -= STEP_S
         }
-        paintBalls(ctx, balls, fill, ratio)
+        paintBalls(ctx, balls, fill, ratio, tint)
         if (balls.length > 0) {
           frameRef.current = requestAnimationFrame(tick)
         } else {

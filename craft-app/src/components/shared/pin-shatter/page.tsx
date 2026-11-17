@@ -1,13 +1,28 @@
 import { useState } from 'react'
 
-import { DemoSettings, DemoSlider } from '@/components/shared/demo-controls'
+import {
+  DemoControlGroup,
+  DemoSettings,
+  DemoSlider,
+  DemoSwitch,
+} from '@/components/shared/demo-controls'
 import { type DemoPropDoc } from '@/components/shared/demo-docs'
 import { DemoPage } from '@/components/shared/demo-page'
 import { PIN_SHATTER_IMAGE_SRC, PinShatter } from '@/components/ui/pin-shatter'
 
+const FADE_COLORS = {
+  red: 'var(--color-red-400)',
+  blue: 'var(--color-blue-400)',
+  green: 'var(--color-green-400)',
+} as const
+
+type FadeColor = keyof typeof FADE_COLORS
+
 const PROPS: DemoPropDoc[] = [
   { name: 'imageSrc', type: 'string', default: 'PIN_SHATTER_IMAGE_SRC', description: 'Leave unset; never change the default image. The image the pin is dropped on. Its edges are the walls and floor the balls bounce off.' },
   { name: 'pinSize', type: 'number', default: '36', description: 'Pin diameter in px; the balls scale with it.' },
+  { name: 'fadeToColor', type: 'boolean', default: 'false', description: 'Turn the balls from the pin colour to `fadeColor` over about 0.6s after the pop.' },
+  { name: 'fadeColor', type: 'string', default: "'var(--color-red-400)'", description: 'CSS colour or var() the balls fade to when `fadeToColor` is on.' },
   { name: 'dropRadius', type: 'number', default: '56', description: 'Outer radius in px of the shock rings that leave a dropped pin.' },
   { name: 'dropStrength', type: 'number', default: '0.65', description: '0..1 share of the ripple that bends the image itself. 0 keeps only the rings. Warps pixels with WebGL when the image allows CORS; otherwise a lens ring swells the image instead.' },
   { name: 'dropDuration', type: 'number', default: '680', description: 'Ring travel time in ms; the pop and flash scale with it.' },
@@ -21,6 +36,8 @@ const PROPS: DemoPropDoc[] = [
 const USAGE = `<PinShatter
   imageSrc={src}
   pinSize={36}
+  fadeToColor
+  fadeColor="var(--color-red-400)"
   dropRadius={56}
   dropStrength={0.65}
   dropDuration={680}
@@ -30,6 +47,8 @@ const USAGE = `<PinShatter
 
 export function PinShatterPage() {
   const [pinSize, setPinSize] = useState(36)
+  const [fadeToColor, setFadeToColor] = useState(false)
+  const [fadeColor, setFadeColor] = useState<FadeColor>('red')
   const [dropRadius, setDropRadius] = useState(56)
   const [dropStrength, setDropStrength] = useState(65)
   const [dropDuration, setDropDuration] = useState(680)
@@ -78,6 +97,19 @@ export function PinShatterPage() {
             step={20}
             unit="ms"
           />
+          <DemoSwitch
+            label="Fade balls to a colour"
+            checked={fadeToColor}
+            onCheckedChange={setFadeToColor}
+          />
+          {fadeToColor ? (
+            <DemoControlGroup
+              title="Fade colour"
+              options={['red', 'blue', 'green'] as const}
+              value={fadeColor}
+              onChange={setFadeColor}
+            />
+          ) : null}
         </DemoSettings>
       }
       docs={{ paths: ['src/components/ui/pin-shatter/'], usage: USAGE, props: PROPS }}
@@ -85,6 +117,8 @@ export function PinShatterPage() {
       <PinShatter
         imageSrc={PIN_SHATTER_IMAGE_SRC}
         pinSize={pinSize}
+        fadeToColor={fadeToColor}
+        fadeColor={FADE_COLORS[fadeColor]}
         dropRadius={dropRadius}
         dropStrength={dropStrength / 100}
         dropDuration={dropDuration}

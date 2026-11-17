@@ -46,6 +46,14 @@ export const MAX_LIFE_S = 5
 export const STEP_S = 1 / 120
 export const MAX_FRAME_S = 0.05
 
+/**
+ * Colour the balls fade to when `fadeToColor` is on. A CSS colour or var();
+ * red-400 matches the pin's `wrong` variant.
+ */
+export const SHATTER_FADE_COLOR = 'var(--color-red-400)'
+/** Seconds a ball takes to turn from the pin's colour to the fade colour. */
+export const SHATTER_FADE_S = 0.6
+
 /** Pin diameter used when the caller gives none. */
 export const DEFAULT_PIN_SIZE = 36
 /** On touch the pin rides above the finger so the learner can see where it lands. */
