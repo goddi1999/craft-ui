@@ -155,7 +155,7 @@ const PROPS: DemoPropDoc[] = [
   { name: 'className (stage) / frameClassName (board)', type: 'string', default: "'h-[min(70dvh,52rem)]'", description: 'Sizes the image frame. The image always fits inside; empty bands show a blurred copy.' },
   { name: 'onImageRemove', type: '() => void', description: 'Both: round X at the top edge of the frame that removes the image.' },
   { name: 'ImagePinLibrary images / value', type: 'ImagePinLibraryImage[] / string', description: 'Library: the strip of images; `value` (a src) is outlined.' },
-  { name: 'ImagePinLibrary onInsert', type: '(image) => void', description: 'Library: the Insert button in the full preview a thumbnail opens.' },
+  { name: 'ImagePinLibrary onInsert', type: '(image) => void', description: 'Library: fires when a thumbnail is clicked, or from the Insert button in the preview that the round expand button opens.' },
   { name: 'showRegions', type: 'boolean', default: 'false', description: 'Board: draw the targets over the image (debug only).' },
   { name: 'showResult', type: 'boolean', default: 'true', description: 'Board: blue pin on a hit, red on a miss, after the beam crosses it.' },
   { name: 'checkSignal', type: 'number', description: 'Board: bump it to sweep a blue beam left to right. The pin stays neutral until the beam crosses it.' },
@@ -262,7 +262,7 @@ export function ImagePinPage() {
     <DemoPage
       eyebrow="ui / image-pin"
       title="Image Pin"
-      description="Pick an image from the library (or drop your own), draw rectangle and circle targets on it, then switch to the pin tab and drag the pin from its dock onto the image to test the hit. The image always fits a screen-height frame, with a blurred fill behind it. Only the image part of the game: no questions, points or chat."
+      description="Click an image in the library to put it on the canvas (the round button on its corner expands a full preview), or drop your own. Draw rectangle and circle targets on it, then switch to the pin tab and drag the pin from its dock onto the image to test the hit. The image always fits a screen-height frame, with a blurred fill behind it. Only the image part of the game: no questions, points or chat."
       align="stretch"
       settings={
         tab === 'pin' ? (

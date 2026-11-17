@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Maximize2 } from "lucide-react";
 
 import { BlurredScrollArea } from "@/components/ui/blurred-scroll-area";
+import { Button } from "@/components/ui/button";
 import {
+  createLightboxHandle,
   Lightbox,
   LightboxCaption,
   LightboxClose,
@@ -27,14 +29,15 @@ export type ImagePinLibraryProps = {
   images: readonly ImagePinLibraryImage[];
   /** `src` of the image on the board, outlined in the strip. */
   value?: string;
-  /** The preview's Insert button; the lightbox closes after it. */
+  /** A thumbnail click, or the preview's Insert button; the lightbox closes after it. */
   onInsert: (image: ImagePinLibraryImage) => void;
   className?: string;
 };
 
 /**
- * A short strip of images to put on the board. A thumbnail opens a full preview
- * (swipe, zoom) with an Insert button.
+ * A short strip of images to put on the board. Click a thumbnail to insert it at
+ * once; the round expand button at its top right opens a full preview
+ * (swipe, zoom) that has its own Insert button.
  */
 export function ImagePinLibrary({
   images,
@@ -43,6 +46,7 @@ export function ImagePinLibrary({
   className,
 }: ImagePinLibraryProps) {
   const [index, setIndex] = useState(0);
+  const [preview] = useState(createLightboxHandle);
   const previewed = images[index];
 
   return (
@@ -51,7 +55,7 @@ export function ImagePinLibrary({
       aria-label="Image library"
       className={cn("flex flex-col gap-2", className)}
     >
-      <Lightbox index={index} onIndexChange={setIndex}>
+      <Lightbox index={index} onIndexChange={setIndex} handle={preview}>
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <p className="px-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
             Library · {images.length}
@@ -64,12 +68,17 @@ export function ImagePinLibrary({
           >
             <ul className="flex w-max gap-2 p-1">
               {images.map((image, imageIndex) => (
-                <li key={image.id}>
+                <li key={image.id} className="relative">
                   <LightboxTrigger
                     index={imageIndex}
-                    aria-label={`Preview ${image.caption ?? image.alt}`}
+                    aria-haspopup={undefined}
+                    aria-label={`Insert ${image.caption ?? image.alt}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      onInsert(image);
+                    }}
                     className={cn(
-                      "block h-24 w-36 overflow-hidden rounded-lg transition-transform duration-150 active:scale-[0.97]",
+                      "block h-24 w-36 cursor-pointer overflow-hidden rounded-lg transition-transform duration-150 ease-out active:scale-[0.97]",
                       image.src === value &&
                         "ring-2 ring-primary ring-offset-2 ring-offset-background",
                     )}
@@ -86,6 +95,16 @@ export function ImagePinLibrary({
                       />
                     )}
                   </LightboxTrigger>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon-sm"
+                    aria-label={`Preview ${image.caption ?? image.alt}`}
+                    onClick={() => preview.open(imageIndex)}
+                    className="absolute top-1.5 right-1.5 rounded-full bg-background/80 shadow-sm backdrop-blur-md transition-transform duration-150 ease-out before:absolute before:-inset-2 active:scale-[0.94]"
+                  >
+                    <Maximize2 />
+                  </Button>
                 </li>
               ))}
             </ul>
