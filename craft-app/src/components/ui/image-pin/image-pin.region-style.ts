@@ -1,25 +1,27 @@
 import type { Rect as KonvaRect } from 'konva/lib/shapes/Rect'
 
-/** Blue wash. Idle is strong enough to read on water and on a white wall. */
-export const REGION_FILL = 'rgba(37, 99, 235, 0.46)'
-export const REGION_FILL_HOVER = 'rgba(37, 99, 235, 0.56)'
-export const REGION_FILL_SELECTED = 'rgba(29, 78, 216, 0.66)'
+/** Light wash: the photo stays visible, the outline carries the shape. */
+export const REGION_FILL = 'rgba(99, 102, 241, 0.12)'
+export const REGION_FILL_HOVER = 'rgba(99, 102, 241, 0.2)'
+export const REGION_FILL_SELECTED = 'rgba(37, 99, 235, 0.26)'
 
-export const REGION_STROKE_IDLE = '#1D4ED8'
-export const REGION_STROKE_HOVER = '#1E40AF'
-export const REGION_STROKE_SELECTED = '#1E3A8A'
+export const REGION_STROKE_IDLE = '#6366F1'
+export const REGION_STROKE_HOVER = '#4F46E5'
+export const REGION_STROKE_SELECTED = '#2563EB'
 
 /** Screen pixels. The stage divides by its fit-scale; the board stroke does not scale. */
-export const REGION_STROKE_WIDTH_IDLE = 3
-export const REGION_STROKE_WIDTH_ACTIVE = 4
+export const REGION_STROKE_WIDTH_IDLE = 1.5
+export const REGION_STROKE_WIDTH_ACTIVE = 1.5
 
 /** Screen pixels, same split as the stroke widths. */
-export const REGION_DASH: number[] = [12, 8]
-export const REGION_CORNER_RADIUS = 8
+export const REGION_DASH: number[] = [6, 4]
+export const REGION_CORNER_RADIUS = 6
 
-/** Navy on the blue wash, with a white edge so it survives dark cliffs and bright water. */
+/** Navy with a faint white edge so it survives dark cliffs and bright water. */
 export const REGION_LABEL_COLOR = '#1E3A8A'
 export const REGION_LABEL_HALO = '#FFFFFF'
+/** Screen pixels. A number never grows past this, however big the region. */
+export const REGION_LABEL_MAX_SIZE = 16
 
 /** Scene pixels for a length that should stay `screenPx` on the fitted image. */
 export function scenePixels(screenPx: number, stageScale: number): number {
@@ -28,21 +30,22 @@ export function scenePixels(screenPx: number, stageScale: number): number {
 }
 
 /**
- * Digit height tracks the region. Rectangles use the full height; circles stop
- * inside the curve. A wide label shrinks so it stays inside the width.
+ * Digit height tracks the region but stops at `maxSize`, so a large region
+ * gets a quiet number. A wide label shrinks to stay inside the width.
  */
 export function regionLabelFontSize(
   text: string,
   width: number,
   height: number,
   shape: 'rectangle' | 'circle',
+  maxSize = Infinity,
 ): number {
-  const heightShare = shape === 'circle' ? 0.7 : 0.82
+  const heightShare = shape === 'circle' ? 0.5 : 0.6
   const widthShare = shape === 'circle' ? 0.7 : 0.9
   const chars = Math.max(text.length, 1)
   const byHeight = height * heightShare
   const byWidth = (width * widthShare) / (chars * 0.62)
-  return Math.max(1, Math.min(byHeight, byWidth))
+  return Math.max(1, Math.min(byHeight, byWidth, maxSize))
 }
 
 /** Corner drag thumbs — circles, same footprint as before. */

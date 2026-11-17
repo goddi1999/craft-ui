@@ -36,6 +36,7 @@ import {
   REGION_FILL_SELECTED,
   REGION_LABEL_COLOR,
   REGION_LABEL_HALO,
+  REGION_LABEL_MAX_SIZE,
   REGION_STROKE_SELECTED,
   REGION_STROKE_WIDTH_ACTIVE,
   regionFillFor,
@@ -324,7 +325,7 @@ export function ImagePinRegionStage({
         const dash = REGION_DASH.map(px);
         const halo = {
           shadowColor: REGION_LABEL_HALO,
-          shadowBlur: px(2),
+          shadowBlur: px(1),
           shadowOpacity: 1,
           shadowForStrokeEnabled: true,
           shadowEnabled: true,
@@ -361,6 +362,7 @@ export function ImagePinRegionStage({
                   rect.width,
                   rect.height,
                   shape,
+                  px(REGION_LABEL_MAX_SIZE),
                 );
                 const visual = resolveRegionVisualState(
                   rect.id,
@@ -510,12 +512,12 @@ export function ImagePinRegionStage({
                       text={label}
                       fontSize={fontSize}
                       fontFamily="Arial, sans-serif"
-                      fontStyle="bold"
+                      fontStyle="600"
                       align="center"
                       verticalAlign="middle"
                       fill={REGION_LABEL_COLOR}
                       stroke={REGION_LABEL_HALO}
-                      strokeWidth={fontSize * 0.045}
+                      strokeWidth={fontSize * 0.03}
                       fillAfterStrokeEnabled
                       listening={false}
                     />
@@ -577,8 +579,8 @@ export function ImagePinRegionStage({
                   padding={0}
                   borderEnabled
                   borderStroke={REGION_STROKE_SELECTED}
-                  borderStrokeWidth={px(REGION_STROKE_WIDTH_ACTIVE)}
-                  borderDash={dash}
+                  borderStrokeWidth={REGION_STROKE_WIDTH_ACTIVE}
+                  borderDash={REGION_DASH}
                   anchorFill={ANCHOR_FILL}
                   anchorStroke={ANCHOR_STROKE}
                   anchorStrokeWidth={ANCHOR_STROKE_WIDTH}
