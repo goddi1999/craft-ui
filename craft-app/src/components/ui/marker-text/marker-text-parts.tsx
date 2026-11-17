@@ -1,9 +1,10 @@
-import { useContext, useId, useLayoutEffect, useRef } from 'react'
+import { Fragment, useContext, useId, useLayoutEffect, useRef, type ElementType } from 'react'
 
 import { cn } from '@/lib/utils'
 
 import { DEFAULT_INK, MASK_SPAN, PEN_EASE } from './marker-text.constants'
 import { MarkerContext } from './marker-text.context'
+import type { ResolvedSentence } from './marker-text.match'
 import type { MarkProps, Stroke } from './marker-text.types'
 
 /**
@@ -21,11 +22,16 @@ export function Mark({
   const registry = useContext(MarkerContext)
   const ref = useRef<HTMLElement>(null)
   const id = useId()
+  // own colour, then the MarkerText's colour for this type, then the default ink
+  const ink = color ?? registry?.colors?.[type]
+
+  // `add` is stable; the registry value itself is new whenever `colors` may have changed
+  const add = registry?.add
 
   useLayoutEffect(() => {
-    if (!(registry && ref.current)) return
-    return registry.add(id, { el: ref.current, type, color, strokeWidth })
-  }, [registry, id, type, color, strokeWidth])
+    if (!(add && ref.current)) return
+    return add(id, { el: ref.current, type, color: ink, strokeWidth })
+  }, [add, id, type, ink, strokeWidth])
 
   const Tag = type === 'highlight' ? 'mark' : type === 'strike' ? 's' : 'span'
 
@@ -44,6 +50,41 @@ export function Mark({
       {children}
     </Tag>
   )
+}
+
+/**
+ * Sentences cut into plain text and `Mark`s. Sentences in a `span` are joined
+ * by a space so they read as one paragraph.
+ */
+export function MarkedSentences({
+  sentences,
+  as: Tag = 'span',
+}: {
+  sentences: ResolvedSentence[]
+  as?: ElementType
+}) {
+  return sentences.map((sentence, index) => (
+    <Fragment key={index}>
+      <Tag className={sentence.className}>
+        {sentence.segments.map((segment, i) =>
+          segment.spec ? (
+            <Mark
+              key={i}
+              type={segment.spec.type}
+              color={segment.spec.color}
+              strokeWidth={segment.spec.strokeWidth}
+              className={segment.spec.className}
+            >
+              {segment.text}
+            </Mark>
+          ) : (
+            <Fragment key={i}>{segment.text}</Fragment>
+          ),
+        )}
+      </Tag>
+      {Tag === 'span' && index < sentences.length - 1 ? ' ' : null}
+    </Fragment>
+  ))
 }
 
 /**

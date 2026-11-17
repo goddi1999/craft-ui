@@ -6,15 +6,23 @@ import { cn } from '@/lib/utils'
 import { DEFAULT_GAP, VIEW_THRESHOLD } from './marker-text.constants'
 import { MarkerContext } from './marker-text.context'
 import type { MarkEntry, MarkerRegistry, MarkerTextProps, Stroke } from './marker-text.types'
+import { resolveSentences } from './marker-text.match'
 import { schedule } from './marker-text.utils'
-import { StrokeLayer } from './marker-text-parts'
+import { MarkedSentences, StrokeLayer } from './marker-text-parts'
 
 /**
  * Text whose `Mark` phrases get highlighted, underlined, circled, boxed or
  * struck through by hand, one pen stroke after another in reading order.
+ * Write the `Mark`s yourself, or pass `sentences` and say which words get which
+ * type. `colors` sets the ink per type from outside; a mark's own colour wins.
  */
 export function MarkerText({
   children,
+  sentences,
+  marks,
+  sentenceAs,
+  colors,
+  onMarks,
   show,
   gap = DEFAULT_GAP,
   onDrawn,
@@ -79,7 +87,7 @@ export function MarkerText({
     totalRef.current = total
   })
 
-  const [registry] = useState<MarkerRegistry>(() => ({
+  const [registry] = useState<Pick<MarkerRegistry, 'add'>>(() => ({
     add: (id, entry) => {
       entriesRef.current.set(id, entry)
       measureRef.current()
@@ -89,6 +97,19 @@ export function MarkerText({
       }
     },
   }))
+
+  const resolved = sentences ? resolveSentences(sentences, marks) : null
+  const onMarksRef = useRef(onMarks)
+  onMarksRef.current = onMarks
+  // report when what was found changes, not on every render
+  const found = resolved
+    ? JSON.stringify([resolved.result.matched, resolved.result.missed])
+    : ''
+  useEffect(() => {
+    if (!resolved) return
+    onMarksRef.current?.(resolved.result)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `found` stands for `resolved.result`
+  }, [found])
 
   useEffect(() => {
     const root = rootRef.current
@@ -134,9 +155,10 @@ export function MarkerText({
   }, [armed, hasStrokes, reduced])
 
   return (
-    <MarkerContext.Provider value={registry}>
+    <MarkerContext.Provider value={{ ...registry, colors }}>
       <Tag ref={rootRef} className={cn('relative isolate', className)} {...props}>
         <StrokeLayer strokes={strokes} under armed={armed} reduced={reduced} maskId={maskId} />
+        {resolved ? <MarkedSentences sentences={resolved.sentences} as={sentenceAs} /> : null}
         {children}
         <StrokeLayer
           strokes={strokes}
