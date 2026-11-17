@@ -288,6 +288,18 @@ export function ImagePinPage() {
     setPending(false)
   }
 
+  // No image yet: both tabs offer the same drop zone.
+  const imageDrop = (
+    <div className="flex h-[min(70dvh,52rem)] min-h-72 w-full items-center justify-center">
+      <FileDrop
+        accept="image/*"
+        label="Drop an image"
+        hint="or click to choose one"
+        onFilesChange={importImages}
+      />
+    </div>
+  )
+
   return (
     <DemoPage
       eyebrow="ui / image-pin"
@@ -400,10 +412,7 @@ export function ImagePinPage() {
                 onImageRemove={removeImage}
               />
             ) : (
-              <ImagePinPlaceholder
-                label="No image yet"
-                hint="Drop one in the Pin tab, or insert one from the library below."
-              />
+              imageDrop
             )}
             <p className="text-sm text-muted-foreground">
               Click and drag on the image to draw. Click a region to select, move or resize it.
@@ -417,15 +426,7 @@ export function ImagePinPage() {
             />
           </>
         ) : !imageSrc ? (
-          // The only place to drop a new image: the Pin tab with no image.
-          <div className="flex h-[min(70dvh,52rem)] min-h-72 w-full items-center justify-center">
-            <FileDrop
-              accept="image/*"
-              label="Drop an image"
-              hint="or click to choose one"
-              onFilesChange={importImages}
-            />
-          </div>
+          imageDrop
         ) : regions.length === 0 ? (
           <ImagePinPlaceholder
             label="No regions yet"
