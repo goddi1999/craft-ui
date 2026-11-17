@@ -62,3 +62,17 @@ export const WAVE_REACH = 1.65
 export const WAVE_AMPLITUDE_PX = 11.5
 /** Waves that can run at once; the oldest is dropped. */
 export const MAX_WAVES = 6
+
+/**
+ * NEVER CHANGE THIS IMAGE. PinShatter, its demo, docs and preview card are all
+ * tuned to it. Apple sends no CORS headers for it, so the drop ripple plays as
+ * the lens ring rather than the WebGL pixel warp.
+ */
+export const PIN_SHATTER_IMAGE_SRC =
+  'https://www.apple.com/v/macbook-neo/a/images/overview/product-stories/performance/performance_lifestyle__erk9efbsqgqe_large_2x.jpg'
+
+/** A pin being moved shrinks a little so it feels lifted, then springs back on drop. */
+export const MOVE_DRAG_SCALE = 0.85
+export const MOVE_DRAG_SCALE_MS = 150
+/** Pointer travel in px before a press on a placed pin becomes a move instead of a click. */
+export const MOVE_THRESHOLD_PX = 4

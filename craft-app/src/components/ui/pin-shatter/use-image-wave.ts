@@ -42,17 +42,19 @@ export function useImageWave(imageSrc: string) {
     }
   }, [imageSrc])
 
+  /** Returns false when WebGL cannot run here, so the caller can play a fallback. */
   const ripple = useCallback((x: number, y: number, options: WaveOptions) => {
+    if (options.strength <= 0) return true
     const canvas = canvasRef.current
     const image = imageRef.current
-    if (!canvas || !image || options.strength <= 0) return
+    if (!canvas || !image) return false
 
     if (rendererRef.current?.canvas !== canvas) {
       rendererRef.current?.dispose()
       rendererRef.current = createWaveRenderer(canvas, image)
     }
     const renderer = rendererRef.current
-    if (!renderer) return
+    if (!renderer) return false
 
     wavesRef.current = [
       ...wavesRef.current,
@@ -66,7 +68,7 @@ export function useImageWave(imageSrc: string) {
       },
     ].slice(-MAX_WAVES)
 
-    if (frameRef.current !== 0) return
+    if (frameRef.current !== 0) return true
     const ratio = Math.min(window.devicePixelRatio || 1, 2)
     const tick = (now: number) => {
       wavesRef.current = wavesRef.current.filter(
@@ -82,6 +84,7 @@ export function useImageWave(imageSrc: string) {
       frameRef.current = requestAnimationFrame(tick)
     }
     frameRef.current = requestAnimationFrame(tick)
+    return true
   }, [])
 
   return { canvasRef, ripple }

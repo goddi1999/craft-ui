@@ -18,21 +18,29 @@ import {
   DROP_DURATION_MS,
   DROP_RADIUS,
   DROP_STRENGTH,
+  MOVE_DRAG_SCALE,
+  MOVE_DRAG_SCALE_MS,
+  PIN_SHATTER_IMAGE_SRC,
 } from './pin-shatter.constants'
+import { PinDropLens } from './PinDropLens'
 import { PinDropRipple } from './PinDropRipple'
 import { useImageWave } from './use-image-wave'
-import { usePinDrag } from './use-pin-drag'
+import { usePinDrag, type PinDragSource } from './use-pin-drag'
 import { usePinShatter } from './use-pin-shatter'
 
 export type PinShatterProps = {
-  imageSrc: string
+  /** Leave unset: the component is built around `PIN_SHATTER_IMAGE_SRC`. */
+  imageSrc?: string
   /** Pin diameter in px. */
   pinSize?: number
   /** Hint beside the docked pin. */
   dockLabel?: string
   /** Outer radius in px of the rings that leave a dropped pin. */
   dropRadius?: number
-  /** 0..1 share of the ripple that bends the image itself; 0 keeps only the rings. */
+  /**
+   * 0..1 share of the ripple that bends the image itself; 0 keeps only the rings.
+   * Warps pixels with WebGL when the image allows CORS, else swells it with a lens ring.
+   */
   dropStrength?: number
   /** Ring travel time in ms. */
   dropDuration?: number
@@ -47,12 +55,24 @@ export type PinShatterProps = {
   className?: string
 }
 
+/** Scale keyframes for a pin landing: a big pop from the dock, a springy settle after a move. */
+const LANDING_SCALE: Record<PinDragSource, string[]> = {
+  dock: ['scale(1.72)', 'scale(0.84)', 'scale(1.07)', 'scale(1)'],
+  move: [`scale(${MOVE_DRAG_SCALE})`, 'scale(1.18)', 'scale(0.95)', 'scale(1)'],
+}
+const LANDING_BRIGHTNESS: Record<PinDragSource, string[]> = {
+  dock: ['brightness(2.2)', 'brightness(1.45)', 'brightness(1.12)', 'brightness(1)'],
+  move: ['brightness(1.35)', 'brightness(1.25)', 'brightness(1.08)', 'brightness(1)'],
+}
+
 const pinButtonClass =
   'touch-none rounded-full transition-transform duration-150 ease-out active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
 
 /**
  * Drag the pin from the dock onto the image: it lands with a pop and a flash,
- * two shock rings leave it and the image ripples around it. Then click it: it pops into small
+ * two shock rings leave it and the image ripples around it. Drag it again to
+ * move it: it shrinks a little while held and springs back on drop, with the
+ * same effect at the new spot. Click it and it pops into small
  * matte rubber balls that fall, bounce off the image's edges and each other, and
  * fade out. The pin then returns to the dock for another go. Drop it off the
  * image to send it back. Keyboard: Enter on the docked pin places it in the
@@ -60,7 +80,7 @@ const pinButtonClass =
  * With reduced motion the pin lands and returns without ripple or balls.
  */
 export function PinShatter({
-  imageSrc,
+  imageSrc = PIN_SHATTER_IMAGE_SRC,
   pinSize = DEFAULT_PIN_SIZE,
   dockLabel = 'Drag the pin onto the image',
   dropRadius = DROP_RADIUS,
@@ -79,7 +99,11 @@ export function PinShatter({
   const [pin, setPin] = useState<ImagePinPoint | null>(null)
   const [popping, setPopping] = useState(false)
   const [round, setRound] = useState(0)
-  const [landing, setLanding] = useState(0)
+  const [landing, setLanding] = useState<{ key: number; from: PinDragSource }>({
+    key: 0,
+    from: 'dock',
+  })
+  const [lens, setLens] = useState<{ key: number; x: number; y: number } | null>(null)
 
   const finish = useCallback(() => {
     setPopping(false)
@@ -90,21 +114,26 @@ export function PinShatter({
   const { canvasRef: waveRef, ripple } = useImageWave(imageSrc)
 
   const place = useCallback(
-    (point: ImagePinPoint | null) => {
+    (point: ImagePinPoint | null, from: PinDragSource = 'dock') => {
       setPin(point)
       const surface = surfaceRef.current
       if (!point || !surface) return
-      setLanding((current) => current + 1)
+      const key = landing.key + 1
+      setLanding({ key, from })
+      setLens(null)
       if (reduced) return
-      ripple(point.x * surface.clientWidth, point.y * surface.clientHeight, {
+      const x = point.x * surface.clientWidth
+      const y = point.y * surface.clientHeight
+      const played = ripple(x, y, {
         radius: dropRadius,
         strength: dropStrength,
         duration: dropDuration,
       })
+      if (!played) setLens({ key, x, y })
     },
-    [reduced, ripple, dropRadius, dropStrength, dropDuration],
+    [landing, reduced, ripple, dropRadius, dropStrength, dropDuration],
   )
-  const { drag, start } = usePinDrag(surfaceRef, place)
+  const { drag, start, startMove } = usePinDrag(surfaceRef, place)
 
   const natural = image
     ? { width: image.naturalWidth, height: image.naturalHeight }
@@ -189,9 +218,22 @@ export function PinShatter({
               style={IMAGE_PIN_FEATHER_MASK}
             />
 
+            {lens ? (
+              <PinDropLens
+                key={`lens-${lens.key}`}
+                src={imageSrc}
+                x={lens.x}
+                y={lens.y}
+                radius={dropRadius}
+                strength={dropStrength}
+                duration={dropDuration}
+                onDone={() => setLens(null)}
+              />
+            ) : null}
+
             {pin && !drag && !reduced ? (
               <PinDropRipple
-                key={landing}
+                key={landing.key}
                 x={pin.x}
                 y={pin.y}
                 radius={dropRadius}
@@ -202,8 +244,9 @@ export function PinShatter({
             {pin && !drag ? (
               <button
                 type="button"
-                aria-label="Pin on the image. Press Enter to pop it, Escape to return it to the dock."
+                aria-label="Pin on the image. Click to pop it, drag to move it. Press Enter to pop it, Escape to return it to the dock."
                 onClick={handleShatter}
+                onPointerDown={startMove}
                 onKeyDown={handlePinKeyDown}
                 className={cn(pinButtonClass, 'absolute cursor-pointer')}
                 style={{
@@ -213,20 +256,15 @@ export function PinShatter({
                 }}
               >
                 <motion.span
-                  key={landing}
+                  key={landing.key}
                   className="relative flex"
                   initial={false}
                   animate={
                     reduced
                       ? undefined
                       : {
-                          transform: ['scale(1.72)', 'scale(0.84)', 'scale(1.07)', 'scale(1)'],
-                          filter: [
-                            'brightness(2.2)',
-                            'brightness(1.45)',
-                            'brightness(1.12)',
-                            'brightness(1)',
-                          ],
+                          transform: LANDING_SCALE[landing.from],
+                          filter: LANDING_BRIGHTNESS[landing.from],
                         }
                   }
                   transition={{
@@ -289,17 +327,21 @@ export function PinShatter({
       ) : null}
 
       {drag ? (
-        <div
+        <motion.div
           aria-hidden
           className="pointer-events-none fixed z-50 cursor-grabbing"
           style={{
-            left: drag.clientX,
-            top: drag.clientY - drag.lift,
-            transform: 'translate(-50%, -50%) scale(1.15)',
+            left: drag.clientX - drag.grabX,
+            top: drag.clientY - drag.grabY - drag.lift,
           }}
+          initial={{ transform: `translate(-50%, -50%) scale(${drag.source === 'move' ? 1 : 1.15})` }}
+          animate={{
+            transform: `translate(-50%, -50%) scale(${drag.source === 'move' ? MOVE_DRAG_SCALE : 1.15})`,
+          }}
+          transition={{ duration: reduced ? 0 : MOVE_DRAG_SCALE_MS / 1000, ease: [0.23, 1, 0.32, 1] }}
         >
           <ImagePin size={pinSize} className={cn(!drag.overSurface && 'opacity-70')} />
-        </div>
+        </motion.div>
       ) : null}
     </div>
   )

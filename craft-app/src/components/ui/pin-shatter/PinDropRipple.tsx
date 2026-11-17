@@ -19,7 +19,7 @@ export type PinDropRippleProps = {
 /** Two shock rings that leave a dropped pin, the inner one a beat behind. */
 export function PinDropRipple({ x, y, radius, duration, className }: PinDropRippleProps) {
   const seconds = duration / 1000
-  const ring = 'absolute top-1/2 left-1/2 rounded-full border-2 border-white/90 shadow-[0_0_14px_white]'
+  const ring = 'absolute top-1/2 left-1/2 rounded-full border-2 border-white/90 shadow-[0_0_14px_white,0_0_0_1px_rgb(0_0_0/0.16)]'
 
   return (
     <span

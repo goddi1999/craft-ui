@@ -3,16 +3,13 @@ import { useState } from 'react'
 import { DemoSettings, DemoSlider } from '@/components/shared/demo-controls'
 import { type DemoPropDoc } from '@/components/shared/demo-docs'
 import { DemoPage } from '@/components/shared/demo-page'
-import { PinShatter } from '@/components/ui/pin-shatter'
-
-/** Same-origin, so the image warp can read its pixels. */
-const IMAGE_SRC = '/lightbox/1-2048w.webp'
+import { PIN_SHATTER_IMAGE_SRC, PinShatter } from '@/components/ui/pin-shatter'
 
 const PROPS: DemoPropDoc[] = [
-  { name: 'imageSrc', type: 'string', description: 'The image the pin is dropped on. Its edges are the walls and floor the balls bounce off.' },
+  { name: 'imageSrc', type: 'string', default: 'PIN_SHATTER_IMAGE_SRC', description: 'Leave unset; never change the default image. The image the pin is dropped on. Its edges are the walls and floor the balls bounce off.' },
   { name: 'pinSize', type: 'number', default: '36', description: 'Pin diameter in px; the balls scale with it.' },
   { name: 'dropRadius', type: 'number', default: '56', description: 'Outer radius in px of the shock rings that leave a dropped pin.' },
-  { name: 'dropStrength', type: 'number', default: '0.65', description: '0..1 share of the ripple that bends the image itself. 0 keeps only the rings. Needs an image that allows CORS; otherwise the rings alone play.' },
+  { name: 'dropStrength', type: 'number', default: '0.65', description: '0..1 share of the ripple that bends the image itself. 0 keeps only the rings. Warps pixels with WebGL when the image allows CORS; otherwise a lens ring swells the image instead.' },
   { name: 'dropDuration', type: 'number', default: '680', description: 'Ring travel time in ms; the pop and flash scale with it.' },
   { name: 'dockLabel', type: 'string', default: "'Drag the pin onto the image'", description: 'Hint beside the docked pin.' },
   { name: 'onShatter', type: '(point: ImagePinPoint) => void', description: 'Fires when the placed pin is clicked, with its 0..1 position.' },
@@ -86,7 +83,7 @@ export function PinShatterPage() {
       docs={{ paths: ['src/components/ui/pin-shatter/'], usage: USAGE, props: PROPS }}
     >
       <PinShatter
-        imageSrc={IMAGE_SRC}
+        imageSrc={PIN_SHATTER_IMAGE_SRC}
         pinSize={pinSize}
         dropRadius={dropRadius}
         dropStrength={dropStrength / 100}

@@ -59,7 +59,7 @@ void main() {
 }`
 
 /** Fast start, long tail: the ring races out and slows. */
-const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - 2 ** (-9.5 * t))
+export const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - 2 ** (-9.5 * t))
 
 function compile(gl: WebGLRenderingContext, type: number, source: string) {
   const shader = gl.createShader(type)
