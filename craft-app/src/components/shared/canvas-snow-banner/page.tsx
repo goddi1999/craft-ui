@@ -1,85 +1,130 @@
-import { useState, type ReactNode } from 'react'
+import {
+  DemoSettings,
+  DemoSlider,
+  useDemoSettings,
+} from "@/components/shared/demo-controls";
+import {
+  toUsageSnippet,
+  type DemoPropDoc,
+} from "@/components/shared/demo-docs";
+import { DemoPage } from "@/components/shared/demo-page";
+import { CanvasSnowBanner } from "@/components/ui/canvas-snow-banner";
 
-import { DemoPanel } from '@/components/shared/demo-controls'
-import { DemoPage } from '@/components/shared/demo-page'
-import { CanvasSnowBanner } from '@/components/ui/canvas-snow-banner'
-import { Input } from '@/components/ui/input'
+const DEFAULTS = {
+  height: 120,
+  amount: 200,
+  sway: 200,
+  framerate: 60,
+};
 
-function Field({
-  label,
-  children,
-}: {
-  label: string
-  children: ReactNode
-}) {
-  return (
-    <label className="flex flex-col gap-1.5 text-xs">
-      <span className="font-medium tracking-[0.12em] text-muted-foreground uppercase">
-        {label}
-      </span>
-      {children}
-    </label>
-  )
-}
+const PROPS: DemoPropDoc[] = [
+  {
+    name: "height",
+    type: "number",
+    default: "120",
+    description: "Banner height in CSS pixels.",
+  },
+  {
+    name: "amount",
+    type: "number",
+    default: "200",
+    description: "Number of snowflakes.",
+  },
+  {
+    name: "sway",
+    type: "number",
+    default: "200",
+    description: "Horizontal wind drift in pixels; negative values blow left.",
+  },
+  {
+    name: "framerate",
+    type: "number",
+    default: "60",
+    description: "Target GSAP ticker framerate.",
+  },
+  {
+    name: "className",
+    type: "string",
+    description: "Extra classes on the root, usually to position the banner.",
+  },
+];
 
 export function CanvasSnowBannerPage() {
-  const [height, setHeight] = useState(120)
-  const [amount, setAmount] = useState(200)
-  const [sway, setSway] = useState(200)
+  const settings = useDemoSettings(DEFAULTS);
+  const { height, amount, sway, framerate } = settings.values;
+
+  const usage = toUsageSnippet({
+    component: "CanvasSnowBanner",
+    from: "@/components/ui/canvas-snow-banner",
+    props: {
+      height,
+      amount,
+      sway,
+      framerate,
+      className: "absolute inset-x-0 top-0",
+    },
+    defaults: DEFAULTS,
+  });
 
   return (
     <DemoPage
       eyebrow="ui / canvas-snow-banner"
       title="Canvas Snow Banner"
       description="A fading canvas strip of asterisk snowflakes, driven by the GSAP ticker with wind sway and density controls."
-      align="start"
-    >
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 pb-20 lg:flex-row lg:items-start">
-        <div className="relative min-h-48 flex-1 overflow-hidden rounded-2xl border bg-zinc-950">
-          <CanvasSnowBanner
-            height={height}
-            amount={amount}
-            sway={sway}
-            className="absolute inset-x-0 top-0"
+      settings={
+        <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
+          <DemoSlider
+            label="Height"
+            unit="px"
+            min={80}
+            max={300}
+            value={height}
+            onValueChange={(next) => settings.set("height", next)}
           />
-          <div className="flex h-48 items-end justify-center p-8">
-            <p className="text-sm text-zinc-400">Snow falls across the top edge</p>
-          </div>
+          <DemoSlider
+            label="Amount"
+            min={10}
+            max={500}
+            value={amount}
+            onValueChange={(next) => settings.set("amount", next)}
+          />
+          <DemoSlider
+            label="Wind"
+            min={-500}
+            max={500}
+            value={sway}
+            onValueChange={(next) => settings.set("sway", next)}
+          />
+          <DemoSlider
+            label="Framerate"
+            unit="fps"
+            min={15}
+            max={120}
+            value={framerate}
+            onValueChange={(next) => settings.set("framerate", next)}
+          />
+        </DemoSettings>
+      }
+      docs={{
+        paths: ["src/components/ui/canvas-snow-banner/"],
+        usage,
+        props: PROPS,
+      }}
+    >
+      <div className="relative h-72 w-full max-w-3xl overflow-hidden rounded-2xl border bg-zinc-950">
+        <CanvasSnowBanner
+          height={height}
+          amount={amount}
+          sway={sway}
+          framerate={framerate}
+          className="absolute inset-x-0 top-0"
+        />
+        <div className="flex h-full items-end justify-center p-8">
+          <p className="text-sm text-zinc-400">
+            Snow falls across the top edge
+          </p>
         </div>
-
-        <DemoPanel className="max-w-md shrink-0">
-          <Field label={`Height · ${height}px`}>
-            <Input
-              type="range"
-              min={80}
-              max={300}
-              step={1}
-              value={height}
-              onChange={(e) => setHeight(Number(e.target.value))}
-            />
-          </Field>
-          <Field label={`Amount · ${amount}`}>
-            <Input
-              type="range"
-              min={10}
-              max={500}
-              step={1}
-              value={amount}
-              onChange={(e) => setAmount(Number(e.target.value))}
-            />
-          </Field>
-          <Field label={`Wind (x) · ${sway}`}>
-            <Input
-              type="range"
-              min={-500}
-              max={500}
-              step={1}
-              value={sway}
-              onChange={(e) => setSway(Number(e.target.value))}
-            />
-          </Field>
-        </DemoPanel>
       </div>
     </DemoPage>
-  )
+  );
 }
