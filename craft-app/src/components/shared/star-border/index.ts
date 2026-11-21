@@ -1,0 +1,1 @@
+export { StarBorderPage } from './page'
