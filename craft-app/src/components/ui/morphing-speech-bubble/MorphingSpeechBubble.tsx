@@ -13,6 +13,7 @@ import {
   TEXT_SHIFT,
 } from './morphing-speech-bubble.constants'
 import type { MorphingSpeechBubbleProps } from './morphing-speech-bubble.types'
+import { MessageStepper } from './morphing-speech-bubble-parts'
 import { useMeasure } from './use-measure'
 
 /**
@@ -30,12 +31,17 @@ export function MorphingSpeechBubble({
   blur = true,
   maxWidth = DEFAULT_MAX_WIDTH,
   avatarSize = DEFAULT_AVATAR_SIZE,
+  onPrevious,
+  onNext,
+  canGoPrevious = true,
+  canGoNext = true,
   className,
 }: MorphingSpeechBubbleProps) {
   const reduced = useReducedMotion() === true
   const [contentRef, size] = useMeasure<HTMLDivElement>()
   const avatarLeft = side === 'left'
   const measured = size.width > 0
+  const stepper = onPrevious !== undefined || onNext !== undefined
 
   const shell = reduced ? { duration: 0 } : { type: 'spring' as const, duration, bounce }
   const hidden = {
@@ -107,6 +113,14 @@ export function MorphingSpeechBubble({
           {name}: {message}
         </span>
       </SpeechBubbleRoot>
+      {stepper ? (
+        <MessageStepper
+          onPrevious={onPrevious}
+          onNext={onNext}
+          canGoPrevious={canGoPrevious}
+          canGoNext={canGoNext}
+        />
+      ) : null}
     </div>
   )
 }

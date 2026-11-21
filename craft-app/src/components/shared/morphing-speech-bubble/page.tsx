@@ -99,6 +99,17 @@ const PROPS: DemoPropDoc[] = [
     description: 'Line length in px before the text wraps.',
   },
   {
+    name: 'onPrevious / onNext',
+    type: '() => void',
+    description: 'Pass either to show the round up / down stepper beside the bubble.',
+  },
+  {
+    name: 'canGoPrevious / canGoNext',
+    type: 'boolean',
+    default: 'true',
+    description: 'Disables a stepper button at the start or end of your messages.',
+  },
+  {
     name: 'avatarSize',
     type: 'number',
     default: '48',
@@ -119,6 +130,13 @@ export function MorphingSpeechBubblePage() {
     const id = window.setTimeout(() => setIndex((value) => (value + 1) % MESSAGES.length), interval)
     return () => window.clearTimeout(id)
   }, [autoplay, interval, index, custom])
+
+  // stepping by hand pauses autoplay, so the message you stepped to stays put
+  const handleStep = (delta: number) => {
+    setCustom('')
+    settings.set('autoplay', false)
+    setIndex((value) => Math.min(MESSAGES.length - 1, Math.max(0, value + delta)))
+  }
 
   const handleNext = () => {
     setCustom('')
@@ -145,7 +163,7 @@ export function MorphingSpeechBubblePage() {
     <DemoPage
       eyebrow="ui / morphing-speech-bubble"
       title="Morphing Speech Bubble"
-      description="Willfried talks, and his bubble springs to the size of each new message the way the dynamic island does: the shell morphs while the old text blurs out fast and the new text blurs in. Slow the duration down to watch the morph, or type your own message."
+      description="Willfried talks, and his bubble springs to the size of each new message the way the dynamic island does: the shell morphs while the old text blurs out fast and the new text blurs in. Slow the duration down to watch the morph, step back and forth with the arrows, or type your own message."
       settings={
         <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
           <ToneSwatches value={tone} onChange={(next) => settings.set('tone', next)} />
@@ -201,7 +219,7 @@ export function MorphingSpeechBubblePage() {
         props: PROPS,
       }}
     >
-      <div className="flex min-h-[220px] w-full max-w-md items-end justify-center px-4">
+      <div className="flex min-h-[220px] w-full max-w-md flex-col items-center justify-end gap-5 px-4">
         {WILLFRIED ? (
           <MorphingSpeechBubble
             message={message}
@@ -212,8 +230,15 @@ export function MorphingSpeechBubblePage() {
             duration={duration}
             bounce={bounce}
             blur={blur}
+            onPrevious={() => handleStep(-1)}
+            onNext={() => handleStep(1)}
+            canGoPrevious={index > 0}
+            canGoNext={index < MESSAGES.length - 1}
           />
         ) : null}
+        <p className="text-xs text-muted-foreground tabular-nums">
+          {custom.trim() === '' ? `${index + 1} / ${MESSAGES.length}` : 'Your message'}
+        </p>
       </div>
     </DemoPage>
   )

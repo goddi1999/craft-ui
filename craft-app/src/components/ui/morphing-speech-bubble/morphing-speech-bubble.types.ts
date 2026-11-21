@@ -18,6 +18,12 @@ export type MorphingSpeechBubbleProps = {
   /** Longest line in px before the text wraps. */
   maxWidth?: number
   avatarSize?: number
+  /** Show the up / down stepper and call this to go back a message. */
+  onPrevious?: () => void
+  /** Show the up / down stepper and call this to go forward a message. */
+  onNext?: () => void
+  canGoPrevious?: boolean
+  canGoNext?: boolean
   className?: string
 }
 
