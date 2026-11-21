@@ -1,0 +1,1 @@
+export { CutoutCardPage } from './page'

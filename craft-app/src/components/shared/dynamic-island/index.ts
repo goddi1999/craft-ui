@@ -1,0 +1,1 @@
+export { DynamicIslandPage } from './page'

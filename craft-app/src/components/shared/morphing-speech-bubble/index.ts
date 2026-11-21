@@ -1,0 +1,1 @@
+export { MorphingSpeechBubblePage } from './page'

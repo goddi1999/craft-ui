@@ -1,0 +1,1 @@
+export { CultDockPage } from './page'

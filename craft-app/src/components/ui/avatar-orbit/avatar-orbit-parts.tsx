@@ -1,6 +1,12 @@
 import { motion } from 'motion/react'
 import { useState } from 'react'
 
+import {
+  SpeechBubbleBody,
+  SpeechBubbleRoot,
+  SpeechBubbleTail,
+  SpeechBubbleText,
+} from '@/components/ui/speech-bubble'
 import { cn } from '@/lib/utils'
 
 import type { AvatarOrbitBubbleTone } from './avatar-orbit.types'
@@ -68,7 +74,10 @@ export function AvatarOrbitMember({
           animate={
             reduced || !shown
               ? undefined
-              : { y: ['0cqw', `${-1.4 * sign}cqw`, '0cqw'], x: ['0cqw', `${0.6 * sign}cqw`, '0cqw'] }
+              : {
+                  y: ['0cqw', `${-1.4 * sign}cqw`, '0cqw'],
+                  x: ['0cqw', `${0.6 * sign}cqw`, '0cqw'],
+                }
           }
           transition={drift(index, delay)}
         >
@@ -112,7 +121,7 @@ type BubbleProps = {
   shown: boolean
 }
 
-/** Decorative speech bubble; the tail points back at its avatar. */
+/** Decorative speech bubble; the tail sits on the corner facing its avatar. */
 function AvatarOrbitBubble({ children, tone, side, delay, reduced, shown }: BubbleProps) {
   const left = side === 'left'
 
@@ -121,18 +130,30 @@ function AvatarOrbitBubble({ children, tone, side, delay, reduced, shown }: Bubb
       aria-hidden="true"
       data-slot="avatar-orbit-bubble"
       className={cn(
-        'pointer-events-none absolute -top-[3cqw] z-10 rounded-[2.4cqw] bg-(--bubble-bg) px-[3.2cqw] py-[1.8cqw] text-[3.6cqw] leading-none font-medium whitespace-nowrap text-(--bubble-fg)',
-        'before:absolute before:bottom-0 before:size-[2.4cqw] before:bg-(--bubble-bg)',
-        BUBBLE_TONES[tone],
-        left
-          ? 'right-[72%] origin-bottom-right before:-right-[0.6cqw] before:rounded-bl-[2cqw]'
-          : 'left-[72%] origin-bottom-left before:-left-[0.6cqw] before:rounded-br-[2cqw]',
+        'pointer-events-none absolute -top-[4cqw] z-10',
+        left ? 'right-[72%] origin-bottom-right' : 'left-[72%] origin-bottom-left',
       )}
       initial={reduced ? false : { scale: 0, opacity: 0 }}
       animate={shown ? { scale: 1, opacity: 1 } : undefined}
       transition={{ ...popSpring, delay }}
     >
-      {children}
+      {/* tones override the bubble's colour variables, so they go after its defaults */}
+      <SpeechBubbleRoot className={cn('mr-0', BUBBLE_TONES[tone])}>
+        <SpeechBubbleBody className="px-[3.6cqw] py-[2.2cqw] lg:px-[3.6cqw] lg:py-[2.2cqw]">
+          <SpeechBubbleTail
+            side={left ? 'right' : 'left'}
+            className={cn(
+              'h-[3cqw] w-auto md:h-[3cqw]',
+              left
+                ? 'right-[-1cqw] md:right-[-1cqw] lg:right-[-1cqw]'
+                : 'left-[-1cqw] md:left-[-1cqw] lg:left-[-1cqw]',
+            )}
+          />
+          <SpeechBubbleText className="text-[3.6cqw] whitespace-nowrap md:text-[3.6cqw] lg:text-[3.6cqw]">
+            {children}
+          </SpeechBubbleText>
+        </SpeechBubbleBody>
+      </SpeechBubbleRoot>
     </motion.span>
   )
 }

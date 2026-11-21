@@ -1,0 +1,1 @@
+export { OrganicCardPage } from './page'

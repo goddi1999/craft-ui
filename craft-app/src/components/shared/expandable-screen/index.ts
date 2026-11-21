@@ -1,0 +1,1 @@
+export { ExpandableScreenPage } from './page'

@@ -29,17 +29,29 @@ export function place(
 }
 
 export const BUBBLE_TONES: Record<AvatarOrbitBubbleTone, string> = {
-  blue: '[--bubble-bg:var(--avatar-orbit-bubble,oklch(0.62_0.19_255))] [--bubble-fg:white]',
-  neutral: '[--bubble-bg:var(--muted)] [--bubble-fg:var(--foreground)]',
-  primary: '[--bubble-bg:var(--primary)] [--bubble-fg:var(--primary-foreground)]',
+  blue: '[--speech-bubble-bg:var(--avatar-orbit-bubble,oklch(0.62_0.19_255))] [--speech-bubble-fg:white]',
+  neutral: '[--speech-bubble-bg:var(--muted)] [--speech-bubble-fg:var(--foreground)]',
+  primary: '[--speech-bubble-bg:var(--primary)] [--speech-bubble-fg:var(--primary-foreground)]',
 }
 
 export const SPAWN_STAGGER = 0.06
 export const BUBBLE_LAG = 0.3
 
-export const spawnSpring: Transition = { type: 'spring', stiffness: 170, damping: 15 }
-export const popSpring: Transition = { type: 'spring', stiffness: 420, damping: 16 }
-export const hoverSpring: Transition = { type: 'spring', stiffness: 380, damping: 18 }
+export const spawnSpring: Transition = {
+  type: 'spring',
+  stiffness: 170,
+  damping: 15,
+}
+export const popSpring: Transition = {
+  type: 'spring',
+  stiffness: 420,
+  damping: 16,
+}
+export const hoverSpring: Transition = {
+  type: 'spring',
+  stiffness: 380,
+  damping: 18,
+}
 
 /** Desynced drift: each member gets its own period and reach. */
 export function drift(index: number, spawnDelay: number): Transition {

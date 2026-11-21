@@ -1,0 +1,1 @@
+export { MockBrowserWindowPage } from './page'

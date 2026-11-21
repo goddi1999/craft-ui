@@ -1,0 +1,1 @@
+export { FeatureCarouselPage } from './page'

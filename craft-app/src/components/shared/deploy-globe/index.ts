@@ -1,0 +1,1 @@
+export { DeployGlobePage } from './page'
