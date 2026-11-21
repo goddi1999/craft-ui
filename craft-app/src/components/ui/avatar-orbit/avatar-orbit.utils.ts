@@ -1,10 +1,6 @@
 import type { Transition } from 'motion/react'
 
-import type {
-  AvatarOrbitBubbleSide,
-  AvatarOrbitBubbleTone,
-  AvatarOrbitMember,
-} from './avatar-orbit.types'
+import type { AvatarOrbitBubbleSide, AvatarOrbitMember } from './avatar-orbit.types'
 
 export type Placement = {
   /** Offset from the stage centre, as percentages of the stage width. */
@@ -26,12 +22,6 @@ export function place(
   const x = Math.cos((degrees * Math.PI) / 180) * distance
   const y = Math.sin((degrees * Math.PI) / 180) * distance
   return { x, y, side: member.bubbleSide ?? (x < 0 ? 'left' : 'right') }
-}
-
-export const BUBBLE_TONES: Record<AvatarOrbitBubbleTone, string> = {
-  blue: '[--speech-bubble-bg:var(--avatar-orbit-bubble,oklch(0.62_0.19_255))] [--speech-bubble-fg:white]',
-  neutral: '[--speech-bubble-bg:var(--muted)] [--speech-bubble-fg:var(--foreground)]',
-  primary: '[--speech-bubble-bg:var(--primary)] [--speech-bubble-fg:var(--primary-foreground)]',
 }
 
 export const SPAWN_STAGGER = 0.06

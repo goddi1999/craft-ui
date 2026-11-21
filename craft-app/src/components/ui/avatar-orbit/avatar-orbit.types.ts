@@ -1,9 +1,11 @@
 import type { ComponentProps, ReactNode } from 'react'
 
+import type { SpeechBubbleTone } from '@/components/ui/speech-bubble'
+
 export type AvatarOrbitBubbleSide = 'left' | 'right'
 
-/** `blue` reads `--avatar-orbit-bubble` (iOS blue by default); the others follow the theme. */
-export type AvatarOrbitBubbleTone = 'blue' | 'neutral' | 'primary'
+/** Any speech-bubble tone: `default` follows the theme, the rest are the 24-colour palette. */
+export type AvatarOrbitBubbleTone = SpeechBubbleTone
 
 export type AvatarOrbitMember = {
   id: string

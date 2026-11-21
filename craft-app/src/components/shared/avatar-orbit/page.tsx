@@ -11,7 +11,8 @@ import {
 } from '@/components/shared/demo-controls'
 import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
 import { DemoPage } from '@/components/shared/demo-page'
-import { AvatarOrbit, type AvatarOrbitMember } from '@/components/ui/avatar-orbit'
+import { ToneSwatches } from '@/components/shared/speech-bubble'
+import { AvatarOrbit, type AvatarOrbitBubbleTone, type AvatarOrbitMember } from '@/components/ui/avatar-orbit'
 import { FluidOrb } from '@/components/ui/fluid-orb'
 
 // hex, not theme tokens: the orb shader mixes the colour itself and needs raw RGB
@@ -30,6 +31,7 @@ const DEFAULTS = {
   avatarSize: 26,
   bubbles: true,
   color: '#1A73F2' as OrbColor,
+  bubbleTone: 'blue' as AvatarOrbitBubbleTone,
 }
 
 const COMPONENT_DEFAULTS = { radius: 32, avatarSize: 26, startAngle: -90, bubbleTone: 'blue' }
@@ -47,9 +49,9 @@ const PROPS: DemoPropDoc[] = [
   { name: 'avatarSize', type: 'number', default: '26', description: 'Avatar diameter, as a percentage of the stage width.' },
   {
     name: 'bubbleTone',
-    type: "'blue' | 'neutral' | 'primary'",
+    type: 'SpeechBubbleTone',
     default: "'blue'",
-    description: 'Bubble colour. Blue reads the --avatar-orbit-bubble CSS variable.',
+    description: 'Bubble colour, any speech-bubble tone: default follows the theme, plus the 24-colour palette.',
   },
 ]
 
@@ -64,7 +66,7 @@ const MEMBERS: AvatarOrbitMember[] = BUBBLES.map((_, index) => {
 
 export function AvatarOrbitPage() {
   const settings = useDemoSettings(DEFAULTS)
-  const { count, radius, avatarSize, bubbles, color } = settings.values
+  const { count, radius, avatarSize, bubbles, color, bubbleTone } = settings.values
   const [run, setRun] = useState(0)
 
   // bubbles on every other member so the ring stays airy
@@ -81,6 +83,7 @@ export function AvatarOrbitPage() {
       center: { expression: '<FluidOrb className="size-full!" />' },
       radius,
       avatarSize,
+      bubbleTone,
     },
     defaults: COMPONENT_DEFAULTS,
   })
@@ -121,6 +124,7 @@ export function AvatarOrbitPage() {
             checked={bubbles}
             onCheckedChange={(next) => settings.set('bubbles', next)}
           />
+          {bubbles ? <ToneSwatches value={bubbleTone} onChange={(next) => settings.set('bubbleTone', next)} /> : null}
           <DemoControlGroup
             title="Orb colour"
             options={COLORS}
@@ -147,6 +151,7 @@ export function AvatarOrbitPage() {
         members={members}
         radius={radius}
         avatarSize={avatarSize}
+        bubbleTone={bubbleTone}
         center={<FluidOrb size={320} color={color} className="size-full!" />}
         className="max-w-md"
       />

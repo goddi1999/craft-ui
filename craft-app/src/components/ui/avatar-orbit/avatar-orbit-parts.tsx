@@ -12,7 +12,6 @@ import { cn } from '@/lib/utils'
 import type { AvatarOrbitBubbleTone } from './avatar-orbit.types'
 import {
   BUBBLE_LAG,
-  BUBBLE_TONES,
   drift,
   hoverSpring,
   popSpring,
@@ -137,8 +136,7 @@ function AvatarOrbitBubble({ children, tone, side, delay, reduced, shown }: Bubb
       animate={shown ? { scale: 1, opacity: 1 } : undefined}
       transition={{ ...popSpring, delay }}
     >
-      {/* tones override the bubble's colour variables, so they go after its defaults */}
-      <SpeechBubbleRoot className={cn('mr-0', BUBBLE_TONES[tone])}>
+      <SpeechBubbleRoot tone={tone} className="mr-0">
         <SpeechBubbleBody className="px-[3.6cqw] py-[2.2cqw] lg:px-[3.6cqw] lg:py-[2.2cqw]">
           <SpeechBubbleTail
             side={left ? 'right' : 'left'}
