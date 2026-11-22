@@ -10,13 +10,20 @@ import {
 } from '@/components/shared/demo-controls'
 import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
 import { DemoPage } from '@/components/shared/demo-page'
-import { PulseHeart, type PulseHeartIcon } from '@/components/ui/pulse-heart'
+import {
+  PULSE_HEART_COLORS,
+  PulseHeart,
+  type PulseHeartColor,
+  type PulseHeartIcon,
+} from '@/components/ui/pulse-heart'
+import { cn } from '@/lib/utils'
 
-const ICONS: PulseHeartIcon[] = ['heart', 'star', 'thumb']
+const ICONS: PulseHeartIcon[] = ['heart', 'star', 'thumb', 'chat']
 
 const DEFAULTS = {
   count: 1248,
   icon: 'heart' as PulseHeartIcon,
+  color: undefined as PulseHeartColor | undefined,
   showCount: true,
   idleOutline: true,
   disabled: false,
@@ -79,7 +86,7 @@ const PROPS: DemoPropDoc[] = [
   },
   {
     name: 'icon',
-    type: "'heart' | 'star' | 'thumb' | ReactNode",
+    type: "'heart' | 'star' | 'thumb' | 'chat' | ReactNode",
     default: "'heart'",
     description: 'Built-in glyph, or your own element.',
   },
@@ -100,6 +107,11 @@ const PROPS: DemoPropDoc[] = [
     type: 'number',
     default: '32',
     description: 'Pill corner radius in px.',
+  },
+  {
+    name: 'color',
+    type: "'ink' | 'brown' | 'red' | … | 'slate' | 'sand'",
+    description: 'One of the 24 palette colours for the liked state. likedColor wins when both are set.',
   },
   {
     name: 'likedColor',
@@ -206,12 +218,14 @@ function ColorField({ label, value, onValueChange }: ColorFieldProps) {
 export function PulseHeartPage() {
   const settings = useDemoSettings(DEFAULTS)
   const values = settings.values
-  const { count, icon, showCount, idleOutline, disabled } = values
+  const { count, icon, showCount, idleOutline, disabled, color } = values
+  // a palette colour replaces the custom liked colour
+  const props = color ? { ...values, likedColor: undefined } : values
 
   const usage = toUsageSnippet({
     component: 'PulseHeart',
     from: '@/components/ui/pulse-heart',
-    props: values,
+    props,
     defaults: COMPONENT_DEFAULTS,
   })
 
@@ -237,6 +251,27 @@ export function PulseHeartPage() {
             value={icon}
             onChange={(value) => settings.set('icon', value)}
           />
+          <div className="flex flex-col gap-2.5 sm:col-span-2">
+            <DemoControlLabel>Colour</DemoControlLabel>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Colour">
+              {(Object.keys(PULSE_HEART_COLORS) as PulseHeartColor[]).map((tone) => (
+                <button
+                  key={tone}
+                  type="button"
+                  title={tone}
+                  aria-label={tone}
+                  aria-pressed={tone === color}
+                  onClick={() => settings.set('color', tone === color ? undefined : tone)}
+                  style={{ background: PULSE_HEART_COLORS[tone] }}
+                  className={cn(
+                    'size-7 rounded-full ring-1 ring-border transition-transform active:scale-95',
+                    'outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                    tone === color && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
+                  )}
+                />
+              ))}
+            </div>
+          </div>
           <DemoSwitch
             label="Show count"
             checked={showCount}
@@ -312,12 +347,15 @@ export function PulseHeartPage() {
             onCheckedChange={(value) => settings.set('disabled', value)}
           />
           <div className="grid gap-2 sm:col-span-2 sm:grid-cols-2">
-            {COLORS.map((color) => (
+            {COLORS.map((field) => (
               <ColorField
-                key={color.key}
-                label={`${color.label} colour`}
-                value={values[color.key]}
-                onValueChange={(value) => settings.set(color.key, value)}
+                key={field.key}
+                label={`${field.label} colour`}
+                value={values[field.key]}
+                onValueChange={(value) => {
+                  settings.set(field.key, value)
+                  if (field.key === 'likedColor') settings.set('color', undefined)
+                }}
               />
             ))}
           </div>
@@ -333,7 +371,7 @@ export function PulseHeartPage() {
       <div className="flex min-h-[22rem] items-center justify-center bg-zinc-950 p-10">
         <PulseHeart
           key={`${icon}-${idleOutline}-${showCount}-${disabled}`}
-          {...values}
+          {...props}
           defaultLiked={false}
           onChange={(_liked, next) => settings.set('count', next)}
         />

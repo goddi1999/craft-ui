@@ -2,7 +2,37 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type 
 
 import './pulse-heart.css'
 
-export type PulseHeartIcon = 'heart' | 'star' | 'thumb'
+export type PulseHeartIcon = 'heart' | 'star' | 'thumb' | 'chat'
+
+// The 24-colour palette shared with speech-bubble, copied so this folder stays self-contained.
+export const PULSE_HEART_COLORS = {
+  ink: '#0a0a0c',
+  brown: '#8b5e3c',
+  red: '#e8483f',
+  orange: '#f08a24',
+  amber: '#f0b429',
+  green: '#3ecf8e',
+  turquoise: '#2fbfa0',
+  blue: '#3b93f0',
+  purple: '#8b5cf6',
+  pink: '#e152b0',
+  grey: '#a3a3a3',
+  cream: '#f1efe9',
+  coral: '#f47560',
+  rose: '#ec4f7a',
+  orchid: '#c25ed8',
+  indigo: '#5a5cf0',
+  navy: '#27408b',
+  cyan: '#1fb5d4',
+  lime: '#9ccc3c',
+  moss: '#6b8e3a',
+  pine: '#2f7d5b',
+  plum: '#7c3a73',
+  slate: '#5d6b7e',
+  sand: '#d6b88a',
+} as const
+
+export type PulseHeartColor = keyof typeof PULSE_HEART_COLORS
 
 export type PulseHeartProps = {
   /** Controlled liked state. Changes from outside bind without a run. */
@@ -23,6 +53,8 @@ export type PulseHeartProps = {
   size?: number
   /** Pill corner radius in px. @default 32 */
   corner?: number
+  /** Palette colour for the liked state. Ignored when `likedColor` is set. */
+  color?: PulseHeartColor
   /** Colour after the flip, and of the hover tint and focus ring. @default '#ff4d4d' */
   likedColor?: string
   /** Colour before the flip. @default '#8b8b93' */
@@ -55,7 +87,7 @@ type Cell = { ch: string } | { top: string; bottom: string }
 
 const OUT = 0.4
 
-// Lucide's heart / star / thumbs-up path data, inlined so the swell
+// Lucide's heart / star / thumbs-up / message-circle path data, inlined so the swell
 // animation can grab the <g> and scale it directly.
 const ICONS: Record<PulseHeartIcon, readonly IconPath[]> = {
   heart: [
@@ -73,6 +105,11 @@ const ICONS: Record<PulseHeartIcon, readonly IconPath[]> = {
       d: 'M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z',
     },
     { d: 'M7 10v12' },
+  ],
+  chat: [
+    {
+      d: 'M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719',
+    },
   ],
 }
 
@@ -96,7 +133,8 @@ export function PulseHeart({
   idleOutline = true,
   size = 40,
   corner = 32,
-  likedColor = '#ff4d4d',
+  color,
+  likedColor: likedColorProp,
   idleColor = '#8b8b93',
   pillColor = '#232326',
   textColor = '#ffffff',
@@ -109,6 +147,7 @@ export function PulseHeart({
   label = 'Like',
   className = '',
 }: PulseHeartProps) {
+  const likedColor = likedColorProp ?? (color ? PULSE_HEART_COLORS[color] : '#ff4d4d')
   const controlled = likedProp !== undefined
   const [inner, setInner] = useState(defaultLiked)
   const [total, setTotal] = useState(count)
