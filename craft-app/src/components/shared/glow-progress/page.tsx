@@ -11,12 +11,12 @@ import { toUsageSnippet, type DemoPropDoc } from '@/components/shared/demo-docs'
 import { DemoPage } from '@/components/shared/demo-page'
 import { Card } from '@/components/ui/card'
 import {
+  GLOW_PROGRESS_TONE_NAMES,
   GlowProgress,
   type GlowProgressSize,
   type GlowProgressTone,
 } from '@/components/ui/glow-progress'
 
-const TONES: readonly GlowProgressTone[] = ['lime', 'orange', 'sky', 'violet']
 const SIZES: readonly GlowProgressSize[] = ['sm', 'md', 'lg']
 const LESSONS_PER_LEVEL = 10
 const START_LEVEL = 5
@@ -40,9 +40,10 @@ const PROPS: DemoPropDoc[] = [
   { name: 'max', type: 'number', default: '100', description: 'Value that counts as complete.' },
   {
     name: 'tone',
-    type: "'lime' | 'orange' | 'sky' | 'violet'",
+    type: "'lime' | 'ink' | 'brown' | 'red' | 'orange' | 'amber' | 'green' | 'turquoise' | 'blue' | 'purple' | 'pink' | 'grey'",
     default: "'lime'",
-    description: 'Fill gradient and the colour of the halo around the sparkle.',
+    description:
+      'Fill gradient and halo colour. lime is the green-to-yellow default; the other 11 are the agent bot palette, each fading to a pale tint of itself.',
   },
   {
     name: 'size',
@@ -89,7 +90,7 @@ export function GlowProgressPage() {
         <DemoSettings onReset={settings.reset} canReset={settings.isDirty}>
           <DemoControlGroup
             title="Tone"
-            options={TONES}
+            options={GLOW_PROGRESS_TONE_NAMES}
             value={tone}
             onChange={(next) => settings.set('tone', next)}
           />

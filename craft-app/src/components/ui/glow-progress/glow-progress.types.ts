@@ -1,7 +1,9 @@
 import type * as ProgressPrimitive from '@radix-ui/react-progress'
 import type { ComponentProps } from 'react'
 
-export type GlowProgressTone = 'lime' | 'orange' | 'sky' | 'violet'
+import type { GLOW_PROGRESS_TONES } from './glow-progress.constants'
+
+export type GlowProgressTone = keyof typeof GLOW_PROGRESS_TONES
 export type GlowProgressSize = 'sm' | 'md' | 'lg'
 
 export type GlowProgressToneColors = {
