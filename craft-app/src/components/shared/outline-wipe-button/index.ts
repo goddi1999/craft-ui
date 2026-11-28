@@ -1,0 +1,1 @@
+export { OutlineWipeButtonPage } from './page'

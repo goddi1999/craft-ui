@@ -1,0 +1,46 @@
+/* The fill grows with a strong ease-out so a new value lands quickly, then settles. */
+.glow-progress-fill {
+  transition:
+    width 700ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 200ms ease;
+}
+
+/* A slow, gentle twinkle: decorative, so it stays subtle. */
+.glow-progress-sparkle {
+  animation: glow-progress-twinkle 2400ms ease-in-out infinite;
+}
+
+.glow-progress-halo {
+  animation: glow-progress-breathe 2400ms ease-in-out infinite;
+}
+
+@keyframes glow-progress-twinkle {
+  0%,
+  100% {
+    transform: scale(0.9) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.06) rotate(12deg);
+  }
+}
+
+@keyframes glow-progress-breathe {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-progress-fill {
+    transition: opacity 200ms ease;
+  }
+
+  .glow-progress-sparkle,
+  .glow-progress-halo {
+    animation: none;
+  }
+}

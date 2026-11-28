@@ -1,0 +1,1 @@
+export { EdgeGlowButtonPage } from './page'

@@ -1,5 +1,10 @@
 import {
   AccordionPage,
+  GlowProgressPage,
+  OutlineWipeButtonPage,
+  FillSweepButtonPage,
+  InsetCircleButtonPage,
+  EdgeGlowButtonPage,
   DeployTimelinePage,
   ToolCallGraphPage,
   LapTimerPage,
@@ -247,6 +252,54 @@ import { sortNewestFirst } from './gallery.utils'
  * Order here does not matter — the gallery shows the newest `addedAt` first.
  */
 export const GALLERY_EXAMPLES: GalleryExample[] = sortNewestFirst([
+  {
+    slug: 'glow-progress',
+    addedAt: '2026-11-28',
+    title: 'Glow Progress',
+    description:
+      'A level-up progress bar on the Radix primitive, with a gradient fill and a glowing sparkle riding its leading edge.',
+    tech: 'React · Radix · CSS',
+    categories: ['data', 'animation'],
+    page: GlowProgressPage,
+  },
+  {
+    slug: 'outline-wipe-button',
+    addedAt: '2026-11-28',
+    title: 'Outline Wipe Button',
+    description:
+      'Outlined display text that a sweeping caret wipes into solid, glowing colour on hover or focus.',
+    tech: 'React · Tailwind',
+    categories: ['inputs', 'animation'],
+    page: OutlineWipeButtonPage,
+  },
+  {
+    slug: 'fill-sweep-button',
+    addedAt: '2026-11-28',
+    title: 'Fill Sweep Button',
+    description: 'An outlined pill that floods with colour from the left while its label flips to stay readable.',
+    tech: 'React · Tailwind',
+    categories: ['inputs', 'animation'],
+    page: FillSweepButtonPage,
+  },
+  {
+    slug: 'inset-circle-button',
+    addedAt: '2026-11-28',
+    title: 'Inset Circle Button',
+    description: 'A round button whose inner disc shrinks away with a circular clip, inverting the label.',
+    tech: 'React · Tailwind',
+    categories: ['inputs', 'animation'],
+    page: InsetCircleButtonPage,
+  },
+  {
+    slug: 'edge-glow-button',
+    addedAt: '2026-11-28',
+    title: 'Edge Glow Button',
+    description:
+      'A pill with a warm light that springs after the pointer and lights whichever edge it nears.',
+    tech: 'React · Spring physics',
+    categories: ['inputs', 'effects'],
+    page: EdgeGlowButtonPage,
+  },
   {
     slug: 'scroll-driven-index',
     addedAt: '2026-05-20',
