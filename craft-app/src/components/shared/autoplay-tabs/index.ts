@@ -1,0 +1,1 @@
+export { AutoplayTabsPage } from './page'

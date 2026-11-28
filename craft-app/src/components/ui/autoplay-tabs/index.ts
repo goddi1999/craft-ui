@@ -1,0 +1,5 @@
+export { AutoplayTabsRoot } from './AutoplayTabsRoot'
+export { AutoplayTabsList, AutoplayTabsTab } from './AutoplayTabsList'
+export { AutoplayTabsPlayButton } from './AutoplayTabsPlayButton'
+export { useAutoplayTabs } from './autoplay-tabs.context'
+export type { AutoplayTabsRootProps } from './autoplay-tabs.types'
