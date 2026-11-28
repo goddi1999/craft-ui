@@ -28,8 +28,17 @@ const VARIANT_LABELS: Record<Variant, string> = {
   caption: 'Caption',
 }
 
+const PLACEMENTS = ['below', 'inset'] as const
+type Placement = (typeof PLACEMENTS)[number]
+
+const PLACEMENT_LABELS: Record<Placement, string> = {
+  below: 'Below',
+  inset: 'Inset',
+}
+
 const DEFAULTS = {
   variant: 'default' as Variant,
+  placement: 'below' as Placement,
   duration: 3.6,
   autoPlay: true,
 }
@@ -117,6 +126,13 @@ const PROPS: DemoPropDoc[] = [
     description: 'AppleCarouselControls: size of the tab list and play button.',
   },
   {
+    name: 'placement',
+    type: "'below' | 'inset'",
+    default: "'below'",
+    description:
+      'AppleCarouselControls: under the cards, or floating inside the gallery on frosted pills.',
+  },
+  {
     name: 'useAppleCarouselItem()',
     type: '{ index, isCurrent, isClone }',
     description:
@@ -148,7 +164,7 @@ function renderDefaultSlides() {
   ))
 }
 
-function renderCaptionSlides() {
+function renderCaptionSlides(placement: Placement) {
   return PLACES.map((place) => (
     // The caption always sits on a photo, so the card resolves the dark
     // tokens in either theme.
@@ -169,6 +185,8 @@ function renderCaptionSlides() {
           'opacity-36 transition-opacity duration-150 ease-out in-data-current:opacity-100 in-data-current:duration-400',
           '@max-5xl:gap-3 @max-5xl:px-6 @max-5xl:pb-6 @max-5xl:text-base/5',
           '@max-3xl:flex-col @max-3xl:px-6 @max-3xl:text-center',
+          // Clears the controls floating over the bottom of the card.
+          placement === 'inset' && 'pb-28 @max-5xl:pb-24',
         )}
       >
         <a
@@ -192,7 +210,7 @@ function renderCaptionSlides() {
 
 export function AppleCarouselPage() {
   const settings = useDemoSettings(DEFAULTS)
-  const { variant, duration, autoPlay } = settings.values
+  const { variant, placement, duration, autoPlay } = settings.values
 
   const usage = toUsageSnippet({
     component: 'AppleCarouselRoot',
@@ -204,7 +222,7 @@ export function AppleCarouselPage() {
     <AppleCarouselItem key={item.id}>{/* card */}</AppleCarouselItem>
   ))}
 </AppleCarouselContent>
-<AppleCarouselControls>
+<AppleCarouselControls${placement === 'inset' ? ' placement="inset"' : ''}>
   <AppleCarouselTabList aria-label="Slides">
     {items.map((item) => (
       <AppleCarouselTab key={item.id}>{item.title}</AppleCarouselTab>
@@ -227,6 +245,13 @@ export function AppleCarouselPage() {
             value={variant}
             onChange={(next) => settings.set('variant', next)}
             format={(option) => VARIANT_LABELS[option]}
+          />
+          <DemoControlGroup
+            title="Controls"
+            options={PLACEMENTS}
+            value={placement}
+            onChange={(next) => settings.set('placement', next)}
+            format={(option) => PLACEMENT_LABELS[option]}
           />
           <DemoSlider
             label="Duration"
@@ -254,9 +279,9 @@ export function AppleCarouselPage() {
         className="max-w-5xl"
       >
         <AppleCarouselContent>
-          {variant === 'caption' ? renderCaptionSlides() : renderDefaultSlides()}
+          {variant === 'caption' ? renderCaptionSlides(placement) : renderDefaultSlides()}
         </AppleCarouselContent>
-        <AppleCarouselControls>
+        <AppleCarouselControls placement={placement}>
           <AppleCarouselTabList aria-label="Places in Viet Nam">
             {PLACES.map((place) => (
               <AppleCarouselTab key={place.image}>{place.title}</AppleCarouselTab>

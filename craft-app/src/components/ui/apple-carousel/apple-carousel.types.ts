@@ -58,4 +58,10 @@ export type AppleCarouselControlsProps = ComponentProps<'div'> & {
    * @defaultValue "default"
    */
   size?: 'default' | 'sm'
+  /**
+   * Where the controls sit: under the cards, or floating inside them at the
+   * bottom of the gallery on a frosted pill.
+   * @defaultValue "below"
+   */
+  placement?: 'below' | 'inset'
 }

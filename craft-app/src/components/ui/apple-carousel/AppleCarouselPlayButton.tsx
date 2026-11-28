@@ -29,6 +29,7 @@ export function AppleCarouselPlayButton({
       data-slot="apple-carousel-play-button"
       className={cn(
         'flex size-14 items-center justify-center rounded-full bg-muted text-foreground group-data-[size=sm]/apple-carousel-controls:size-11',
+        'group-data-[placement=inset]/apple-carousel-controls:bg-background/70 group-data-[placement=inset]/apple-carousel-controls:backdrop-blur-md group-data-[placement=inset]/apple-carousel-controls:hover:bg-background/85',
         'transition-[background-color,scale] duration-150 ease-out hover:bg-muted/80 active:scale-97 motion-reduce:active:scale-100',
         'focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-ring',
         className,

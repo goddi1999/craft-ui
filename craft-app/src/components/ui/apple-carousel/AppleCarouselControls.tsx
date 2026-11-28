@@ -8,6 +8,7 @@ import type { AppleCarouselControlsProps } from './apple-carousel.types'
 
 export function AppleCarouselControls({
   size = 'default',
+  placement = 'below',
   className,
   ...props
 }: AppleCarouselControlsProps) {
@@ -15,8 +16,12 @@ export function AppleCarouselControls({
     <div
       data-slot="apple-carousel-controls"
       data-size={size}
+      data-placement={placement}
       className={cn(
         'group/apple-carousel-controls flex items-center justify-center gap-3 pt-6 data-[size=sm]:gap-2 data-[size=sm]:pt-4',
+        // Inset floats over the cards; only the pills take pointer input so
+        // swipes between them still reach the viewport.
+        'data-[placement=inset]:pointer-events-none data-[placement=inset]:absolute data-[placement=inset]:inset-x-0 data-[placement=inset]:bottom-0 data-[placement=inset]:pt-0 data-[placement=inset]:pb-6 data-[placement=inset]:*:pointer-events-auto data-[placement=inset]:data-[size=sm]:pb-4',
         className,
       )}
       {...props}
@@ -37,6 +42,7 @@ export function AppleCarouselTabList({
       data-slot="apple-carousel-tab-list"
       className={cn(
         'flex h-14 items-center rounded-full bg-muted px-4 group-data-[size=sm]/apple-carousel-controls:h-11 group-data-[size=sm]/apple-carousel-controls:px-3',
+        'group-data-[placement=inset]/apple-carousel-controls:bg-background/70 group-data-[placement=inset]/apple-carousel-controls:backdrop-blur-md',
         className,
       )}
       {...props}
